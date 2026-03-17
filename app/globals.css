@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   Design Tokens
+   Fill these in from your Figma design file.
+   ───────────────────────────────────────────── */
+@theme {
+  /* ── Brand colors ── */
+  --color-brand-orange: #E67E22;
+  --color-brand-dark: #252421;
+
+  /* Typography — replace with your Figma fonts */
+  /* --font-sans: 'Your Font', sans-serif; */
+  /* --font-heading: 'Your Heading Font', sans-serif; */
+
+  /* Spacing / sizing — extend as needed */
+  /* --spacing-section: 6rem; */
+}
+
+/* ─────────────────────────────────────────────
+   Base Styles
+   ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
