@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Island_Moments, Nunito } from "next/font/google";
+import { Island_Moments, Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
 
 // Exact Figma font: Island Moments, weight 400
@@ -12,9 +12,7 @@ const logoFont = Island_Moments({
   display: "swap",
 });
 
-// Figma font: Product Sans (proprietary, not on Google Fonts)
-// Closest available substitute: Nunito — same geometric rounded structure
-const navFont = Nunito({
+const navFont = Montserrat({
   weight: ["700"],
   subsets: ["latin"],
   display: "swap",
@@ -35,59 +33,56 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState<NavHref>("#home");
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-[#1a1a1a] shadow-[0px_4px_4px_rgba(0,0,0,0.25)]">
-
+    <header className="fixed top-0 left-0 right-0 z-50 w-full h-[116px] bg-transparent">
       {/* ── Desktop nav (lg and above) ── */}
-      {/*
-        No items-center on nav → flex default is align-items:stretch
-        → both the logo div and the ul fill the full h-[70px]
-        → items-center inside each child vertically centers the content
-        → active underline is absolutely positioned so it never shifts text
-      */}
       <nav
-        className="hidden lg:flex flex-row justify-between h-[70px] px-[70px]"
+        className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center h-[116px] px-[70px]"
         aria-label="Main navigation"
       >
-        {/* Logo frame: stretches to 70px, items-center centers the text */}
-        <div className="flex items-center gap-[10px]">
-          <Link
-            href="/"
-            className={cn(
-              "text-white text-[75px] leading-[40px] font-normal select-none",
-              logoFont.className
-            )}
-          >
-            Neo Zino
-          </Link>
-        </div>
+        {/* Left column — Logo */}
+        <Link
+          href="/"
+          className={cn(
+            "inline-flex items-center text-white text-[75px] leading-none font-normal select-none m-0 p-0 -translate-y-2 justify-self-start",
+            logoFont.className,
+          )}
+        >
+          Neo Zino
+        </Link>
 
-        {/* Nav links: stretches to 70px, each li also stretches and centers its text */}
+        {/* Center column — Nav links */}
         <ul
-          className={cn("flex flex-row gap-[40px]", navFont.className)}
+          className={cn(
+            "flex flex-row items-center gap-[40px]",
+            navFont.className,
+          )}
           role="list"
         >
           {navLinks.map(({ label, href }) => (
             <li
               key={href}
-              // relative so the absolute underline anchors to this item
-              // flex items-center centers the text within the full 70px height
               className="relative flex items-center justify-center px-[10px]"
             >
               <Link
                 href={href}
                 onClick={() => setActiveLink(href)}
-                className="text-white text-[24px] font-bold leading-[40px] whitespace-nowrap"
+                className={cn(
+                  "relative text-white text-lg font-semibold whitespace-nowrap",
+                  "after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[5px] after:bg-[#E67E22]",
+                  "after:transition-all after:duration-300 after:ease-in-out",
+                  activeLink === href
+                    ? "after:w-full"
+                    : "after:w-0 hover:after:w-full",
+                )}
               >
                 {label}
               </Link>
-
-              {/* Active underline: absolutely positioned, never affects text centering */}
-              {activeLink === href && (
-                <span className="absolute bottom-0 inset-x-0 h-[5px] bg-[#E67E22]" />
-              )}
             </li>
           ))}
         </ul>
+
+        {/* Right column — empty spacer to keep links centered */}
+        <div />
       </nav>
 
       {/* ── Mobile nav (below lg) ── */}
@@ -100,7 +95,7 @@ export default function Navbar() {
             href="/"
             className={cn(
               "text-white text-[2.2rem] leading-none select-none",
-              logoFont.className
+              logoFont.className,
             )}
           >
             Neo Zino
@@ -113,17 +108,63 @@ export default function Navbar() {
             aria-controls="mobile-menu"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
-            <svg width="22" height="18" viewBox="0 0 22 18" fill="none" aria-hidden="true">
+            <svg
+              width="22"
+              height="18"
+              viewBox="0 0 22 18"
+              fill="none"
+              aria-hidden="true"
+            >
               {menuOpen ? (
                 <>
-                  <line x1="1" y1="1" x2="21" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="21" y1="1" x2="1" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  <line
+                    x1="1"
+                    y1="1"
+                    x2="21"
+                    y2="17"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="21"
+                    y1="1"
+                    x2="1"
+                    y2="17"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </>
               ) : (
                 <>
-                  <line x1="0" y1="2"  x2="22" y2="2"  stroke="white" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="0" y1="9"  x2="22" y2="9"  stroke="white" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="0" y1="16" x2="22" y2="16" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  <line
+                    x1="0"
+                    y1="2"
+                    x2="22"
+                    y2="2"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="0"
+                    y1="9"
+                    x2="22"
+                    y2="9"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="0"
+                    y1="16"
+                    x2="22"
+                    y2="16"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </>
               )}
             </svg>
@@ -135,7 +176,7 @@ export default function Navbar() {
             id="mobile-menu"
             className={cn(
               "flex flex-col px-6 py-4 gap-3 border-t border-white/10",
-              navFont.className
+              navFont.className,
             )}
             role="list"
           >
@@ -144,8 +185,10 @@ export default function Navbar() {
                 <Link
                   href={href}
                   className={cn(
-                    "text-white text-base font-bold block py-2",
-                    activeLink === href && "border-b-2 border-[#E67E22] inline-block"
+                    "relative inline-block text-white text-base font-bold py-2",
+                    "after:content-[''] after:absolute after:left-0 after:-bottom-0 after:h-[3px] after:bg-[#E67E22]",
+                    "after:transition-all after:duration-300 after:ease-in-out",
+                    activeLink === href ? "after:w-full" : "after:w-0",
                   )}
                   onClick={() => {
                     setActiveLink(href);
@@ -159,7 +202,6 @@ export default function Navbar() {
           </ul>
         )}
       </div>
-
     </header>
   );
 }

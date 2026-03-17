@@ -8,35 +8,46 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+// Avatar geometry — tweak OVERHANG to control how far the head pops above the circle
+const CIRCLE = 300;                   // circle diameter in px
+const OVERHANG = 60;                  // px the head extends above the circle's top edge
+const WRAP_H = CIRCLE + OVERHANG;     // total avatar wrapper height (360px)
+
 export default function HeroSection() {
   return (
     <section
       className={cn(
-        "relative min-h-screen w-full",
+        "relative h-[100dvh] w-full overflow-hidden",
         "bg-[url('/images/orange-mountains.jpg')] bg-cover bg-center bg-no-repeat",
         montserrat.className,
       )}
     >
-      {/* Dark overlay — keeps background mountains subtly visible */}
-      <div className="absolute inset-0 bg-black/78 pointer-events-none" />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/68 pointer-events-none" />
 
-      {/* Layout wrapper: flex column so spacer + content fill the screen */}
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Navbar height spacer — pushes content below the fixed navbar */}
-        <div className="h-[70px] shrink-0" />
+      <div className="relative z-10 flex flex-col h-full">
+        {/* Spacer matching the fixed navbar height */}
+        <div className="h-[116px] shrink-0" />
 
-        {/* Content area: fills remaining height, centers grid vertically */}
-        <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[70px] py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center w-full">
-            {/* ── Left column: Text content ── */}
+        {/* Content area — increased horizontal padding pulls content toward center */}
+        <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[130px] py-4">
+
+          {/*
+            grid-cols-[1fr_auto]:
+              - Left column (1fr) takes available width
+              - Right column (auto) sizes exactly to the avatar wrapper
+            This lets padding control how "centered" the content sits,
+            without the columns arbitrarily splitting 50/50.
+          */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-20 items-center w-full">
+
+            {/* ── Left column: Text ── */}
             <div className="flex flex-col gap-5">
-              {/* Greeting */}
-              <p className="text-3xl lg:text-4xl font-semibold text-white">
+              <p className="text-2xl lg:text-[28px] font-semibold text-white leading-snug">
                 Hi, i&apos;m <span className="text-[#E67E22]">Neo</span>
               </p>
 
-              {/* Headline */}
-              <h1 className="text-5xl lg:text-6xl font-semibold text-white leading-tight">
+              <h1 className="text-4xl lg:text-[50px] font-semibold text-white leading-tight">
                 Freelance{" "}
                 <span className="text-[#E67E22]">
                   Web
@@ -45,69 +56,110 @@ export default function HeroSection() {
                 </span>
               </h1>
 
-              {/* Paragraph */}
-              <p className="text-base lg:text-lg font-medium text-white/90 max-w-lg leading-relaxed">
+              <p className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[310px] leading-relaxed">
                 I design and build clean, responsive{" "}
                 <span className="text-[#E67E22]">websites</span> for businesses,
                 brands, and personal projects, creating digital experiences that
                 are clear, modern, and easy to use.
               </p>
 
-              {/* Buttons */}
-              <div className="flex flex-row flex-wrap gap-6 mt-3">
+              <div className="flex flex-row flex-wrap gap-5 mt-2">
                 <a
                   href="#work"
-                  className="inline-flex items-center justify-center bg-[#E67E22] text-white font-semibold rounded-[18px] px-8 py-4 text-base whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
+                  className="inline-flex items-center justify-center bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
                 >
                   My Work
                 </a>
                 <a
                   href="#contact"
-                  className="inline-flex items-center justify-center border-2 border-[#E67E22] text-white font-semibold rounded-[18px] px-8 py-4 text-base whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
+                  className="inline-flex items-center justify-center border-2 border-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
                 >
                   Contact Me
                 </a>
               </div>
             </div>
 
-            {/* ── Right column: Avatar with pop-out effect ── */}
+            {/* ── Right column: Avatar ── */}
             <div className="flex items-center justify-center">
               {/*
-                Wrapper is ~30% taller than the circle.
-                Circle is anchored bottom-0 inside the wrapper.
-                Image fills the full wrapper height with object-bottom —
-                subject's base stays at the circle bottom while the
-                head/shoulders overflow above the circle's top edge.
+                Wrapper is TALLER than the circle by OVERHANG px.
+                This space at the top is where the head "pops out".
+                NO overflow:hidden here — that would clip both the head and the glow.
               */}
               <div
                 className="relative"
-                style={{
-                  width: "clamp(260px, 28vw, 380px)",
-                  height: "clamp(340px, 37vw, 500px)",
-                }}
+                style={{ width: CIRCLE, height: WRAP_H }}
               >
-                {/* Orange glow — same footprint as the circle, sits behind it */}
+                {/*
+                  Layer 1: Orange glow ring.
+                  Positioned at the BOTTOM of the wrapper (the circle area).
+                  box-shadow radiates outward — visible because no parent clips it.
+                */}
                 <div
-                  className="absolute inset-x-0 bottom-0 rounded-full bg-[#E67E22]/10 blur-3xl"
-                  style={{ height: "clamp(260px, 28vw, 380px)" }}
+                  className="absolute left-0 right-0 bottom-0 rounded-full border-4 border-[#E67E22]"
+                  style={{
+                    height: CIRCLE,
+                    boxShadow:
+                      "0 0 30px 8px rgba(230,126,34,0.55), 0 0 70px 24px rgba(230,126,34,0.25)",
+                  }}
                 />
 
-                {/* Circle frame — NO overflow-hidden so the portrait breaks out above */}
+                {/*
+                  Layer 2: Dark circle background fill.
+                  Sits behind the image, gives the circle its dark interior.
+                */}
                 <div
-                  className="absolute inset-x-0 bottom-0 rounded-full bg-[#252421]/70 border-4 border-[#E67E22]"
-                  style={{ height: "clamp(260px, 28vw, 380px)" }}
+                  className="absolute left-0 right-0 bottom-0 rounded-full bg-[#252421]/80"
+                  style={{ height: CIRCLE }}
                 />
 
-                {/* Portrait — fills wrapper height, bottom-anchored so head pops above circle */}
-                <Image
-                  src="/images/neo2d.jpeg"
-                  alt="Neo Zino – Freelance Web Developer"
-                  fill
-                  className="object-contain object-bottom z-10"
-                  priority
-                />
+                {/*
+                  Layer 3: Body image — clipped to the circle via clip-path.
+                  clip-path: circle(R at cx cy) where:
+                    R  = CIRCLE/2 = 150px (radius)
+                    cx = 50% = 150px (horizontally centered)
+                    cy = WRAP_H - CIRCLE/2 = 360 - 150 = 210px (circle center vertically)
+                  Result: a perfect 300px circle in the BOTTOM 300px of the wrapper.
+                  Image uses fill + object-bottom → figure anchored to wrapper bottom.
+                */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    clipPath: `circle(${CIRCLE / 2}px at 50% ${WRAP_H - CIRCLE / 2}px)`,
+                  }}
+                >
+                  <Image
+                    src="/images/neo2d.png"
+                    alt="Neo Zino – Freelance Web Developer"
+                    fill
+                    className="object-contain object-bottom"
+                    priority
+                  />
+                </div>
+
+                {/*
+                  Layer 4: Head pop-out — same image, same position, z-10.
+                  clip-path: inset(0 0 Xpx 0) where X = CIRCLE.
+                  This shows ONLY the top OVERHANG px of the wrapper (the head area above the circle).
+                  The two clip-paths meet exactly at the circle's top edge:
+                    Body visible: y = OVERHANG → WRAP_H  (inside circle)
+                    Head visible: y = 0         → OVERHANG (above circle)
+                */}
+                <div
+                  className="absolute inset-0 z-10 pointer-events-none"
+                  style={{ clipPath: `inset(0 0 ${CIRCLE}px 0)` }}
+                >
+                  <Image
+                    src="/images/neo2d.png"
+                    alt=""
+                    fill
+                    className="object-contain object-bottom"
+                    aria-hidden={true}
+                  />
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
