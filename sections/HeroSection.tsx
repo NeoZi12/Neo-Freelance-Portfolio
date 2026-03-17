@@ -8,10 +8,10 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
-// Avatar geometry — tweak OVERHANG to control how far the head pops above the circle
-const CIRCLE = 300;                   // circle diameter in px
-const OVERHANG = 60;                  // px the head extends above the circle's top edge
-const WRAP_H = CIRCLE + OVERHANG;     // total avatar wrapper height (360px)
+// Avatar geometry — one shared portrait box, two clip masks
+const CIRCLE     = 340;                                    // ring diameter (px)
+const POP_OUT    = 70;                                     // px of hair crown above the ring
+const PORTRAIT_H = Math.round(CIRCLE * (1024 / 768));     // 453px — aspect-correct, FIXED regardless of POP_OUT
 
 export default function HeroSection() {
   return (
@@ -27,7 +27,7 @@ export default function HeroSection() {
 
       <div className="relative z-10 flex flex-col h-full">
         {/* Spacer matching the fixed navbar height */}
-        <div className="h-[116px] shrink-0" />
+        <div className="h-[90px] shrink-0" />
 
         {/* Content area — increased horizontal padding pulls content toward center */}
         <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[130px] py-4">
@@ -39,7 +39,7 @@ export default function HeroSection() {
             This lets padding control how "centered" the content sits,
             without the columns arbitrarily splitting 50/50.
           */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-20 items-center w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-10 lg:gap-20 items-center w-full">
 
             {/* ── Left column: Text ── */}
             <div className="flex flex-col gap-5">
@@ -56,7 +56,7 @@ export default function HeroSection() {
                 </span>
               </h1>
 
-              <p className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[310px] leading-relaxed">
+              <p className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[420px] leading-relaxed">
                 I design and build clean, responsive{" "}
                 <span className="text-[#E67E22]">websites</span> for businesses,
                 brands, and personal projects, creating digital experiences that
@@ -82,81 +82,94 @@ export default function HeroSection() {
             {/* ── Right column: Avatar ── */}
             <div className="flex items-center justify-center">
               {/*
-                Wrapper is TALLER than the circle by OVERHANG px.
-                This space at the top is where the head "pops out".
-                NO overflow:hidden here — that would clip both the head and the glow.
+                Container: CIRCLE wide × (CIRCLE + POP_OUT) tall.
+                The circle ring occupies the bottom CIRCLE px.
+                The top POP_OUT px is the hair pop-out zone.
+                No overflow:hidden — lets the glow box-shadow radiate freely.
               */}
               <div
                 className="relative"
-                style={{ width: CIRCLE, height: WRAP_H }}
+                style={{ width: CIRCLE, height: CIRCLE + POP_OUT }}
               >
-                {/*
-                  Layer 1: Orange glow ring.
-                  Positioned at the BOTTOM of the wrapper (the circle area).
-                  box-shadow radiates outward — visible because no parent clips it.
-                */}
+                {/* Glow — radiates from the circle area */}
                 <div
-                  className="absolute left-0 right-0 bottom-0 rounded-full border-4 border-[#E67E22]"
+                  className="absolute left-0 right-0 bottom-0 rounded-full"
                   style={{
                     height: CIRCLE,
                     boxShadow:
-                      "0 0 30px 8px rgba(230,126,34,0.55), 0 0 70px 24px rgba(230,126,34,0.25)",
+                      "0 0 60px 20px rgba(230,126,34,0.30), 0 0 130px 60px rgba(230,126,34,0.12)",
                   }}
                 />
 
-                {/*
-                  Layer 2: Dark circle background fill.
-                  Sits behind the image, gives the circle its dark interior.
-                */}
+                {/* Dark circle fill */}
                 <div
-                  className="absolute left-0 right-0 bottom-0 rounded-full bg-[#252421]/80"
+                  className="absolute left-0 right-0 bottom-0 rounded-full bg-[#252421]/70"
                   style={{ height: CIRCLE }}
                 />
 
                 {/*
-                  Layer 3: Body image — clipped to the circle via clip-path.
-                  clip-path: circle(R at cx cy) where:
-                    R  = CIRCLE/2 = 150px (radius)
-                    cx = 50% = 150px (horizontally centered)
-                    cy = WRAP_H - CIRCLE/2 = 360 - 150 = 210px (circle center vertically)
-                  Result: a perfect 300px circle in the BOTTOM 300px of the wrapper.
-                  Image uses fill + object-bottom → figure anchored to wrapper bottom.
+                  Shared portrait box — ONE box, fixed dimensions.
+                  Both layers use identical geometry so the image is pixel-aligned.
+                  No z-index on the box → no stacking context → Layer A (z-2),
+                  ring (z-5), Layer B (z-10) sort correctly in the container stack.
                 */}
                 <div
-                  className="absolute inset-0"
-                  style={{
-                    clipPath: `circle(${CIRCLE / 2}px at 50% ${WRAP_H - CIRCLE / 2}px)`,
-                  }}
+                  className="absolute top-0 left-0"
+                  style={{ width: CIRCLE, height: PORTRAIT_H }}
                 >
-                  <Image
-                    src="/images/neo2d.png"
-                    alt="Neo Zino – Freelance Web Developer"
-                    fill
-                    className="object-contain object-bottom"
-                    priority
-                  />
+                  {/*
+                    Layer A: portrait inside the circle.
+                    Circle center in portrait coords: cy = POP_OUT + CIRCLE/2
+                  */}
+                  <div
+                    className="absolute inset-0 z-[2]"
+                    style={{
+                      clipPath: `circle(${CIRCLE / 2}px at 50% ${POP_OUT + CIRCLE / 2}px)`,
+                    }}
+                  >
+                    <Image
+                      src="/images/neo2d.png"
+                      alt="Neo Zino – Freelance Web Developer"
+                      fill
+                      className="object-contain object-top"
+                      priority
+                    />
+                  </div>
+
+                  {/*
+                    Layer B: portrait OUTSIDE the circle — hair pop-out.
+                    clip-path: path() traces the region above the circle's upper arc:
+                      top-left → top-right → down to the circle equator on the right →
+                      counterclockwise arc back to the circle equator on the left →
+                      up to top-left.
+                    The bottom edge of this mask follows the circle curve exactly,
+                    so there is no flat rectangular cutoff at the ring boundary.
+                    z-10: above the ring (z-5) so hair renders in front.
+                  */}
+                  <div
+                    className="absolute inset-0 z-10 pointer-events-none"
+                    style={{
+                      clipPath: `path('M 0 0 L ${CIRCLE} 0 L ${CIRCLE} ${POP_OUT + CIRCLE / 2 + 6} A ${CIRCLE / 2} ${CIRCLE / 2} 0 0 0 0 ${POP_OUT + CIRCLE / 2 + 6} Z')`,
+                    }}
+                  >
+                    <Image
+                      src="/images/neo2d.png"
+                      alt=""
+                      fill
+                      className="object-contain object-top"
+                      aria-hidden
+                    />
+                  </div>
                 </div>
 
                 {/*
-                  Layer 4: Head pop-out — same image, same position, z-10.
-                  clip-path: inset(0 0 Xpx 0) where X = CIRCLE.
-                  This shows ONLY the top OVERHANG px of the wrapper (the head area above the circle).
-                  The two clip-paths meet exactly at the circle's top edge:
-                    Body visible: y = OVERHANG → WRAP_H  (inside circle)
-                    Head visible: y = 0         → OVERHANG (above circle)
+                  Orange border ring.
+                  z-[5]: above Layer A body (z-2), below Layer B hair (z-10).
                 */}
                 <div
-                  className="absolute inset-0 z-10 pointer-events-none"
-                  style={{ clipPath: `inset(0 0 ${CIRCLE}px 0)` }}
-                >
-                  <Image
-                    src="/images/neo2d.png"
-                    alt=""
-                    fill
-                    className="object-contain object-bottom"
-                    aria-hidden={true}
-                  />
-                </div>
+                  className="absolute left-0 right-0 bottom-0 rounded-full border-4 border-[#E67E22] pointer-events-none z-[5]"
+                  style={{ height: CIRCLE }}
+                />
               </div>
             </div>
 

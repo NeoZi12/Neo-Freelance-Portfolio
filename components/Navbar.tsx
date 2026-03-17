@@ -33,17 +33,17 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState<NavHref>("#home");
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full h-[116px] bg-transparent">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full h-[90px] bg-transparent">
       {/* ── Desktop nav (lg and above) ── */}
       <nav
-        className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center h-[116px] px-[70px]"
+        className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center h-[90px] px-[70px]"
         aria-label="Main navigation"
       >
         {/* Left column — Logo */}
         <Link
           href="/"
           className={cn(
-            "inline-flex items-center text-white text-[75px] leading-none font-normal select-none m-0 p-0 -translate-y-2 justify-self-start",
+            "inline-flex items-center text-white text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start",
             logoFont.className,
           )}
         >
@@ -53,7 +53,7 @@ export default function Navbar() {
         {/* Center column — Nav links */}
         <ul
           className={cn(
-            "flex flex-row items-center gap-[40px]",
+            "flex flex-row items-stretch h-full gap-[20px] ml-[70px]",
             navFont.className,
           )}
           role="list"
@@ -61,19 +61,20 @@ export default function Navbar() {
           {navLinks.map(({ label, href }) => (
             <li
               key={href}
-              className="relative flex items-center justify-center px-[10px]"
+              className={cn(
+                "relative h-full flex items-center justify-center px-8",
+                "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0",
+                "after:h-[5px] after:bg-[#E67E22]",
+                "after:transition-transform after:duration-300 after:origin-center",
+                activeLink === href
+                  ? "after:scale-x-100"
+                  : "after:scale-x-0 hover:after:scale-x-100",
+              )}
             >
               <Link
                 href={href}
                 onClick={() => setActiveLink(href)}
-                className={cn(
-                  "relative text-white text-lg font-semibold whitespace-nowrap",
-                  "after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[5px] after:bg-[#E67E22]",
-                  "after:transition-all after:duration-300 after:ease-in-out",
-                  activeLink === href
-                    ? "after:w-full"
-                    : "after:w-0 hover:after:w-full",
-                )}
+                className="text-white text-lg font-semibold whitespace-nowrap"
               >
                 {label}
               </Link>
