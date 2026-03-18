@@ -31,9 +31,8 @@ type NavHref = (typeof navLinks)[number]["href"];
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState<NavHref>("#home");
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full h-[90px] bg-transparent">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full h-[64px] lg:h-[90px] bg-black">
       {/* ── Desktop nav (lg and above) ── */}
       <nav
         className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center h-[90px] px-[70px]"
@@ -43,7 +42,7 @@ export default function Navbar() {
         <Link
           href="/"
           className={cn(
-            "inline-flex items-center text-white text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start",
+            "inline-flex items-center text-white text-[42px] xl:text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start whitespace-nowrap",
             logoFont.className,
           )}
         >
@@ -53,7 +52,7 @@ export default function Navbar() {
         {/* Center column — Nav links */}
         <ul
           className={cn(
-            "flex flex-row items-stretch h-full gap-[20px] ml-[70px]",
+            "flex flex-row items-stretch h-full gap-[20px]",
             navFont.className,
           )}
           role="list"
@@ -87,7 +86,7 @@ export default function Navbar() {
       </nav>
 
       {/* ── Mobile nav (below lg) ── */}
-      <div className="lg:hidden">
+      <div className="lg:hidden bg-black">
         <nav
           className="flex items-center justify-between h-[64px] px-6"
           aria-label="Main navigation"
