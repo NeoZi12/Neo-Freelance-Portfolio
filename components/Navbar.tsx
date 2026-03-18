@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Island_Moments, Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -22,7 +22,7 @@ const navLinks = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
-  { label: "Projects", href: "#projects" },
+  { label: "Portfolio", href: "#portfolio" },
   { label: "Contact", href: "#contact" },
 ] as const;
 
@@ -31,6 +31,29 @@ type NavHref = (typeof navLinks)[number]["href"];
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState<NavHref>("#home");
+
+  useEffect(() => {
+    const sectionIds = navLinks.map((l) => l.href.replace("#", ""));
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveLink(`#${id}` as NavHref);
+          }
+        },
+        { threshold: 0.5 }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full h-[64px] lg:h-[90px] bg-black">
       {/* ── Desktop nav (lg and above) ── */}
@@ -61,7 +84,7 @@ export default function Navbar() {
             <li
               key={href}
               className={cn(
-                "relative h-full flex items-center justify-center px-8",
+                "relative h-full",
                 "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0",
                 "after:h-[5px] after:bg-[#E67E22]",
                 "after:transition-transform after:duration-300 after:origin-center",
@@ -73,7 +96,7 @@ export default function Navbar() {
               <Link
                 href={href}
                 onClick={() => setActiveLink(href)}
-                className="text-white text-lg font-semibold whitespace-nowrap"
+                className="h-full flex items-center px-8 text-white text-lg font-semibold whitespace-nowrap"
               >
                 {label}
               </Link>

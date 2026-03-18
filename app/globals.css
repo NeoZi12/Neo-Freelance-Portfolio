@@ -16,6 +16,10 @@
   /* ── Services section ── */
   --color-card-dark: #202020; /* service card background */
 
+  /* ── Portfolio section gradient ── */
+  --color-portfolio-dark: #0B0F14; /* gradient start — very dark navy */
+  --color-portfolio-warm: #2A1408; /* gradient end — dark burnt orange */
+
   /* Typography — replace with your Figma fonts */
   /* --font-sans: 'Your Font', sans-serif; */
   /* --font-heading: 'Your Heading Font', sans-serif; */
