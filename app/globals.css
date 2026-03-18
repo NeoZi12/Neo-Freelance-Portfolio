@@ -13,6 +13,9 @@
   --color-about-dark: #121417; /* gradient start — very dark blue-black */
   --color-about-warm: #211712; /* gradient end — dark brownish-red */
 
+  /* ── Services section ── */
+  --color-card-dark: #202020; /* service card background */
+
   /* Typography — replace with your Figma fonts */
   /* --font-sans: 'Your Font', sans-serif; */
   /* --font-heading: 'Your Heading Font', sans-serif; */
