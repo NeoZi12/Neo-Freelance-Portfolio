@@ -16,14 +16,17 @@ interface Project {
   description: string;
   thumbnail: string;
   screenshots: string[];
+  liveUrl: string;
 }
 
 const projects: Project[] = [
   {
     id: "1",
     name: "Jobizz - AI-integrated full-stack website",
-    description: "A fully functional web application for a tax consulting office that manages client data, appointments, and business operations.",
+    description:
+      "A fully functional web application for a tax consulting office that manages client data, appointments, and business operations.",
     thumbnail: "/images/project1.png",
+    liveUrl: "https://jobizz-beige.vercel.app/",
     screenshots: [
       "/images/project1-1.png",
       "/images/project1-2.png",
@@ -39,8 +42,10 @@ const projects: Project[] = [
   {
     id: "2",
     name: "UGC Creator Portfolio Page",
-    description: "A modern portfolio website showcasing UGC content, brand collaborations, and creative work.",
+    description:
+      "A modern portfolio website showcasing UGC content, brand collaborations, and creative work.",
     thumbnail: "/images/project2.png",
+    liveUrl: "https://bruna-barros.vercel.app",
     screenshots: [
       "/images/project2-1.png",
       "/images/project2-2.png",
@@ -54,8 +59,10 @@ const projects: Project[] = [
   {
     id: "3",
     name: "Software Developer Portfolio Page",
-    description: "A software developer portfolio website showcasing projects, technical skills, and real-world applications.",
+    description:
+      "A software developer portfolio website showcasing projects, technical skills, and real-world applications.",
     thumbnail: "/images/project3.png",
+    liveUrl: "https://neozi12.github.io/",
     screenshots: [
       "/images/project3-1.png",
       "/images/project3-2.png",
@@ -86,23 +93,22 @@ function ProjectCard({
           src={project.thumbnail}
           alt={project.name}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
 
-      {/* Hover overlay */}
+      {/* Always-visible overlay */}
       <div
         className={cn(
           "absolute inset-0 rounded-2xl",
-          "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-          "bg-gradient-to-b from-brand-orange to-transparent",
-          "flex flex-col justify-between p-4"
+          "bg-gradient-to-b from-brand-orange/70 to-transparent",
+          "flex flex-col justify-between p-4",
         )}
       >
         <h3
           className={cn(
             montserrat.className,
-            "text-white font-bold text-lg leading-tight"
+            "text-white font-bold text-lg leading-tight",
           )}
         >
           {project.name}
@@ -115,11 +121,11 @@ function ProjectCard({
               "inline-flex items-center gap-1.5",
               "bg-black border-2 border-brand-orange text-brand-orange",
               "font-semibold text-sm rounded-[18px] px-4 py-2",
-              "shadow-[0px_6px_16px_rgba(230,126,34,0.4)]"
+              "shadow-[0px_6px_16px_rgba(230,126,34,0.4)]",
             )}
           >
             View Project
-            <Icon icon="lucide:external-link" width={14} height={14} />
+            <Icon icon="lucide:arrow-right" width={14} height={14} />
           </span>
         </div>
       </div>
@@ -139,13 +145,9 @@ function ProjectModal({
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const prev = () =>
-    setCurrentSlide((i) =>
-      i === 0 ? project.screenshots.length - 1 : i - 1
-    );
+    setCurrentSlide((i) => (i === 0 ? project.screenshots.length - 1 : i - 1));
   const next = () =>
-    setCurrentSlide((i) =>
-      i === project.screenshots.length - 1 ? 0 : i + 1
-    );
+    setCurrentSlide((i) => (i === project.screenshots.length - 1 ? 0 : i + 1));
 
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
@@ -168,7 +170,7 @@ function ProjectModal({
       <div
         className={cn(
           "relative bg-brand-dark rounded-2xl max-w-4xl w-full p-5 md:p-7",
-          "max-h-[90vh] overflow-hidden"
+          "max-h-[90vh] overflow-hidden",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -182,14 +184,26 @@ function ProjectModal({
         </button>
 
         {/* Title */}
-        <h2
-          className={cn(
-            montserrat.className,
-            "text-brand-orange font-bold text-2xl mb-2 pr-8"
-          )}
-        >
-          {project.name}
-        </h2>
+        <div className="flex items-center gap-2 mb-2 pr-8">
+          <h2
+            className={cn(
+              montserrat.className,
+              "text-brand-orange font-bold text-2xl",
+            )}
+          >
+            {project.name}
+          </h2>
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-orange hover:opacity-70 transition-opacity duration-200 shrink-0"
+            aria-label="View live project"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Icon icon="lucide:external-link" width={20} height={20} />
+          </a>
+        </div>
 
         {/* Description */}
         <p className={cn(montserrat.className, "text-white/70 text-sm mb-6")}>
@@ -197,7 +211,7 @@ function ProjectModal({
         </p>
 
         {/* Screenshot Carousel */}
-        <div className="relative overflow-hidden rounded-xl aspect-video bg-black">
+        <div className="relative overflow-hidden rounded-xl aspect-video bg-black shadow-[0_8px_32px_rgba(230,126,34,0.45)]">
           <Image
             src={project.screenshots[currentSlide]}
             alt={`${project.name} screenshot ${currentSlide + 1}`}
@@ -213,7 +227,7 @@ function ProjectModal({
                 className={cn(
                   "absolute left-3 top-1/2 -translate-y-1/2",
                   "w-9 h-9 rounded-full bg-black/50 hover:bg-black/80",
-                  "flex items-center justify-center text-white transition-colors duration-200"
+                  "flex items-center justify-center text-white transition-colors duration-200",
                 )}
                 aria-label="Previous screenshot"
               >
@@ -226,7 +240,7 @@ function ProjectModal({
                 className={cn(
                   "absolute right-3 top-1/2 -translate-y-1/2",
                   "w-9 h-9 rounded-full bg-black/50 hover:bg-black/80",
-                  "flex items-center justify-center text-white transition-colors duration-200"
+                  "flex items-center justify-center text-white transition-colors duration-200",
                 )}
                 aria-label="Next screenshot"
               >
@@ -241,7 +255,7 @@ function ProjectModal({
                     onClick={() => setCurrentSlide(i)}
                     className={cn(
                       "w-2 h-2 rounded-full transition-colors duration-200",
-                      i === currentSlide ? "bg-white" : "bg-white/40"
+                      i === currentSlide ? "bg-white" : "bg-white/40",
                     )}
                     aria-label={`Go to screenshot ${i + 1}`}
                   />
@@ -268,7 +282,7 @@ export default function PortfolioSection() {
       className={cn(
         "bg-gradient-to-b from-portfolio-dark to-portfolio-warm",
         "min-h-screen lg:h-screen flex flex-col",
-        montserrat.className
+        montserrat.className,
       )}
     >
       {/* Spacer matching fixed navbar height */}
@@ -279,8 +293,7 @@ export default function PortfolioSection() {
         {/* Title — centered in top 1fr = exactly between navbar and grid top */}
         <div className="flex items-center justify-center">
           <h2 className="text-white font-bold text-[36px] leading-none text-center">
-            My{" "}
-            <span className="text-brand-orange">Portfolio</span>
+            My <span className="text-brand-orange">Portfolio</span>
           </h2>
         </div>
 
