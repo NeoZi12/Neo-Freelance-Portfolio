@@ -60,3 +60,18 @@ video {
   max-width: 100%;
   display: block;
 }
+
+/* ── Autofill override ──────────────────────────────────────────────────────
+   Chrome/Safari inject a white or light-blue background on autofilled inputs.
+   The box-shadow inset trick is the only reliable way to override it.
+   ─────────────────────────────────────────────────────────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #0d0b09 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}

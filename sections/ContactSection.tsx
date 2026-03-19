@@ -57,7 +57,7 @@ function SocialLinkItem({ link }: { link: SocialLink }) {
       href={link.href}
       target={link.platform === "email" ? "_self" : "_blank"}
       rel="noopener noreferrer"
-      className="flex items-center gap-4 group"
+      className="flex items-center gap-4 group w-fit"
     >
       <div
         className={cn(
@@ -80,27 +80,72 @@ function SocialLinkItem({ link }: { link: SocialLink }) {
 
 type FormStatus = "idle" | "sending" | "success" | "error";
 
-const inputClass = cn(
-  "w-full bg-transparent border-0 border-b border-white/20",
-  "px-0 py-3 text-white text-sm placeholder:text-white/35",
-  "outline-none focus:border-brand-orange",
-  "transition-colors duration-200"
-);
+interface FieldErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateFields(fields: { name: string; email: string; message: string }): FieldErrors {
+  const errors: FieldErrors = {};
+  if (fields.name.trim().length === 0) {
+    errors.name = "Please enter your full name.";
+  } else if (fields.name.trim().length < 2) {
+    errors.name = "Name must be at least 2 characters.";
+  }
+  if (fields.email.trim().length === 0) {
+    errors.email = "Please enter your email address.";
+  } else if (!EMAIL_RE.test(fields.email.trim())) {
+    errors.email = "Please enter a valid email address.";
+  }
+  if (fields.message.trim().length === 0) {
+    errors.message = "Please type your message.";
+  }
+  return errors;
+}
+
+function inputClass(hasError: boolean) {
+  return cn(
+    "w-full bg-transparent border-0 border-b",
+    hasError ? "border-red-400" : "border-white/20",
+    "px-0 py-3 text-white text-sm placeholder:text-white/35",
+    "outline-none focus:border-brand-orange",
+    "transition-colors duration-200"
+  );
+}
 
 export default function ContactSection() {
   const [fields, setFields] = useState({ name: "", email: "", message: "" });
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState({ name: false, email: false, message: false });
   const [status, setStatus] = useState<FormStatus>("idle");
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
-    setFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const updated = { ...fields, [e.target.name]: e.target.value };
+    setFields(updated);
+    if (touched[e.target.name as keyof typeof touched]) {
+      setErrors(validateFields(updated));
+    }
+  }
+
+  function handleBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const name = e.target.name as keyof typeof touched;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    setErrors(validateFields(fields));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setStatus("sending");
+    setTouched({ name: true, email: true, message: true });
+    const validationErrors = validateFields(fields);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
+    setStatus("sending");
     try {
       await emailjs.send(
         "service_jfqyste",
@@ -114,6 +159,8 @@ export default function ContactSection() {
       );
       setStatus("success");
       setFields({ name: "", email: "", message: "" });
+      setTouched({ name: false, email: false, message: false });
+      setErrors({});
     } catch {
       setStatus("error");
     }
@@ -166,43 +213,58 @@ export default function ContactSection() {
 
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
               {/* Name */}
-              <input
-                name="name"
-                type="text"
-                required
-                value={fields.name}
-                onChange={handleChange}
-                placeholder="Full Name"
-                className={inputClass}
-              />
+              <div className="flex flex-col gap-1">
+                <input
+                  name="name"
+                  type="text"
+                  value={fields.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Full Name"
+                  className={inputClass(!!errors.name)}
+                />
+                {errors.name && (
+                  <span className="text-red-400 text-xs mt-0.5">{errors.name}</span>
+                )}
+              </div>
 
               {/* Email */}
-              <input
-                name="email"
-                type="email"
-                required
-                value={fields.email}
-                onChange={handleChange}
-                placeholder="Email Address"
-                className={inputClass}
-              />
+              <div className="flex flex-col gap-1">
+                <input
+                  name="email"
+                  type="email"
+                  value={fields.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Email Address"
+                  className={inputClass(!!errors.email)}
+                />
+                {errors.email && (
+                  <span className="text-red-400 text-xs mt-0.5">{errors.email}</span>
+                )}
+              </div>
 
               {/* Message */}
-              <textarea
-                name="message"
-                required
-                rows={4}
-                value={fields.message}
-                onChange={handleChange}
-                placeholder="Type your message..."
-                className={cn(inputClass, "resize-none")}
-              />
+              <div className="flex flex-col gap-1">
+                <textarea
+                  name="message"
+                  rows={4}
+                  value={fields.message}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Type your message..."
+                  className={cn(inputClass(!!errors.message), "resize-none")}
+                />
+                {errors.message && (
+                  <span className="text-red-400 text-xs mt-0.5">{errors.message}</span>
+                )}
+              </div>
 
               {/* Submit */}
               <div className="flex flex-col gap-3">
                 <button
                   type="submit"
-                  disabled={status === "sending"}
+                  disabled={status === "sending" || Object.keys(validateFields(fields)).length > 0}
                   className={cn(
                     "self-start inline-flex items-center gap-2",
                     "bg-brand-orange text-white font-semibold text-sm",

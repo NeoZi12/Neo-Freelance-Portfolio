@@ -84,7 +84,7 @@ function ProjectCard({
 }) {
   return (
     <div
-      className="group relative cursor-pointer overflow-hidden rounded-2xl h-[280px] ring-2 ring-brand-orange shadow-[0_8px_32px_rgba(230,126,34,0.45)]"
+      className="group relative cursor-pointer overflow-hidden rounded-2xl h-[220px] sm:h-[260px] lg:h-[280px] ring-2 ring-brand-orange shadow-[0_8px_32px_rgba(230,126,34,0.45)]"
       onClick={() => onClick(project)}
     >
       {/* Base image */}
@@ -108,7 +108,7 @@ function ProjectCard({
         <h3
           className={cn(
             montserrat.className,
-            "text-white font-bold text-lg leading-tight",
+            "text-white font-bold text-sm sm:text-base lg:text-lg leading-tight line-clamp-2",
           )}
         >
           {project.name}
@@ -288,17 +288,19 @@ export default function PortfolioSection() {
       {/* Spacer matching fixed navbar height */}
       <div className="hidden lg:block h-[90px] shrink-0" />
 
-      {/* Content area: 3 rows — top space / grid / bottom space (equal 1fr each side) */}
-      <div className="flex-1 grid grid-rows-[1fr_auto_1fr] px-6 pb-6">
-        {/* Title — centered in top 1fr = exactly between navbar and grid top */}
-        <div className="flex items-center justify-center">
-          <h2 className="text-white font-bold text-[36px] leading-none text-center">
+      {/* Content area */}
+      {/* Mobile: simple flex column with vertical padding */}
+      {/* Desktop: 3-row grid that vertically centers the cards */}
+      <div className="flex-1 flex flex-col gap-8 px-6 py-10 lg:grid lg:grid-rows-[1fr_auto_1fr] lg:gap-0 lg:py-0 lg:pb-6">
+        {/* Title */}
+        <div className="flex items-center justify-center lg:self-center">
+          <h2 className="text-white font-bold text-3xl lg:text-[36px] leading-none text-center">
             My <span className="text-brand-orange">Portfolio</span>
           </h2>
         </div>
 
-        {/* Grid — auto height, sits right below the title row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-5 w-full max-w-[1200px] mx-auto">
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-x-8 lg:gap-y-5 w-full max-w-[1200px] mx-auto">
           {projects.map((project) => (
             <ProjectCard
               key={project.id}
@@ -308,8 +310,8 @@ export default function PortfolioSection() {
           ))}
         </div>
 
-        {/* Bottom spacer — mirrors top 1fr, keeps grid vertically centered */}
-        <div />
+        {/* Bottom spacer (desktop only) */}
+        <div className="hidden lg:block" />
       </div>
 
       {/* Modal */}

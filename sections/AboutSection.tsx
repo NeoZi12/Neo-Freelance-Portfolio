@@ -1,6 +1,20 @@
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
+import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+
+const skills = [
+  { name: "JavaScript", icon: "logos:javascript" },
+  { name: "TypeScript", icon: "logos:typescript-icon" },
+  { name: "React", icon: "logos:react" },
+  { name: "Next.js", icon: "logos:nextjs-icon" },
+  { name: "Node.js", icon: "logos:nodejs-icon" },
+  { name: "SQL", icon: "logos:postgresql" },
+  { name: "Tailwind", icon: "logos:tailwindcss-icon" },
+  { name: "Git", icon: "logos:git-icon" },
+  { name: "HTML", icon: "logos:html-5" },
+  { name: "CSS", icon: "logos:css-3" },
+];
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -67,7 +81,7 @@ export default function AboutSection() {
     <section
       id="about"
       className={cn(
-        "w-full min-h-screen lg:h-screen flex flex-col",
+        "w-full min-h-screen flex flex-col",
         "bg-gradient-to-b from-about-dark to-about-warm",
         montserrat.className,
       )}
@@ -76,7 +90,7 @@ export default function AboutSection() {
       <div className="hidden lg:block h-[90px] shrink-0" />
 
       {/* flex-1 fills the remaining height; items-center centers within that space */}
-      <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[130px] py-16 lg:py-0">
+      <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[130px] py-16 lg:py-10">
         {/*
           Two-column grid:
           - Mobile (single col): text first (order-1), photo second (order-2)
@@ -96,7 +110,7 @@ export default function AboutSection() {
                 offsetY={30}
               />
             </div>
-            {/* Desktop: ~45% smaller than Figma width, taller height */}
+            {/* Desktop */}
             <div className="hidden lg:block">
               <PhotoFrame
                 photoW={310}
@@ -110,12 +124,12 @@ export default function AboutSection() {
           </div>
 
           {/* ── Right on desktop (text) — above photo on mobile ── */}
-          <div className="flex flex-col gap-5 order-1 lg:order-2 lg:p-[50px] [filter:drop-shadow(0px_4px_4px_rgba(0,0,0,0.25))]">
+          <div className="flex flex-col gap-4 order-1 lg:order-2 lg:px-[50px] [filter:drop-shadow(0px_4px_4px_rgba(0,0,0,0.25))]">
             <h2 className="text-[48px] font-semibold text-white leading-tight">
               About <span className="text-[#E67E22]">Me</span>
             </h2>
 
-            <p className="text-xl font-semibold text-white leading-[26px] max-w-[484px]">
+            <p className="text-xl font-medium text-white/90 leading-[26px] max-w-[484px]">
               I design and build clean, responsive{" "}
               <span className="text-[#E67E22]">websites</span> for businesses,
               brands, and personal projects, creating digital experiences that
@@ -128,6 +142,24 @@ export default function AboutSection() {
             >
               Contact Me
             </a>
+
+            {/* ── Tech stack ── */}
+            <div className="flex flex-col gap-3 pt-2">
+              <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">
+                Technologies I work with
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill) => (
+                  <div
+                    key={skill.name}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-white/70 text-xs font-medium hover:shadow-[0_0_12px_rgba(230,126,34,0.45)] hover:scale-105 hover:border-brand-orange/30 transition-all duration-200 cursor-default"
+                  >
+                    <Icon icon={skill.icon} width={16} height={16} />
+                    {skill.name}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
