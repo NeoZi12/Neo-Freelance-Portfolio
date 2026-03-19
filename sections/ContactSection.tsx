@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { Montserrat } from "next/font/google";
 import emailjs from "@emailjs/browser";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const COOLDOWN_MS = 60_000;
 const COOLDOWN_KEY = "contact_last_sent";
@@ -12,71 +13,73 @@ const MSG_MAX = 500;
 
 const montserrat = Montserrat({ subsets: ["latin"], display: "swap" });
 
-/* ─── Data ─────────────────────────────────────────────────────────────── */
+/* ─── Static social data (icons / hrefs / platform keys) ───────────────── */
 
-interface SocialLink {
-  platform: string;
-  label: string;
-  sublabel: string;
-  icon: string;
-  href: string;
-}
+const socialMeta = [
+  { platform: "linkedin", label: "LinkedIn",  icon: "mdi:linkedin",      href: "https://www.linkedin.com/in/neozino/" },
+  { platform: "whatsapp", label: "WhatsApp",  icon: "mdi:whatsapp",      href: "https://wa.me/972525930575",          fixedSublabel: "+972 52 593 0575" },
+  { platform: "email",    label: "Email",     icon: "mdi:email-outline",  href: "mailto:neozi2014@gmail.com",          fixedSublabel: "neozi2014@gmail.com" },
+  { platform: "github",   label: "GitHub",    icon: "mdi:github",        href: "https://github.com/NeoZi12" },
+] as const;
 
-const socialLinks: SocialLink[] = [
-  {
-    platform: "linkedin",
-    label: "LinkedIn",
-    sublabel: "Connect with me",
-    icon: "mdi:linkedin",
-    href: "https://www.linkedin.com/in/neozino/",
-  },
-  {
-    platform: "whatsapp",
-    label: "WhatsApp",
-    sublabel: "+972 52 593 0575",
-    icon: "mdi:whatsapp",
-    href: "https://wa.me/972525930575",
-  },
-  {
-    platform: "email",
-    label: "Email",
-    sublabel: "neozi2014@gmail.com",
-    icon: "mdi:email-outline",
-    href: "mailto:neozi2014@gmail.com",
-  },
-  {
-    platform: "github",
-    label: "GitHub",
-    sublabel: "See my code",
-    icon: "mdi:github",
-    href: "https://github.com/NeoZi12",
-  },
-];
+/* ─── SocialLinkItem ────────────────────────────────────────────────────── */
 
-/* ─── SocialLink ────────────────────────────────────────────────────────── */
-
-function SocialLinkItem({ link }: { link: SocialLink }) {
+function SocialLinkItem({
+  platform, label, icon, href, sublabel, isHe,
+}: {
+  platform: string; label: string; icon: string;
+  href: string; sublabel: string | null; isHe: boolean;
+}) {
   return (
     <a
-      href={link.href}
-      target={link.platform === "email" ? "_self" : "_blank"}
+      href={href}
+      target={platform === "email" ? "_self" : "_blank"}
       rel="noopener noreferrer"
-      className="flex items-center gap-4 group w-fit"
+      className={cn("flex items-center gap-4 group w-fit", isHe && "flex-row-reverse self-end")}
     >
-      <div
-        className={cn(
-          "w-12 h-12 rounded-full bg-brand-orange flex items-center justify-center shrink-0",
-          "shadow-[0_4px_16px_rgba(230,126,34,0.4)]",
-          "group-hover:shadow-[0_6px_24px_rgba(230,126,34,0.65)] transition-shadow duration-200"
-        )}
-      >
-        <Icon icon={link.icon} width={22} height={22} className="text-white" />
+      <div className={cn(
+        "w-12 h-12 rounded-full bg-brand-orange flex items-center justify-center shrink-0",
+        "shadow-[0_4px_16px_rgba(230,126,34,0.4)]",
+        "group-hover:shadow-[0_6px_24px_rgba(230,126,34,0.65)] transition-shadow duration-200",
+      )}>
+        <Icon icon={icon} width={22} height={22} className="text-white" />
       </div>
-      <div className="flex flex-col gap-0.5">
-        <span className="text-white font-semibold text-sm">{link.label}</span>
-        <span className="text-white/50 text-xs">{link.sublabel}</span>
+      <div className={cn("flex flex-col gap-0.5", isHe && "items-end")}>
+        <span className="text-white font-semibold text-sm">{label}</span>
+        {sublabel && <span className="text-white/50 text-xs">{sublabel}</span>}
       </div>
     </a>
+  );
+}
+
+/* ─── Validation ────────────────────────────────────────────────────────── */
+
+interface FieldErrors { name?: string; email?: string; message?: string; }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateFields(
+  fields: { name: string; email: string; message: string },
+  v: { nameRequired: string; nameMin: string; emailRequired: string; emailInvalid: string; messageRequired: string; messageMax: string },
+): FieldErrors {
+  const errors: FieldErrors = {};
+  if (fields.name.trim().length === 0)       errors.name = v.nameRequired;
+  else if (fields.name.trim().length < 2)    errors.name = v.nameMin;
+  if (fields.email.trim().length === 0)      errors.email = v.emailRequired;
+  else if (!EMAIL_RE.test(fields.email.trim())) errors.email = v.emailInvalid;
+  if (fields.message.trim().length === 0)    errors.message = v.messageRequired;
+  else if (fields.message.length > MSG_MAX)  errors.message = v.messageMax.replace("{max}", String(MSG_MAX));
+  return errors;
+}
+
+function inputClass(hasError: boolean, isHe: boolean) {
+  return cn(
+    "w-full bg-transparent border-0 border-b",
+    hasError ? "border-red-400" : "border-white/20",
+    "px-0 py-3 text-white text-sm placeholder:text-white/35",
+    "outline-none focus:border-brand-orange",
+    "transition-colors duration-200",
+    isHe && "text-right",
   );
 }
 
@@ -84,45 +87,11 @@ function SocialLinkItem({ link }: { link: SocialLink }) {
 
 type FormStatus = "idle" | "sending" | "success" | "error";
 
-interface FieldErrors {
-  name?: string;
-  email?: string;
-  message?: string;
-}
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function validateFields(fields: { name: string; email: string; message: string }): FieldErrors {
-  const errors: FieldErrors = {};
-  if (fields.name.trim().length === 0) {
-    errors.name = "Please enter your full name.";
-  } else if (fields.name.trim().length < 2) {
-    errors.name = "Name must be at least 2 characters.";
-  }
-  if (fields.email.trim().length === 0) {
-    errors.email = "Please enter your email address.";
-  } else if (!EMAIL_RE.test(fields.email.trim())) {
-    errors.email = "Please enter a valid email address.";
-  }
-  if (fields.message.trim().length === 0) {
-    errors.message = "Please type your message.";
-  } else if (fields.message.length > MSG_MAX) {
-    errors.message = `Message must be under ${MSG_MAX} characters.`;
-  }
-  return errors;
-}
-
-function inputClass(hasError: boolean) {
-  return cn(
-    "w-full bg-transparent border-0 border-b",
-    hasError ? "border-red-400" : "border-white/20",
-    "px-0 py-3 text-white text-sm placeholder:text-white/35",
-    "outline-none focus:border-brand-orange",
-    "transition-colors duration-200"
-  );
-}
-
 export default function ContactSection() {
+  const { locale, t } = useLanguage();
+  const isHe = locale === "he";
+  const tc = t.contact;
+
   const [fields, setFields] = useState({ name: "", email: "", message: "" });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState({ name: false, email: false, message: false });
@@ -130,65 +99,47 @@ export default function ContactSection() {
   const [cooldownSecs, setCooldownSecs] = useState(0);
   const honeypotRef = useRef<HTMLInputElement>(null);
 
-  // Tick down the cooldown counter every second
+  const validate = (f: typeof fields) => validateFields(f, tc.validation);
+
   useEffect(() => {
     if (cooldownSecs <= 0) return;
     const id = setTimeout(() => setCooldownSecs((s) => s - 1), 1000);
     return () => clearTimeout(id);
   }, [cooldownSecs]);
 
-  // Restore cooldown on mount (e.g. page refresh during cooldown)
   useEffect(() => {
     const last = Number(localStorage.getItem(COOLDOWN_KEY) ?? 0);
     const remaining = Math.ceil((last + COOLDOWN_MS - Date.now()) / 1000);
     if (remaining > 0) setCooldownSecs(remaining);
   }, []);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const updated = { ...fields, [e.target.name]: e.target.value };
     setFields(updated);
-    if (touched[e.target.name as keyof typeof touched]) {
-      setErrors(validateFields(updated));
-    }
+    if (touched[e.target.name as keyof typeof touched]) setErrors(validate(updated));
   }
 
   function handleBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const name = e.target.name as keyof typeof touched;
     setTouched((prev) => ({ ...prev, [name]: true }));
-    setErrors(validateFields(fields));
+    setErrors(validate(fields));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    // Honeypot: bots fill hidden fields — silently fake success
-    if (honeypotRef.current?.value) {
-      setStatus("success");
-      return;
-    }
-
-    // Rate limit
+    if (honeypotRef.current?.value) { setStatus("success"); return; }
     if (cooldownSecs > 0) return;
-
     setTouched({ name: true, email: true, message: true });
-    const validationErrors = validateFields(fields);
+    const validationErrors = validate(fields);
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
-
     setStatus("sending");
     try {
-      await emailjs.send(
-        "service_jfqyste",
-        "template_8vsa8pv",
-        {
-          user_name: fields.name,
-          user_email: fields.email,
-          message: fields.message,
-        },
-        "knK3azBapROlEFyqf"
-      );
+      await emailjs.send("service_jfqyste", "template_8vsa8pv", {
+        user_name: fields.name,
+        user_email: fields.email,
+        message: fields.message,
+      }, "knK3azBapROlEFyqf");
       setStatus("success");
       setFields({ name: "", email: "", message: "" });
       setTouched({ name: false, email: false, message: false });
@@ -200,62 +151,80 @@ export default function ContactSection() {
     }
   }
 
+  // Merge static social meta with locale sublabels
+  const socialLinks = socialMeta.map((s) => ({
+    ...s,
+    sublabel: "fixedSublabel" in s
+      ? s.fixedSublabel                                          // WhatsApp / Email — always show
+      : isHe ? null : tc.social[s.platform as keyof typeof tc.social], // LinkedIn / GitHub — hide in Hebrew
+  }));
+
   return (
     <section
       id="contact"
       className={cn(
         "bg-gradient-to-b from-contact-dark to-contact-warm",
         "min-h-screen lg:h-screen flex flex-col",
-        montserrat.className
+        montserrat.className,
       )}
     >
-      {/* Navbar spacer */}
       <div className="hidden lg:block h-[90px] shrink-0" />
 
-      {/* Content */}
       <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[130px] py-16 lg:py-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center w-full max-w-[1200px] mx-auto">
 
           {/* ── Left column ── */}
-          <div className="flex flex-col gap-8">
-            <div>
+          <div className={cn("flex flex-col gap-8", isHe && "items-end")}>
+            {/* Heading block */}
+            <div
+              className={cn("w-full", isHe && "text-right")}
+              dir={isHe ? "rtl" : "ltr"}
+            >
               <h2 className="text-[48px] font-semibold text-white leading-tight">
-                Let&apos;s work{" "}
-                <span className="text-brand-orange">together</span>
+                {tc.heading1}{" "}
+                <span className="text-brand-orange">{tc.heading2}</span>
               </h2>
               <p className="mt-3 text-white/60 text-base leading-relaxed max-w-[380px]">
-                If you have a project in mind, I&apos;d love to hear from you.
+                {tc.subheading}
               </p>
             </div>
 
             {/* Orange divider */}
-            <div className="w-12 h-[2px] bg-brand-orange rounded-full" />
+            <div className={cn("w-12 h-[2px] bg-brand-orange rounded-full", isHe && "ml-auto")} />
 
             {/* Social links */}
-            <div className="flex flex-col gap-5">
+            <div className={cn("flex flex-col gap-5", isHe && "items-end")}>
               {socialLinks.map((link) => (
-                <SocialLinkItem key={link.platform} link={link} />
+                <SocialLinkItem
+                  key={link.platform}
+                  platform={link.platform}
+                  label={link.label}
+                  icon={link.icon}
+                  href={link.href}
+                  sublabel={link.sublabel}
+                  isHe={isHe}
+                />
               ))}
             </div>
           </div>
 
-          {/* ── Right column ── */}
-          <div>
-            <h3 className="text-white font-bold text-xl mb-8">
-              Send Message
+          {/* ── Right column (form) ── */}
+          <div dir={isHe ? "rtl" : "ltr"}>
+            <h3 className={cn("text-white font-bold text-xl mb-8", isHe && "text-right")}>
+              {tc.formHeading}
             </h3>
 
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
-              {/* Honeypot — hidden from humans, filled by bots */}
               <input
                 ref={honeypotRef}
-                name="website"
+                name="_trap"
                 type="text"
                 tabIndex={-1}
                 aria-hidden="true"
-                autoComplete="off"
+                autoComplete="new-password"
                 style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
               />
+
               {/* Name */}
               <div className="flex flex-col gap-1">
                 <input
@@ -264,11 +233,12 @@ export default function ContactSection() {
                   value={fields.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Full Name"
-                  className={inputClass(!!(touched.name && errors.name))}
+                  placeholder={tc.placeholders.name}
+                  dir={isHe ? "rtl" : "ltr"}
+                  className={inputClass(!!(touched.name && errors.name), isHe)}
                 />
                 {touched.name && errors.name && (
-                  <span className="text-red-400 text-xs mt-0.5">{errors.name}</span>
+                  <span className={cn("text-red-400 text-xs mt-0.5", isHe && "text-right")}>{errors.name}</span>
                 )}
               </div>
 
@@ -280,11 +250,12 @@ export default function ContactSection() {
                   value={fields.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Email Address"
-                  className={inputClass(!!(touched.email && errors.email))}
+                  placeholder={tc.placeholders.email}
+                  dir={isHe ? "rtl" : "ltr"}
+                  className={inputClass(!!(touched.email && errors.email), isHe)}
                 />
                 {touched.email && errors.email && (
-                  <span className="text-red-400 text-xs mt-0.5">{errors.email}</span>
+                  <span className={cn("text-red-400 text-xs mt-0.5", isHe && "text-right")}>{errors.email}</span>
                 )}
               </div>
 
@@ -296,20 +267,21 @@ export default function ContactSection() {
                   value={fields.message}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Type your message..."
+                  placeholder={tc.placeholders.message}
                   maxLength={MSG_MAX}
-                  className={cn(inputClass(!!(touched.message && errors.message)), "resize-none")}
+                  dir={isHe ? "rtl" : "ltr"}
+                  className={cn(inputClass(!!(touched.message && errors.message), isHe), "resize-none")}
                 />
                 <div className="flex justify-between items-center">
                   {touched.message && errors.message ? (
-                    <span className="text-red-400 text-xs">{errors.message}</span>
+                    <span className={cn("text-red-400 text-xs", isHe && "text-right w-full")}>{errors.message}</span>
                   ) : (
                     <span />
                   )}
                   {fields.message.length > MSG_MAX - 100 && (
                     <span className={cn(
                       "text-xs tabular-nums",
-                      fields.message.length >= MSG_MAX ? "text-red-400" : "text-white/40"
+                      fields.message.length >= MSG_MAX ? "text-red-400" : "text-white/40",
                     )}>
                       {fields.message.length}/{MSG_MAX}
                     </span>
@@ -321,43 +293,39 @@ export default function ContactSection() {
               <div className="flex flex-col gap-3">
                 <button
                   type="submit"
-                  disabled={status === "sending" || cooldownSecs > 0 || Object.keys(validateFields(fields)).length > 0}
+                  disabled={status === "sending" || cooldownSecs > 0 || Object.keys(validate(fields)).length > 0}
                   className={cn(
-                    "self-start inline-flex items-center gap-2",
+                    "inline-flex items-center gap-2",
+                    isHe ? "ml-auto" : "self-start",
                     "bg-brand-orange text-white font-semibold text-sm",
                     "rounded-[18px] px-8 py-3.5",
                     "shadow-[0px_10px_24px_rgba(230,126,34,0.4)]",
                     "hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200",
-                    "disabled:opacity-60 disabled:cursor-not-allowed"
+                    "disabled:opacity-60 disabled:cursor-not-allowed",
                   )}
                 >
                   {status === "sending" ? (
                     <>
-                      <Icon
-                        icon="lucide:loader-circle"
-                        width={16}
-                        height={16}
-                        className="animate-spin"
-                      />
-                      Sending...
+                      <Icon icon="lucide:loader-circle" width={16} height={16} className="animate-spin" />
+                      {tc.sending}
                     </>
                   ) : cooldownSecs > 0 ? (
-                    `Wait ${cooldownSecs}s`
+                    tc.cooldown.replace("{secs}", String(cooldownSecs))
                   ) : (
-                    "Send Message"
+                    tc.submit
                   )}
                 </button>
 
                 {status === "success" && (
-                  <p className="flex items-center gap-2 text-green-400 text-sm font-medium">
+                  <p className={cn("flex items-center gap-2 text-green-400 text-sm font-medium", isHe && "flex-row-reverse")}>
                     <Icon icon="lucide:check-circle" width={16} height={16} />
-                    Message sent! I&apos;ll get back to you soon.
+                    {tc.success}
                   </p>
                 )}
                 {status === "error" && (
-                  <p className="flex items-center gap-2 text-red-400 text-sm font-medium">
+                  <p className={cn("flex items-center gap-2 text-red-400 text-sm font-medium", isHe && "flex-row-reverse")}>
                     <Icon icon="lucide:alert-circle" width={16} height={16} />
-                    Something went wrong. Please try again or reach out directly.
+                    {tc.error}
                   </p>
                 )}
               </div>

@@ -5,26 +5,15 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
-/* ─── Data ─────────────────────────────────────────────────────────────── */
+/* ─── Static data (images / URLs only) ─────────────────────────────────── */
 
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  thumbnail: string;
-  screenshots: string[];
-  liveUrl: string;
-}
-
-const projects: Project[] = [
+const projectMeta = [
   {
     id: "1",
-    name: "Jobizz - AI-integrated full-stack website",
-    description:
-      "A fully functional web application for a tax consulting office that manages client data, appointments, and business operations.",
     thumbnail: "/images/project1.png",
     liveUrl: "https://jobizz-beige.vercel.app/",
     screenshots: [
@@ -41,9 +30,6 @@ const projects: Project[] = [
   },
   {
     id: "2",
-    name: "UGC Creator Portfolio Page",
-    description:
-      "A modern portfolio website showcasing UGC content, brand collaborations, and creative work.",
     thumbnail: "/images/project2.png",
     liveUrl: "https://bruna-barros.vercel.app",
     screenshots: [
@@ -58,9 +44,6 @@ const projects: Project[] = [
   },
   {
     id: "3",
-    name: "Software Developer Portfolio Page",
-    description:
-      "A software developer portfolio website showcasing projects, technical skills, and real-world applications.",
     thumbnail: "/images/project3.png",
     liveUrl: "https://neozi12.github.io/",
     screenshots: [
@@ -73,13 +56,28 @@ const projects: Project[] = [
   },
 ];
 
+/* ─── Types ─────────────────────────────────────────────────────────────── */
+
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  thumbnail: string;
+  screenshots: string[];
+  liveUrl: string;
+}
+
 /* ─── ProjectCard ───────────────────────────────────────────────────────── */
 
 function ProjectCard({
   project,
+  viewProjectLabel,
+  isHe,
   onClick,
 }: {
   project: Project;
+  viewProjectLabel: string;
+  isHe: boolean;
   onClick: (p: Project) => void;
 }) {
   return (
@@ -87,7 +85,6 @@ function ProjectCard({
       className="group relative cursor-pointer overflow-hidden rounded-2xl h-[220px] sm:h-[260px] lg:h-[280px] ring-2 ring-brand-orange shadow-[0_8px_32px_rgba(230,126,34,0.45)]"
       onClick={() => onClick(project)}
     >
-      {/* Base image */}
       <div className="relative w-full h-full bg-gray-800">
         <Image
           src={project.thumbnail}
@@ -97,7 +94,6 @@ function ProjectCard({
         />
       </div>
 
-      {/* Always-visible overlay */}
       <div
         className={cn(
           "absolute inset-0 rounded-2xl",
@@ -109,12 +105,13 @@ function ProjectCard({
           className={cn(
             montserrat.className,
             "text-white font-bold text-sm sm:text-base lg:text-lg leading-tight line-clamp-2",
+            isHe && "text-right",
           )}
         >
           {project.name}
         </h3>
 
-        <div className="flex items-center">
+        <div className={cn("flex items-center", isHe && "justify-end")}>
           <span
             className={cn(
               montserrat.className,
@@ -124,8 +121,9 @@ function ProjectCard({
               "shadow-[0px_6px_16px_rgba(230,126,34,0.4)]",
             )}
           >
-            View Project
-            <Icon icon="lucide:arrow-right" width={14} height={14} />
+            {isHe && <Icon icon="lucide:arrow-left" width={14} height={14} />}
+            {viewProjectLabel}
+            {!isHe && <Icon icon="lucide:arrow-right" width={14} height={14} />}
           </span>
         </div>
       </div>
@@ -137,9 +135,13 @@ function ProjectCard({
 
 function ProjectModal({
   project,
+  goToWebsiteLabel,
+  isHe,
   onClose,
 }: {
   project: Project;
+  goToWebsiteLabel: string;
+  isHe: boolean;
   onClose: () => void;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -157,7 +159,6 @@ function ProjectModal({
     return () => document.removeEventListener("keydown", fn);
   }, [onClose]);
 
-  // Reset slide when project changes
   useEffect(() => {
     setCurrentSlide(0);
   }, [project.id]);
@@ -169,26 +170,31 @@ function ProjectModal({
     >
       <div
         className={cn(
-          "relative bg-brand-dark rounded-2xl max-w-4xl w-full p-5 md:p-7",
-          "max-h-[90vh] overflow-hidden",
+          "relative bg-brand-dark rounded-2xl max-w-4xl w-full p-4 md:p-7",
+          "max-h-[90vh] overflow-y-hidden",
+          "border border-brand-orange/40",
         )}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors duration-200"
+          className="absolute top-3 right-3 text-white/70 hover:text-white transition-colors duration-200 z-10"
           aria-label="Close modal"
         >
-          <Icon icon="lucide:x" width={24} height={24} />
+          <Icon icon="lucide:x" width={22} height={22} />
         </button>
 
-        {/* Title */}
-        <div className="flex items-center gap-2 mb-2 pr-8">
+        {/* Title + CTA — swap order in Hebrew */}
+        <div className={cn(
+          "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pr-7",
+          isHe && "sm:flex-row-reverse",
+        )}>
           <h2
             className={cn(
               montserrat.className,
-              "text-brand-orange font-bold text-2xl",
+              "text-brand-orange font-bold text-lg sm:text-2xl leading-snug",
+              isHe && "text-right",
             )}
           >
             {project.name}
@@ -197,20 +203,20 @@ function ProjectModal({
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-orange hover:opacity-70 transition-opacity duration-200 shrink-0"
-            aria-label="View live project"
+            className={cn(
+              montserrat.className,
+              "inline-flex items-center justify-center gap-1.5 self-start sm:shrink-0",
+              "border-2 border-brand-orange text-white font-semibold text-sm rounded-[18px] px-4 py-2",
+              "shadow-[0px_6px_16px_rgba(230,126,34,0.3)] hover:shadow-[0px_8px_20px_rgba(230,126,34,0.5)] transition-shadow duration-200",
+            )}
             onClick={(e) => e.stopPropagation()}
           >
-            <Icon icon="lucide:external-link" width={20} height={20} />
+            {isHe && <Icon icon="lucide:external-link" width={14} height={14} />}
+            {goToWebsiteLabel}
+            {!isHe && <Icon icon="lucide:external-link" width={14} height={14} />}
           </a>
         </div>
 
-        {/* Description */}
-        <p className={cn(montserrat.className, "text-white/70 text-sm mb-6")}>
-          {project.description}
-        </p>
-
-        {/* Screenshot Carousel */}
         <div className="relative overflow-hidden rounded-xl aspect-video bg-black shadow-[0_8px_32px_rgba(230,126,34,0.45)]">
           <Image
             src={project.screenshots[currentSlide]}
@@ -221,7 +227,6 @@ function ProjectModal({
 
           {project.screenshots.length > 1 && (
             <>
-              {/* Prev arrow */}
               <button
                 onClick={prev}
                 className={cn(
@@ -234,7 +239,6 @@ function ProjectModal({
                 <Icon icon="lucide:chevron-left" width={20} height={20} />
               </button>
 
-              {/* Next arrow */}
               <button
                 onClick={next}
                 className={cn(
@@ -247,7 +251,6 @@ function ProjectModal({
                 <Icon icon="lucide:chevron-right" width={20} height={20} />
               </button>
 
-              {/* Dot indicators */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
                 {project.screenshots.map((_, i) => (
                   <button
@@ -272,9 +275,18 @@ function ProjectModal({
 /* ─── PortfolioSection ──────────────────────────────────────────────────── */
 
 export default function PortfolioSection() {
+  const { locale, t } = useLanguage();
+  const isHe = locale === "he";
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const closeModal = useCallback(() => setSelectedProject(null), []);
+
+  // Merge static meta (images, URLs) with locale-specific text
+  const projects: Project[] = projectMeta.map((meta, i) => ({
+    ...meta,
+    name: t.portfolio.projects[i].name,
+    description: t.portfolio.projects[i].description,
+  }));
 
   return (
     <section
@@ -285,17 +297,17 @@ export default function PortfolioSection() {
         montserrat.className,
       )}
     >
-      {/* Spacer matching fixed navbar height */}
       <div className="hidden lg:block h-[90px] shrink-0" />
 
-      {/* Content area */}
-      {/* Mobile: simple flex column with vertical padding */}
-      {/* Desktop: 3-row grid that vertically centers the cards */}
       <div className="flex-1 flex flex-col gap-8 px-6 py-10 lg:grid lg:grid-rows-[1fr_auto_1fr] lg:gap-0 lg:py-0 lg:pb-6">
         {/* Title */}
         <div className="flex items-center justify-center lg:self-center">
-          <h2 className="text-white font-bold text-3xl lg:text-[36px] leading-none text-center">
-            Featured <span className="text-brand-orange">Work</span>
+          <h2
+            className="text-white font-bold text-3xl lg:text-[36px] leading-none text-center"
+            dir={isHe ? "rtl" : "ltr"}
+          >
+            <span className="text-white">{t.portfolio.headingRegular} </span>
+            <span className="text-brand-orange">{t.portfolio.headingOrange}</span>
           </h2>
         </div>
 
@@ -305,18 +317,23 @@ export default function PortfolioSection() {
             <ProjectCard
               key={project.id}
               project={project}
+              viewProjectLabel={t.portfolio.viewProject}
+              isHe={isHe}
               onClick={setSelectedProject}
             />
           ))}
         </div>
 
-        {/* Bottom spacer (desktop only) */}
         <div className="hidden lg:block" />
       </div>
 
-      {/* Modal */}
       {selectedProject && (
-        <ProjectModal project={selectedProject} onClose={closeModal} />
+        <ProjectModal
+          project={selectedProject}
+          goToWebsiteLabel={t.portfolio.goToWebsite}
+          isHe={isHe}
+          onClose={closeModal}
+        />
       )}
     </section>
   );

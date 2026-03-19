@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -9,8 +12,6 @@ const montserrat = Montserrat({
 });
 
 // ── Avatar helper ─────────────────────────────────────────────────────────────
-// All geometry is pixel-based; accepting circle + popOut as props lets us
-// render a proportionally-correct circle at any size without scale hacks.
 
 function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
   const portraitH = Math.round(circle * (1024 / 768));
@@ -33,20 +34,11 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
         style={{ height: circle }}
       />
 
-      {/*
-        Shared portrait box — ONE box, fixed dimensions.
-        Both layers use identical geometry so the image is pixel-aligned.
-        No z-index on the box → no stacking context → Layer A (z-2),
-        ring (z-5), Layer B (z-10) sort correctly in the container stack.
-      */}
       <div
         className="absolute top-0 left-0"
         style={{ width: circle, height: portraitH }}
       >
-        {/*
-          Layer A: portrait inside the circle.
-          Circle center in portrait coords: cy = popOut + circle/2
-        */}
+        {/* Layer A: portrait inside the circle */}
         <div
           className="absolute inset-0 z-[2]"
           style={{
@@ -62,11 +54,7 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
           />
         </div>
 
-        {/*
-          Layer B: portrait OUTSIDE the circle — hair pop-out.
-          clip-path: path() traces the region above the circle's upper arc.
-          z-10: above the ring (z-5) so hair renders in front.
-        */}
+        {/* Layer B: hair pop-out */}
         <div
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
@@ -83,10 +71,7 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
         </div>
       </div>
 
-      {/*
-        Orange border ring.
-        z-[5]: above Layer A body (z-2), below Layer B hair (z-10).
-      */}
+      {/* Orange border ring */}
       <div
         className="absolute left-0 right-0 bottom-0 rounded-full border-4 border-[#E67E22] pointer-events-none z-[5]"
         style={{ height: circle }}
@@ -98,6 +83,9 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
+  const { locale, t } = useLanguage();
+  const isHe = locale === "he";
+
   return (
     <section
       id="home"
@@ -116,36 +104,43 @@ export default function HeroSection() {
 
         {/* Content area */}
         <div className="flex-1 flex items-start lg:items-center px-6 sm:px-10 lg:px-[60px] xl:px-[130px] py-4">
-
-          {/*
-            grid-cols-[1fr_auto]:
-              - Left column (1fr) takes available width
-              - Right column (auto) sizes exactly to the avatar wrapper
-            This lets padding control how "centered" the content sits,
-            without the columns arbitrarily splitting 50/50.
-          */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_480px] gap-4 lg:gap-14 xl:gap-20 items-center w-full">
 
             {/* ── Left column: Text ── */}
-            <div className="flex flex-col gap-5">
+            <div
+              className={cn("flex flex-col gap-5", isHe && "text-right")}
+              dir={isHe ? "rtl" : "ltr"}
+            >
               <p className="text-2xl lg:text-[28px] font-semibold text-white leading-snug">
-                Hi, i&apos;m <span className="text-[#E67E22]">Neo</span>
+                {t.hero.greeting}{" "}
+                <span className="text-[#E67E22]">{t.hero.name}</span>
               </p>
 
               <h1 className="text-4xl lg:text-[50px] font-semibold text-white leading-tight">
-                Freelance{" "}
+                {t.hero.headline1}{" "}
                 <span className="text-[#E67E22]">
-                  Web
+                  {t.hero.headline2}
                   <br />
-                  Developer
+                  {t.hero.headline3}
                 </span>
               </h1>
 
               <p className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[420px] leading-relaxed">
-                I design and build clean, responsive{" "}
-                <span className="text-[#E67E22]">websites</span> for businesses,
-                brands, and personal projects, creating digital experiences that
-                are clear, modern, and easy to use.
+                {isHe ? (
+                  <>
+                    אני מעצב ובונה{" "}
+                    <span className="text-[#E67E22]">אתרים</span>{" "}
+                    נקיים ורספונסיביים לעסקים, מותגים ופרויקטים אישיים — ויוצר
+                    חוויות דיגיטליות שהן ברורות, מודרניות וקלות לשימוש.
+                  </>
+                ) : (
+                  <>
+                    I design and build clean, responsive{" "}
+                    <span className="text-[#E67E22]">websites</span> for
+                    businesses, brands, and personal projects, creating digital
+                    experiences that are clear, modern, and easy to use.
+                  </>
+                )}
               </p>
 
               <div className="flex flex-row flex-wrap gap-5 mt-2">
@@ -153,24 +148,24 @@ export default function HeroSection() {
                   href="#portfolio"
                   className="inline-flex items-center justify-center bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
                 >
-                  My Work
+                  {t.hero.cta1}
                 </a>
                 <a
                   href="#contact"
                   className="inline-flex items-center justify-center border-2 border-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
                 >
-                  Contact Me
+                  {t.hero.cta2}
                 </a>
               </div>
             </div>
 
             {/* ── Right column: Avatar ── */}
             <div className="flex items-center justify-center">
-              {/* Mobile (< lg): 280px circle fits all phones ≥ 344px */}
+              {/* Mobile (< lg): 280px circle */}
               <div className="lg:hidden">
                 <AvatarCircle circle={280} popOut={58} />
               </div>
-              {/* Desktop (lg+): original 340px — unchanged */}
+              {/* Desktop (lg+): 340px */}
               <div className="hidden lg:block">
                 <AvatarCircle circle={340} popOut={70} />
               </div>

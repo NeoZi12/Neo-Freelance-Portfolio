@@ -1,7 +1,11 @@
+"use client";
+
+import React from "react";
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const skills = [
   { name: "JavaScript", icon: "logos:javascript" },
@@ -23,14 +27,6 @@ const montserrat = Montserrat({
 });
 
 // ── Photo frame helper ────────────────────────────────────────────────────────
-// Geometry is pixel-based (matching Figma exactly), so we accept explicit
-// dimensions as props and render two sizes via lg:hidden / hidden lg:block.
-//
-// Spatial relationship from Figma:
-//   photo  → top-right  (z above)
-//   frame  → bottom-left (z behind), offset from photo by offsetX / offsetY
-//
-// Photo: /images/about-pic.jpeg
 
 function PhotoFrame({
   photoW,
@@ -76,7 +72,29 @@ function PhotoFrame({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Splits `text` around each phrase in order and wraps matches in orange spans.
+function withHighlights(text: string, phrases: readonly string[]) {
+  const nodes: React.ReactNode[] = [];
+  let remaining = text;
+  for (const phrase of phrases) {
+    const idx = remaining.indexOf(phrase);
+    if (idx === -1) continue;
+    if (idx > 0) nodes.push(remaining.slice(0, idx));
+    nodes.push(
+      <span key={phrase} className="text-[#E67E22]">
+        {phrase}
+      </span>,
+    );
+    remaining = remaining.slice(idx + phrase.length);
+  }
+  if (remaining) nodes.push(remaining);
+  return nodes;
+}
+
 export default function AboutSection() {
+  const { locale, t } = useLanguage();
+  const isHe = locale === "he";
+
   return (
     <section
       id="about"
@@ -86,20 +104,13 @@ export default function AboutSection() {
         montserrat.className,
       )}
     >
-      {/* Spacer matching fixed navbar height — pushes content below navbar on desktop */}
       <div className="hidden lg:block h-[90px] shrink-0" />
 
-      {/* flex-1 fills the remaining height; items-center centers within that space */}
       <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[130px] py-16 lg:py-10">
-        {/*
-          Two-column grid:
-          - Mobile (single col): text first (order-1), photo second (order-2)
-          - Desktop (two col):   photo left  (order-1), text right (order-2)
-        */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-10 items-center w-full">
+
           {/* ── Left on desktop (photo) — below text on mobile ── */}
           <div className="flex items-center justify-center order-2 lg:order-1">
-            {/* Mobile: scaled to fit narrow screens (344px+) */}
             <div className="lg:hidden">
               <PhotoFrame
                 photoW={310}
@@ -110,7 +121,6 @@ export default function AboutSection() {
                 offsetY={30}
               />
             </div>
-            {/* Desktop */}
             <div className="hidden lg:block">
               <PhotoFrame
                 photoW={310}
@@ -124,29 +134,41 @@ export default function AboutSection() {
           </div>
 
           {/* ── Right on desktop (text) — above photo on mobile ── */}
-          <div className="flex flex-col gap-4 order-1 lg:order-2 lg:px-[50px] [filter:drop-shadow(0px_4px_4px_rgba(0,0,0,0.25))]">
-            <h2 className="text-[48px] font-semibold text-white leading-tight">
-              About <span className="text-[#E67E22]">Me</span>
+          <div
+            className={cn(
+              "flex flex-col gap-4 order-1 lg:order-2 lg:px-[50px] [filter:drop-shadow(0px_4px_4px_rgba(0,0,0,0.25))]",
+              isHe && "text-right",
+            )}
+            dir={isHe ? "rtl" : "ltr"}
+          >
+            <h2 className="text-4xl lg:text-[50px] font-semibold text-white leading-tight">
+              {t.about.title1}{" "}
+              <span className="text-[#E67E22]">{t.about.title2}</span>
             </h2>
 
-            <p className="text-xl font-medium text-white/90 leading-[26px] max-w-[484px]">
-              I design and build clean, responsive{" "}
-              <span className="text-[#E67E22]">websites</span> for businesses,
-              brands, and personal projects, creating digital experiences that
-              are clear, modern, and easy to use.
-            </p>
+            <div className="flex flex-col gap-3 max-w-[484px]">
+              <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
+                {withHighlights(t.about.description[0], t.about.p1Highlights)}
+              </p>
+              <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
+                {t.about.description[1]}
+              </p>
+              <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
+                {withHighlights(t.about.description[2], [t.about.p3Highlight])}
+              </p>
+            </div>
 
             <a
               href="#contact"
               className="inline-flex items-center justify-center self-start border-2 border-[#E67E22] text-white font-semibold text-lg rounded-[18px] px-[30px] py-[14px] whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
             >
-              Contact Me
+              {t.about.cta}
             </a>
 
             {/* ── Tech stack ── */}
             <div className="flex flex-col gap-3 pt-2">
               <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">
-                Technologies I work with
+                {t.about.techLabel}
               </span>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
@@ -161,6 +183,7 @@ export default function AboutSection() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Island_Moments, Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type { Locale } from "@/lib/i18n";
 
 // Exact Figma font: Island Moments, weight 400
 const logoFont = Island_Moments({
@@ -18,22 +20,102 @@ const navFont = Montserrat({
   display: "swap",
 });
 
-const navLinks = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Contact", href: "#contact" },
-] as const;
+type NavHref = "#home" | "#about" | "#services" | "#portfolio" | "#contact";
 
-type NavHref = (typeof navLinks)[number]["href"];
+// ── Language Switcher ──────────────────────────────────────────────────────────
+
+function LangSwitcher() {
+  const { locale, setLocale } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function handleSelect(next: Locale) {
+    setLocale(next);
+    setOpen(false);
+  }
+
+  return (
+    <div ref={ref} className="relative flex justify-end items-center h-full">
+      <button
+        onClick={() => setOpen((prev) => !prev)}
+        className={cn(
+          "flex items-center gap-1 text-white text-sm font-bold tracking-wider uppercase px-2 py-1 select-none cursor-pointer",
+          navFont.className,
+        )}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        {locale.toUpperCase()}
+        <svg
+          width="10"
+          height="6"
+          viewBox="0 0 10 6"
+          fill="none"
+          aria-hidden="true"
+          className={cn("transition-transform duration-200", open && "rotate-180")}
+        >
+          <path d="M1 1L5 5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          className="absolute top-full right-0 mt-1 bg-black border border-white/10 rounded-lg overflow-hidden min-w-[160px] z-50"
+        >
+          {(["en", "he"] as Locale[]).map((lang) => (
+            <li key={lang} role="option" aria-selected={locale === lang}>
+              <button
+                onClick={() => handleSelect(lang)}
+                className={cn(
+                  "w-full flex items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-white hover:bg-white/10 transition-colors duration-150 cursor-pointer",
+                  navFont.className,
+                )}
+              >
+                <span className={cn("text-[#E67E22]", locale !== lang && "invisible")}>✓</span>
+                <span>{lang.toUpperCase()}</span>
+                <span className="text-white/40 font-normal normal-case tracking-normal">
+                  — {lang === "en" ? "English" : "עברית"}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// ── Navbar ─────────────────────────────────────────────────────────────────────
 
 export default function Navbar() {
+  const { t, locale, setLocale } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState<NavHref>("#home");
 
+  const navLinksBase = [
+    { label: t.nav.home, href: "#home" as NavHref },
+    { label: t.nav.about, href: "#about" as NavHref },
+    { label: t.nav.services, href: "#services" as NavHref },
+    { label: t.nav.portfolio, href: "#portfolio" as NavHref },
+    { label: t.nav.contact, href: "#contact" as NavHref },
+  ];
+  const isHe = locale === "he";
+  const navLinks = isHe ? [...navLinksBase].reverse() : navLinksBase;
+  const mobileNavLinks = navLinksBase;
+
   useEffect(() => {
-    const sectionIds = navLinks.map((l) => l.href.replace("#", ""));
+    const sectionIds: string[] = ["home", "about", "services", "portfolio", "contact"];
     const observers: IntersectionObserver[] = [];
 
     sectionIds.forEach((id) => {
@@ -43,6 +125,7 @@ export default function Navbar() {
         ([entry]) => {
           if (entry.isIntersecting) {
             setActiveLink(`#${id}` as NavHref);
+            window.history.replaceState(null, "", `${window.location.search}#${id}`);
           }
         },
         { threshold: 0.5 }
@@ -104,8 +187,10 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Right column — empty spacer to keep links centered */}
-        <div />
+        {/* Right column — Language switcher */}
+        <div className="justify-self-end">
+          <LangSwitcher />
+        </div>
       </nav>
 
       {/* ── Mobile nav (below lg) ── */}
@@ -140,54 +225,14 @@ export default function Navbar() {
             >
               {menuOpen ? (
                 <>
-                  <line
-                    x1="1"
-                    y1="1"
-                    x2="21"
-                    y2="17"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="21"
-                    y1="1"
-                    x2="1"
-                    y2="17"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                  <line x1="1" y1="1" x2="21" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="21" y1="1" x2="1" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
                 </>
               ) : (
                 <>
-                  <line
-                    x1="0"
-                    y1="2"
-                    x2="22"
-                    y2="2"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="0"
-                    y1="9"
-                    x2="22"
-                    y2="9"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="0"
-                    y1="16"
-                    x2="22"
-                    y2="16"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                  <line x1="0" y1="2" x2="22" y2="2" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="0" y1="9" x2="22" y2="9" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="0" y1="16" x2="22" y2="16" stroke="white" strokeWidth="2" strokeLinecap="round" />
                 </>
               )}
             </svg>
@@ -199,17 +244,19 @@ export default function Navbar() {
             id="mobile-menu"
             className={cn(
               "flex flex-col px-6 py-4 gap-3 border-t border-white/10",
+              isHe && "items-end",
               navFont.className,
             )}
             role="list"
           >
-            {navLinks.map(({ label, href }) => (
+            {mobileNavLinks.map(({ label, href }) => (
               <li key={href}>
                 <Link
                   href={href}
                   className={cn(
                     "relative inline-block text-white text-base font-bold py-2",
-                    "after:content-[''] after:absolute after:left-0 after:-bottom-0 after:h-[3px] after:bg-[#E67E22]",
+                    "after:content-[''] after:absolute after:-bottom-0 after:h-[3px] after:bg-[#E67E22]",
+                    isHe ? "after:right-0" : "after:left-0",
                     "after:transition-all after:duration-300 after:ease-in-out",
                     activeLink === href ? "after:w-full" : "after:w-0",
                   )}
@@ -222,6 +269,33 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+
+            {/* Language switcher divider + toggle */}
+            <li className="pt-1 w-full">
+              <div className={cn(
+                "border-t border-white/10 pt-3 flex items-center gap-4",
+                isHe && "justify-end",
+              )}>
+                {(["en", "he"] as Locale[]).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => {
+                      setLocale(lang);
+                      setMenuOpen(false);
+                    }}
+                    className={cn(
+                      "flex items-center gap-1.5 text-sm font-bold uppercase tracking-wider transition-colors duration-150",
+                      locale === lang ? "text-[#E67E22]" : "text-white/50 hover:text-white",
+                    )}
+                  >
+                    {lang.toUpperCase()}
+                    <span className="font-normal normal-case tracking-normal text-xs opacity-70">
+                      — {lang === "en" ? "English" : "עברית"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </li>
           </ul>
         )}
       </div>
