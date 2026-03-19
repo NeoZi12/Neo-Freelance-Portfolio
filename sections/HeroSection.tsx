@@ -150,7 +150,7 @@ export default function HeroSection() {
 
               <div className="flex flex-row flex-wrap gap-5 mt-2">
                 <a
-                  href="#work"
+                  href="#portfolio"
                   className="inline-flex items-center justify-center bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
                 >
                   My Work

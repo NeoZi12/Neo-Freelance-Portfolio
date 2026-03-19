@@ -295,7 +295,7 @@ export default function PortfolioSection() {
         {/* Title */}
         <div className="flex items-center justify-center lg:self-center">
           <h2 className="text-white font-bold text-3xl lg:text-[36px] leading-none text-center">
-            My <span className="text-brand-orange">Portfolio</span>
+            Featured <span className="text-brand-orange">Work</span>
           </h2>
         </div>
 

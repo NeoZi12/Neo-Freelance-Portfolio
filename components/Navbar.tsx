@@ -62,15 +62,15 @@ export default function Navbar() {
         aria-label="Main navigation"
       >
         {/* Left column — Logo */}
-        <Link
-          href="/"
+        <button
+          onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("#home"); }}
           className={cn(
-            "inline-flex items-center text-white text-[42px] xl:text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start whitespace-nowrap",
+            "inline-flex items-center text-white text-[42px] xl:text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start whitespace-nowrap cursor-pointer",
             logoFont.className,
           )}
         >
           Neo Zino
-        </Link>
+        </button>
 
         {/* Center column — Nav links */}
         <ul
@@ -114,15 +114,15 @@ export default function Navbar() {
           className="flex items-center justify-between h-[64px] px-6"
           aria-label="Main navigation"
         >
-          <Link
-            href="/"
+          <button
+            onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("#home"); }}
             className={cn(
-              "text-white text-[2.2rem] leading-none select-none",
+              "text-white text-[2.2rem] leading-none select-none cursor-pointer",
               logoFont.className,
             )}
           >
             Neo Zino
-          </Link>
+          </button>
 
           <button
             className="text-white p-1"

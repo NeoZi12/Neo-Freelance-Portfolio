@@ -3,9 +3,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Portfolio",
-  description: "My portfolio",
-  // Update these once you have your final copy
+  title: "Freelance Web Developer - Neo Zino",
+  description: "Freelance web designer & developer crafting modern, high-quality digital experiences.",
 };
 
 export default function RootLayout({

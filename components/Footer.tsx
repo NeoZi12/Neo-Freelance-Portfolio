@@ -20,9 +20,9 @@ export default function Footer() {
 
         {/* Copyright — centered */}
         <p className="text-xs tracking-wide">
-          <span className="text-white/30">© 2026 </span>
-          <span className="text-brand-orange/60">Neo Zino</span>
-          <span className="text-white/30">. All rights reserved.</span>
+          <span className="text-white">© 2026 </span>
+          <span className="text-brand-orange">Neo Zino</span>
+          <span className="text-white">. All rights reserved.</span>
         </p>
 
         {/* Back to top — pinned to the right */}
@@ -31,16 +31,16 @@ export default function Footer() {
           aria-label="Back to top"
           className={cn(
             "absolute right-6 sm:right-10 lg:right-[130px]",
-            "group flex items-center gap-2 text-white/35 text-xs font-medium tracking-widest uppercase",
-            "hover:text-white/70 transition-colors duration-300",
+            "group flex items-center gap-2 text-white text-xs font-medium tracking-widest uppercase cursor-pointer",
+            "hover:text-brand-orange transition-colors duration-300",
           )}
         >
           <span className="hidden sm:inline">Back to top</span>
           <span
             className={cn(
               "flex items-center justify-center w-7 h-7 rounded-full",
-              "border border-white/15",
-              "group-hover:border-brand-orange/60 group-hover:shadow-[0_0_10px_rgba(230,126,34,0.3)]",
+              "border border-white",
+              "group-hover:border-brand-orange group-hover:shadow-[0_0_10px_rgba(230,126,34,0.3)]",
               "transition-all duration-300",
             )}
           >
