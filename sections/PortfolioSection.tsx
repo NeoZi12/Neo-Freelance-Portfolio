@@ -292,7 +292,7 @@ export default function PortfolioSection() {
     <section
       id="portfolio"
       className={cn(
-        "bg-gradient-to-b from-portfolio-dark to-portfolio-warm",
+        "bg-gradient-to-b from-portfolio-dark to-portfolio-warm scroll-mt-16 lg:scroll-mt-0",
         "min-h-screen lg:h-screen flex flex-col",
         montserrat.className,
       )}

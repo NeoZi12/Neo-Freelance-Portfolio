@@ -39,7 +39,7 @@ export default function ServicesSection() {
     <section
       id="services"
       className={cn(
-        'bg-gradient-to-b from-about-dark to-about-warm',
+        'bg-gradient-to-b from-about-dark to-about-warm scroll-mt-16 lg:scroll-mt-0',
         'min-h-screen lg:h-screen flex flex-col',
         montserrat.className,
       )}

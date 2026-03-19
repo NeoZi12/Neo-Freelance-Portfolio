@@ -90,7 +90,7 @@ export default function HeroSection() {
     <section
       id="home"
       className={cn(
-        "relative min-h-[100dvh] lg:h-[100dvh] w-full lg:overflow-hidden",
+        "relative min-h-[100dvh] lg:h-[100dvh] w-full lg:overflow-hidden scroll-mt-16 lg:scroll-mt-0",
         "bg-[url('/images/orange-mountains.jpg')] bg-cover bg-center bg-no-repeat",
         montserrat.className,
       )}

@@ -99,7 +99,7 @@ export default function AboutSection() {
     <section
       id="about"
       className={cn(
-        "w-full min-h-screen flex flex-col",
+        "w-full min-h-screen flex flex-col scroll-mt-16 lg:scroll-mt-0",
         "bg-gradient-to-b from-about-dark to-about-warm",
         montserrat.className,
       )}
