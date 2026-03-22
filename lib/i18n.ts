@@ -6,6 +6,7 @@ export const translations = {
       home: "Home",
       about: "About",
       services: "Services",
+      howItWorks: "Process",
       portfolio: "Portfolio",
       contact: "Contact",
     },
@@ -55,6 +56,72 @@ export const translations = {
           description:
             "Custom websites for businesses, built with the features, data, and functionality needed to create a fully functioning online experience.",
           highlights: ["for businesses", "data", "fully functioning"],
+        },
+      ],
+    },
+    howItWorks: {
+      sectionTitle1: "How It",
+      sectionTitle2: "Works",
+      subtitle:
+        "A simple, guided process to take your website from idea to launch.",
+      stepsTitle: "Step-by-Step Process",
+      faqTitle: "Frequently Asked Questions",
+      steps: [
+        {
+          number: "1",
+          title: "Requirements & Goals",
+          description:
+            "We start by talking about your business, your goals, and what kind of website you need. We'll also go over the content, features, and overall direction so everything is clear before the project begins.",
+        },
+        {
+          number: "2",
+          title: "Content & Structure",
+          description:
+            "We organize the content your website needs, such as text, images, sections, and important information. If you're missing anything, I'll guide you through what to prepare so we can build the site the right way.",
+        },
+        {
+          number: "3",
+          title: "Design Direction",
+          description:
+            "Once everything is clear, I create the visual direction of the website. This includes the layout, style, and overall look, making sure it fits your brand and feels clear, modern, and professional.",
+        },
+        {
+          number: "4",
+          title: "Development & Revisions",
+          description:
+            "I build the website and turn the design into a real, responsive experience. You'll be able to review it, request changes, and we'll refine everything until it feels right.",
+        },
+        {
+          number: "5",
+          title: "Deployment & Launch",
+          description:
+            "Once the website is approved, I deploy it and help get it live. If needed, I'll also guide you through domain and hosting so the launch process feels simple and stress-free.",
+        },
+      ],
+      faqs: [
+        {
+          q: "Do I need to have all the content ready before we start?",
+          a: "Not at all. If you already have content, that's great — but if not, I'll guide you through exactly what's needed and can help you create or structure it so everything fits your website perfectly.",
+        },
+        {
+          q: "How long does the whole process take?",
+          a: "It depends on the scope of the project. Smaller projects like landing pages or portfolio websites are usually completed relatively quickly, while larger or more complex websites take more time. The timeline also depends on how quickly content and feedback are provided.",
+        },
+        {
+          q: "Can I request changes during the project?",
+          a: "Yes, of course. The process includes revisions, and we'll work together to refine everything until you're happy with the result.",
+        },
+        {
+          q: "What if I don't have a design or know what I want?",
+          a: "That's completely fine. I'll help you define the direction, style, and structure based on your business and goals, so you don't need any design or technical background.",
+        },
+        {
+          q: "How do I handle domain and hosting?",
+          a: "If you'd like a custom domain, you can purchase one — but it's completely optional. For hosting, I typically recommend reliable platforms like Vercel. If you're unsure about any part of the process, I'll guide you step by step to make everything simple and stress-free.",
+        },
+        {
+          q: "Will my website work on mobile devices?",
+          a: "Yes, it will work on all screen sizes — including mobile, tablet, and desktop — and will be fully optimized for a smooth experience.",
         },
       ],
     },
@@ -120,6 +187,7 @@ export const translations = {
       home: "בית",
       about: "אודות",
       services: "שירותים",
+      howItWorks: "תהליך",
       portfolio: "תיק עבודות",
       contact: "צור קשר",
     },
@@ -169,6 +237,71 @@ export const translations = {
           description:
             "בניית אתרים מותאמים אישית לעסקים, הכוללים עבודה עם נתונים ומערכת מתפקדת, ליצירת חוויית שימוש מלאה ואפקטיבית.",
           highlights: ["לעסקים", "נתונים", "מלאה ואפקטיבית"],
+        },
+      ],
+    },
+    howItWorks: {
+      sectionTitle1: "איך זה",
+      sectionTitle2: "עובד",
+      subtitle: ".תהליך פשוט ומלווה שיקח את האתר שלך מרעיון להשקה",
+      stepsTitle: "תהליך שלב אחר שלב",
+      faqTitle: "שאלות נפוצות",
+      steps: [
+        {
+          number: "1",
+          title: "דרישות ומטרות",
+          description:
+            "מתחילים בשיחה על העסק שלך, המטרות שלך וסוג האתר שאתה צריך. נעבור גם על התוכן, הפיצ'רים והכיוון הכללי — כדי שהכול יהיה ברור לפני שהפרויקט מתחיל.",
+        },
+        {
+          number: "2",
+          title: "תוכן ומבנה",
+          description:
+            "נארגן יחד את התוכן שהאתר צריך — טקסטים, תמונות, סקשנים ומידע חשוב. אם משהו חסר, אדריך אותך מה להכין כדי שנוכל לבנות את האתר בצורה הנכונה.",
+        },
+        {
+          number: "3",
+          title: "כיוון עיצובי",
+          description:
+            "ברגע שהכול ברור, אני יוצר את הכיוון הוויזואלי של האתר — פריסה, סגנון ומראה כולל. הכול מותאם למותג שלך ומרגיש ברור, מודרני ומקצועי.",
+        },
+        {
+          number: "4",
+          title: "פיתוח ותיקונים",
+          description:
+            "אני בונה את האתר והופך את העיצוב לחוויה אמיתית ורספונסיבית. תוכל לבדוק אותו, לבקש שינויים, ונדייק הכול יחד עד שזה ירגיש בדיוק כמו שצריך.",
+        },
+        {
+          number: "5",
+          title: "העלאה לאוויר",
+          description:
+            "לאחר שהאתר מאושר, אני מעלה אותו לאוויר ומסייע להשיק אותו. אם צריך, אדריך אותך גם בנושא דומיין ואחסון — כדי שתהליך ההשקה יהיה פשוט וללא לחץ.",
+        },
+      ],
+      faqs: [
+        {
+          q: "האם אני צריך שכל התוכן יהיה מוכן לפני שמתחילים?",
+          a: "בכלל לא. אם כבר יש לך תוכן, זה מצוין — אבל אם לא, אדריך אותך בדיוק למה שנדרש ואוכל לעזור ליצור או לארגן אותו כך שיתאים לאתר שלך בצורה מושלמת.",
+        },
+        {
+          q: "כמה זמן לוקח התהליך כולו?",
+          a: "זה תלוי בהיקף הפרויקט. פרויקטים קטנים כמו דפי נחיתה או אתרי פורטפוליו מסתיימים בדרך כלל מהר יחסית, בעוד שאתרים גדולים יותר לוקחים יותר זמן. הלוח הזמנים תלוי גם במהירות שבה מסופקים תוכן ומשוב.",
+        },
+        {
+          q: "האם אני יכול לבקש שינויים במהלך הפרויקט?",
+          a: "כן, כמובן. התהליך כולל תיקונים, ונעבוד יחד כדי לשכלל הכול עד שתהיה מרוצה מהתוצאה.",
+        },
+        {
+          q: "מה אם אין לי עיצוב או לא יודע מה אני רוצה?",
+          a: "זה בסדר גמור. אעזור לך להגדיר את הכיוון, הסגנון והמבנה בהתאם לעסק ולמטרות שלך, כך שאין צורך בידע בעיצוב או טכנולוגיה.",
+        },
+        {
+          q: "איך אני מטפל בדומיין ואחסון?",
+          a: "אם רוצה דומיין מותאם אישית, ניתן לרכוש אחד — אבל זה לחלוטין אופציונלי. לאחסון, אני ממליץ בדרך כלל על פלטפורמות אמינות כמו Vercel. אם לא בטוח לגבי חלק כלשהו בתהליך, אדריך אותך צעד אחר צעד כדי שהכול יהיה פשוט וללא לחץ.",
+        },
+        {
+          q: "האם האתר יעבוד במכשירים ניידים?",
+          a: "כן, האתר יעבוד על כל גדלי המסך — כולל מובייל, טאבלט ומחשב — ויהיה מותאם במלואו לחוויית שימוש חלקה.",
         },
       ],
     },

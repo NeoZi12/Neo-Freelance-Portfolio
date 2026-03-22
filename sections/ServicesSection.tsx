@@ -40,17 +40,17 @@ export default function ServicesSection() {
       id="services"
       className={cn(
         'bg-gradient-to-b from-about-dark to-about-warm scroll-mt-16 lg:scroll-mt-0',
-        'min-h-screen lg:h-screen flex flex-col',
+        'min-h-screen flex flex-col',
         montserrat.className,
       )}
     >
       <div className="hidden lg:block h-[90px] shrink-0" />
 
-      <div className="flex-1 flex flex-col items-center justify-start pt-10 pb-8 px-6">
+      <div className="flex-1 flex flex-col items-center justify-start lg:justify-center pt-10 pb-8 px-6">
 
         {/* Heading */}
         <h2
-          className="text-center font-bold text-4xl leading-none mb-10"
+          className="text-center font-bold text-4xl leading-none mb-10 lg:mb-16"
           dir={isHe ? 'rtl' : 'ltr'}
         >
           <span className="text-white">{t.services.headingRegular} </span>

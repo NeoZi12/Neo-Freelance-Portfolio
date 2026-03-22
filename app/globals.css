@@ -20,6 +20,10 @@
   --color-portfolio-dark: #0b0f14; /* gradient start — very dark navy */
   --color-portfolio-warm: #2a1408; /* gradient end — dark burnt orange */
 
+  /* ── How It Works section gradient ── */
+  --color-hiw-dark: #0a0c10; /* gradient start — deep charcoal blue */
+  --color-hiw-warm: #1a130d; /* gradient end — warm dark ember */
+
   /* ── Contact section gradient ── */
   --color-contact-dark: #0d0b09; /* gradient start — near-black warm undertone */
   --color-contact-warm: #1f1107; /* gradient end — deep charcoal ember */

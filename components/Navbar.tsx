@@ -20,7 +20,7 @@ const navFont = Montserrat({
   display: "swap",
 });
 
-type NavHref = "#home" | "#about" | "#services" | "#portfolio" | "#contact";
+type NavHref = "#home" | "#about" | "#services" | "#how-it-works" | "#portfolio" | "#contact";
 
 // ── Language Switcher ──────────────────────────────────────────────────────────
 
@@ -107,6 +107,7 @@ export default function Navbar() {
     { label: t.nav.home, href: "#home" as NavHref },
     { label: t.nav.about, href: "#about" as NavHref },
     { label: t.nav.services, href: "#services" as NavHref },
+    { label: t.nav.howItWorks, href: "#how-it-works" as NavHref },
     { label: t.nav.portfolio, href: "#portfolio" as NavHref },
     { label: t.nav.contact, href: "#contact" as NavHref },
   ];
@@ -115,7 +116,7 @@ export default function Navbar() {
   const mobileNavLinks = navLinksBase;
 
   useEffect(() => {
-    const sectionIds: string[] = ["home", "about", "services", "portfolio", "contact"];
+    const sectionIds: string[] = ["home", "about", "services", "how-it-works", "portfolio", "contact"];
     const observers: IntersectionObserver[] = [];
 
     sectionIds.forEach((id) => {
@@ -141,7 +142,7 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 w-full h-[64px] lg:h-[90px] bg-black">
       {/* ── Desktop nav (lg and above) ── */}
       <nav
-        className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center h-[90px] px-[70px]"
+        className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center h-[90px] lg:px-8 xl:px-[70px]"
         aria-label="Main navigation"
       >
         {/* Left column — Logo */}
@@ -158,7 +159,7 @@ export default function Navbar() {
         {/* Center column — Nav links */}
         <ul
           className={cn(
-            "flex flex-row items-stretch h-full gap-[20px]",
+            "flex flex-row items-stretch h-full lg:gap-1 xl:gap-[20px]",
             navFont.className,
           )}
           role="list"
@@ -179,7 +180,7 @@ export default function Navbar() {
               <Link
                 href={href}
                 onClick={() => setActiveLink(href)}
-                className="h-full flex items-center px-8 text-white text-lg font-semibold whitespace-nowrap"
+                className="h-full flex items-center lg:px-3 xl:px-8 text-white text-sm xl:text-lg font-semibold whitespace-nowrap"
               >
                 {label}
               </Link>
