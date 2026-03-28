@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [],
   },
+  async rewrites() {
+    return [
+      { source: "/about", destination: "/" },
+      { source: "/services", destination: "/" },
+      { source: "/how-it-works", destination: "/" },
+      { source: "/portfolio", destination: "/" },
+      { source: "/contact", destination: "/" },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { Island_Moments, Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -20,7 +19,7 @@ const navFont = Montserrat({
   display: "swap",
 });
 
-type NavHref = "#home" | "#about" | "#services" | "#how-it-works" | "#portfolio" | "#contact";
+type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact";
 
 // ── Language Switcher ──────────────────────────────────────────────────────────
 
@@ -101,19 +100,45 @@ function LangSwitcher() {
 export default function Navbar() {
   const { t, locale, setLocale } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState<NavHref>("#home");
+  const [activeLink, setActiveLink] = useState<NavHref>("/");
 
   const navLinksBase = [
-    { label: t.nav.home, href: "#home" as NavHref },
-    { label: t.nav.about, href: "#about" as NavHref },
-    { label: t.nav.services, href: "#services" as NavHref },
-    { label: t.nav.howItWorks, href: "#how-it-works" as NavHref },
-    { label: t.nav.portfolio, href: "#portfolio" as NavHref },
-    { label: t.nav.contact, href: "#contact" as NavHref },
+    { label: t.nav.home, href: "/" as NavHref, id: "home" },
+    { label: t.nav.about, href: "/about" as NavHref, id: "about" },
+    { label: t.nav.services, href: "/services" as NavHref, id: "services" },
+    { label: t.nav.howItWorks, href: "/how-it-works" as NavHref, id: "how-it-works" },
+    { label: t.nav.portfolio, href: "/portfolio" as NavHref, id: "portfolio" },
+    { label: t.nav.contact, href: "/contact" as NavHref, id: "contact" },
   ];
   const isHe = locale === "he";
   const navLinks = isHe ? [...navLinksBase].reverse() : navLinksBase;
   const mobileNavLinks = navLinksBase;
+
+  function withLang(path: string) {
+    return path + window.location.search;
+  }
+
+  function scrollToSection(id: string, href: NavHref) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      window.history.replaceState(null, "", withLang(href));
+      setActiveLink(href);
+    }
+  }
+
+  useEffect(() => {
+    // On initial load, scroll to section matching the current path
+    const path = window.location.pathname;
+    if (path !== "/") {
+      const id = path.replace("/", "");
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "auto" });
+        setActiveLink(path as NavHref);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const sectionIds: string[] = ["home", "about", "services", "how-it-works", "portfolio", "contact"];
@@ -125,8 +150,9 @@ export default function Navbar() {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setActiveLink(`#${id}` as NavHref);
-            window.history.replaceState(null, "", `${window.location.search}#${id}`);
+            const href = id === "home" ? "/" : `/${id}`;
+            setActiveLink(href as NavHref);
+            window.history.replaceState(null, "", withLang(href));
           }
         },
         { threshold: 0.5 }
@@ -147,7 +173,7 @@ export default function Navbar() {
       >
         {/* Left column — Logo */}
         <button
-          onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("#home"); }}
+          onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("/"); window.history.replaceState(null, "", withLang("/")); }}
           className={cn(
             "inline-flex items-center text-white text-[42px] xl:text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start whitespace-nowrap cursor-pointer",
             logoFont.className,
@@ -164,7 +190,7 @@ export default function Navbar() {
           )}
           role="list"
         >
-          {navLinks.map(({ label, href }) => (
+          {navLinks.map(({ label, href, id }) => (
             <li
               key={href}
               className={cn(
@@ -177,13 +203,12 @@ export default function Navbar() {
                   : "after:scale-x-0 hover:after:scale-x-100",
               )}
             >
-              <Link
-                href={href}
-                onClick={() => setActiveLink(href)}
-                className="h-full flex items-center lg:px-3 xl:px-8 text-white text-sm xl:text-lg font-semibold whitespace-nowrap"
+              <button
+                onClick={() => scrollToSection(id, href)}
+                className="h-full flex items-center lg:px-3 xl:px-8 text-white text-sm xl:text-lg font-semibold whitespace-nowrap cursor-pointer"
               >
                 {label}
-              </Link>
+              </button>
             </li>
           ))}
         </ul>
@@ -201,7 +226,7 @@ export default function Navbar() {
           aria-label="Main navigation"
         >
           <button
-            onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("#home"); }}
+            onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("/"); window.history.replaceState(null, "", withLang("/")); }}
             className={cn(
               "text-white text-[2.2rem] leading-none select-none cursor-pointer",
               logoFont.className,
@@ -250,24 +275,23 @@ export default function Navbar() {
             )}
             role="list"
           >
-            {mobileNavLinks.map(({ label, href }) => (
+            {mobileNavLinks.map(({ label, href, id }) => (
               <li key={href}>
-                <Link
-                  href={href}
+                <button
                   className={cn(
-                    "relative inline-block text-white text-base font-bold py-2",
+                    "relative inline-block text-white text-base font-bold py-2 cursor-pointer",
                     "after:content-[''] after:absolute after:-bottom-0 after:h-[3px] after:bg-[#E67E22]",
                     isHe ? "after:right-0" : "after:left-0",
                     "after:transition-all after:duration-300 after:ease-in-out",
                     activeLink === href ? "after:w-full" : "after:w-0",
                   )}
                   onClick={() => {
-                    setActiveLink(href);
+                    scrollToSection(id, href);
                     setMenuOpen(false);
                   }}
                 >
                   {label}
-                </Link>
+                </button>
               </li>
             ))}
 

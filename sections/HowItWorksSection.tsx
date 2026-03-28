@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
 import { Montserrat } from 'next/font/google'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { fadeUp, fadeLeft, fadeRight, viewport } from '@/lib/motion'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -16,6 +18,13 @@ export default function HowItWorksSection() {
   const { locale, t } = useLanguage()
   const isHe = locale === 'he'
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+
+  /*
+   * Direction-aware variants: the steps column is visually on the left in LTR
+   * and on the right in RTL (due to flex-row-reverse). FAQ is the opposite.
+   */
+  const stepsVariant = isHe ? fadeRight : fadeLeft
+  const faqVariant   = isHe ? fadeLeft  : fadeRight
 
   return (
     <section
@@ -33,7 +42,13 @@ export default function HowItWorksSection() {
       <div className="flex-1 flex flex-col px-6 sm:px-10 lg:px-[130px] py-16 lg:py-14">
 
         {/* Section heading */}
-        <div className="text-center mb-12">
+        <motion.div
+          className="text-center mb-12"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+        >
           <h2 className="font-bold text-4xl leading-none">
             <span className="text-white">{t.howItWorks.sectionTitle1} </span>
             <span className="text-brand-orange">{t.howItWorks.sectionTitle2}</span>
@@ -41,7 +56,7 @@ export default function HowItWorksSection() {
           <p className="mt-3 text-sm text-white/50 font-medium">
             {t.howItWorks.subtitle}
           </p>
-        </div>
+        </motion.div>
 
         {/* Two columns */}
         <div
@@ -50,8 +65,15 @@ export default function HowItWorksSection() {
             isHe && 'lg:flex-row-reverse',
           )}
         >
-          {/* LEFT — Steps */}
-          <div className="w-full lg:w-1/2" dir={isHe ? 'rtl' : 'ltr'}>
+          {/* LEFT — Steps: slides in from its visual side */}
+          <motion.div
+            className="w-full lg:w-1/2"
+            dir={isHe ? 'rtl' : 'ltr'}
+            variants={stepsVariant}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewport}
+          >
             {/* Column header */}
             <div className="mb-8">
               <p className="text-white/80 text-xs uppercase tracking-widest font-semibold">
@@ -99,10 +121,17 @@ export default function HowItWorksSection() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* RIGHT — FAQ accordion */}
-          <div className="w-full lg:w-1/2" dir={isHe ? 'rtl' : 'ltr'}>
+          {/* RIGHT — FAQ accordion: slides in from its visual side */}
+          <motion.div
+            className="w-full lg:w-1/2"
+            dir={isHe ? 'rtl' : 'ltr'}
+            variants={faqVariant}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewport}
+          >
             {/* Column header */}
             <div className="mb-8">
               <p className="text-white/80 text-xs uppercase tracking-widest font-semibold">
@@ -157,7 +186,7 @@ export default function HowItWorksSection() {
                 )
               })}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

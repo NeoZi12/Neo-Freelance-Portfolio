@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { EASE, DUR } from "@/lib/motion";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -80,6 +82,15 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
   );
 }
 
+// ── Shared hero transition factory ────────────────────────────────────────────
+
+function heroTransition(delay: number) {
+  return { duration: DUR, ease: EASE, delay };
+}
+
+const heroInitial = { opacity: 0, y: 24 } as const;
+const heroAnimate = { opacity: 1, y: 0 } as const;
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
@@ -111,39 +122,65 @@ export default function HeroSection() {
               className={cn("flex flex-col gap-5", isHe && "text-right")}
               dir={isHe ? "rtl" : "ltr"}
             >
-              <p className="text-2xl lg:text-[28px] font-semibold text-white leading-snug">
+              {/* Greeting — first to appear */}
+              <motion.p
+                className="text-2xl lg:text-[28px] font-semibold text-white leading-snug"
+                initial={heroInitial}
+                animate={heroAnimate}
+                transition={heroTransition(0.15)}
+              >
                 {t.hero.greeting}{" "}
                 <span className="text-[#E67E22]">{t.hero.name}</span>
-              </p>
+              </motion.p>
 
-              <h1 className="text-4xl lg:text-[50px] font-semibold text-white leading-tight">
+              {/* Headline — second */}
+              <motion.h1
+                className="text-4xl lg:text-[50px] font-semibold text-white leading-tight"
+                initial={heroInitial}
+                animate={heroAnimate}
+                transition={heroTransition(0.35)}
+              >
                 {t.hero.headline1}{" "}
                 <span className="text-[#E67E22]">
                   {t.hero.headline2}
                   <br />
                   {t.hero.headline3}
                 </span>
-              </h1>
+              </motion.h1>
 
-              <p className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[420px] leading-relaxed">
+              {/* Description — third */}
+              <motion.p
+                className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[420px] leading-relaxed"
+                initial={heroInitial}
+                animate={heroAnimate}
+                transition={heroTransition(0.55)}
+              >
                 {isHe ? (
                   <>
                     אני מעצב ובונה{" "}
                     <span className="text-[#E67E22]">אתרים</span>{" "}
-                    נקיים ורספונסיביים לעסקים, מותגים ופרויקטים אישיים — ויוצר
-                    חוויות דיגיטליות שהן ברורות, מודרניות וקלות לשימוש.
+                    נקיים ומודרניים שעוזרים לעסקים{" "}
+                    <span className="text-[#E67E22]">להפוך מבקרים ללקוחות</span>
+                    .
                   </>
                 ) : (
                   <>
-                    I design and build clean, responsive{" "}
-                    <span className="text-[#E67E22]">websites</span> for
-                    businesses, brands, and personal projects, creating digital
-                    experiences that are clear, modern, and easy to use.
+                    I design and build clean, modern{" "}
+                    <span className="text-[#E67E22]">websites</span>{" "}
+                    that help businesses{" "}
+                    <span className="text-[#E67E22]">turn visitors into clients</span>
+                    .
                   </>
                 )}
-              </p>
+              </motion.p>
 
-              <div className="flex flex-row flex-wrap gap-5 mt-2">
+              {/* CTAs — last */}
+              <motion.div
+                className="flex flex-row flex-wrap gap-5 mt-2"
+                initial={heroInitial}
+                animate={heroAnimate}
+                transition={heroTransition(0.72)}
+              >
                 <a
                   href="#portfolio"
                   className="inline-flex items-center justify-center bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
@@ -156,11 +193,16 @@ export default function HeroSection() {
                 >
                   {t.hero.cta2}
                 </a>
-              </div>
+              </motion.div>
             </div>
 
-            {/* ── Right column: Avatar ── */}
-            <div className="flex items-center justify-center">
+            {/* ── Right column: Avatar — concurrent with headline ── */}
+            <motion.div
+              className="flex items-center justify-center"
+              initial={heroInitial}
+              animate={heroAnimate}
+              transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
+            >
               {/* Mobile (< lg): 280px circle */}
               <div className="lg:hidden">
                 <AvatarCircle circle={280} popOut={58} />
@@ -169,7 +211,7 @@ export default function HeroSection() {
               <div className="hidden lg:block">
                 <AvatarCircle circle={340} popOut={70} />
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>

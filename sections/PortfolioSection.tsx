@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { Montserrat } from "next/font/google";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fadeUp, stagger, viewport } from "@/lib/motion";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -81,8 +83,13 @@ function ProjectCard({
   onClick: (p: Project) => void;
 }) {
   return (
+    /*
+     * `group` lives here so that group-hover:scale-105 on the image works.
+     * The motion.div wrapper (in the parent) handles scroll animation only —
+     * it has no hover transform, so CSS group-hover is unaffected.
+     */
     <div
-      className="group relative cursor-pointer overflow-hidden rounded-2xl h-[220px] sm:h-[260px] lg:h-[280px] ring-2 ring-brand-orange shadow-[0_8px_32px_rgba(230,126,34,0.45)]"
+      className="relative cursor-pointer overflow-hidden rounded-2xl h-[220px] sm:h-[260px] lg:h-[280px] ring-2 ring-brand-orange shadow-[0_8px_32px_rgba(230,126,34,0.45)]"
       onClick={() => onClick(project)}
     >
       <div className="relative w-full h-full bg-gray-800">
@@ -301,7 +308,13 @@ export default function PortfolioSection() {
 
       <div className="flex-1 flex flex-col gap-8 px-6 py-10 lg:grid lg:grid-rows-[1fr_auto_1fr] lg:gap-0 lg:py-0 lg:pb-6">
         {/* Title */}
-        <div className="flex items-center justify-center lg:self-center">
+        <motion.div
+          className="flex items-center justify-center lg:self-center"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+        >
           <h2
             className="text-white font-bold text-3xl lg:text-[36px] leading-none text-center"
             dir={isHe ? "rtl" : "ltr"}
@@ -309,20 +322,36 @@ export default function PortfolioSection() {
             <span className="text-white">{t.portfolio.headingRegular} </span>
             <span className="text-brand-orange">{t.portfolio.headingOrange}</span>
           </h2>
-        </div>
+        </motion.div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-x-8 lg:gap-y-5 w-full max-w-[1200px] mx-auto">
+        {/* Cards grid — stagger container */}
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-x-8 lg:gap-y-5 w-full max-w-[1200px] mx-auto"
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+        >
           {projects.map((project) => (
-            <ProjectCard
+            /*
+             * motion.div wrapper: handles the scroll-in animation.
+             * `group` is on the inner div inside ProjectCard so that
+             * group-hover:scale-105 on the image still works correctly.
+             */
+            <motion.div
               key={project.id}
-              project={project}
-              viewProjectLabel={t.portfolio.viewProject}
-              isHe={isHe}
-              onClick={setSelectedProject}
-            />
+              variants={fadeUp}
+              className="group"
+            >
+              <ProjectCard
+                project={project}
+                viewProjectLabel={t.portfolio.viewProject}
+                isHe={isHe}
+                onClick={setSelectedProject}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="hidden lg:block" />
       </div>

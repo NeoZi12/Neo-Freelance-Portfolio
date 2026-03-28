@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Icon } from "@iconify/react";
 import { Montserrat } from "next/font/google";
+import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fadeLeft, fadeRight, viewport } from "@/lib/motion";
 
 const COOLDOWN_MS = 60_000;
 const COOLDOWN_KEY = "contact_last_sent";
@@ -155,9 +157,16 @@ export default function ContactSection() {
   const socialLinks = socialMeta.map((s) => ({
     ...s,
     sublabel: "fixedSublabel" in s
-      ? s.fixedSublabel                                          // WhatsApp / Email — always show
-      : isHe ? null : tc.social[s.platform as keyof typeof tc.social], // LinkedIn / GitHub — hide in Hebrew
+      ? s.fixedSublabel
+      : isHe ? null : tc.social[s.platform as keyof typeof tc.social],
   }));
+
+  /*
+   * Direction-aware variants: left column fades from its visual side,
+   * right column fades from its visual side. Swapped for RTL (Hebrew).
+   */
+  const leftColVariant  = isHe ? fadeRight : fadeLeft;
+  const rightColVariant = isHe ? fadeLeft  : fadeRight;
 
   return (
     <section
@@ -174,7 +183,13 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center w-full max-w-[1200px] mx-auto">
 
           {/* ── Left column ── */}
-          <div className={cn("flex flex-col gap-8", isHe && "items-end")}>
+          <motion.div
+            className={cn("flex flex-col gap-8", isHe && "items-end")}
+            variants={leftColVariant}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewport}
+          >
             {/* Heading block */}
             <div
               className={cn("w-full", isHe && "text-right")}
@@ -206,10 +221,16 @@ export default function ContactSection() {
                 />
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* ── Right column (form) ── */}
-          <div dir={isHe ? "rtl" : "ltr"}>
+          <motion.div
+            dir={isHe ? "rtl" : "ltr"}
+            variants={rightColVariant}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewport}
+          >
             <h3 className={cn("text-white font-bold text-xl mb-8", isHe && "text-right")}>
               {tc.formHeading}
             </h3>
@@ -330,7 +351,7 @@ export default function ContactSection() {
                 )}
               </div>
             </form>
-          </div>
+          </motion.div>
 
         </div>
       </div>

@@ -2,8 +2,10 @@
 
 import { Montserrat } from "next/font/google";
 import { Icon } from "@iconify/react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fadeUp, viewport } from "@/lib/motion";
 
 const bodyFont = Montserrat({
   weight: ["400", "500"],
@@ -20,8 +22,13 @@ export default function Footer() {
       {/* Orange gradient divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-brand-orange/50 to-transparent" />
 
-      <div className="relative flex items-center justify-center px-6 sm:px-10 lg:px-[130px] py-8">
-
+      <motion.div
+        className="relative flex items-center justify-center px-6 sm:px-10 lg:px-[130px] py-8"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={viewport}
+      >
         {/* Copyright — centered */}
         <p className="text-xs tracking-wide">
           <span className="text-white">{t.footer.copyrightPrefix}</span>
@@ -68,8 +75,7 @@ export default function Footer() {
             </span>
           )}
         </button>
-
-      </div>
+      </motion.div>
     </footer>
   );
 }

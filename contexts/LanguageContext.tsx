@@ -39,7 +39,9 @@ function LanguageProviderInner({ children }: { children: ReactNode }) {
   }, [searchParams]);
 
   function setLocale(next: Locale) {
-    router.push(`?lang=${next}`, { scroll: false });
+    const params = new URLSearchParams(window.location.search);
+    params.set("lang", next);
+    router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
   }
 
   return (

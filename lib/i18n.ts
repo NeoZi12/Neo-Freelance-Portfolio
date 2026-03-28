@@ -17,7 +17,7 @@ export const translations = {
       headline2: "Web",
       headline3: "Developer",
       description:
-        "I design and build clean, responsive websites for businesses, brands, and personal projects, creating digital experiences that are clear, modern, and easy to use.",
+        "I design and build clean, modern websites that help businesses turn visitors into clients.",
       cta1: "My Work",
       cta2: "Contact Me",
     },
@@ -198,7 +198,7 @@ export const translations = {
       headline2: "אתרים",
       headline3: "פרילנסר",
       description:
-        "אני מעצב ובונה אתרים נקיים ורספונסיביים לעסקים, מותגים ופרויקטים אישיים — ויוצר חוויות דיגיטליות שהן ברורות, מודרניות וקלות לשימוש.",
+        "אני מעצב ובונה אתרים נקיים ומודרניים שעוזרים לעסקים להפוך מבקרים ללקוחות.",
       cta1: "העבודות שלי",
       cta2: "יצירת קשר",
     },

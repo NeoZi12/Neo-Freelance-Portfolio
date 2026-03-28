@@ -3,9 +3,11 @@
 import React from "react";
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
+import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fadeUp, fadeLeft, stagger, staggerFast, viewport } from "@/lib/motion";
 
 const skills = [
   { name: "JavaScript", icon: "logos:javascript" },
@@ -110,7 +112,14 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-10 items-center w-full">
 
           {/* ── Left on desktop (photo) — below text on mobile ── */}
-          <div className="flex items-center justify-center order-2 lg:order-1">
+          {/* Fades in from the left — it IS the left column */}
+          <motion.div
+            className="flex items-center justify-center order-2 lg:order-1"
+            variants={fadeLeft}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewport}
+          >
             <div className="lg:hidden">
               <PhotoFrame
                 photoW={310}
@@ -131,22 +140,33 @@ export default function AboutSection() {
                 offsetY={29}
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* ── Right on desktop (text) — above photo on mobile ── */}
-          <div
+          {/* Stagger container: each top-level child fades up in sequence */}
+          <motion.div
             className={cn(
               "flex flex-col gap-4 order-1 lg:order-2 lg:px-[50px] [filter:drop-shadow(0px_4px_4px_rgba(0,0,0,0.25))]",
               isHe && "text-right",
             )}
             dir={isHe ? "rtl" : "ltr"}
+            variants={stagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewport}
           >
-            <h2 className="text-4xl lg:text-[50px] font-semibold text-white leading-tight">
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl lg:text-[50px] font-semibold text-white leading-tight"
+            >
               {t.about.title1}{" "}
               <span className="text-[#E67E22]">{t.about.title2}</span>
-            </h2>
+            </motion.h2>
 
-            <div className="flex flex-col gap-3 max-w-[484px]">
+            <motion.div
+              variants={fadeUp}
+              className="flex flex-col gap-3 max-w-[484px]"
+            >
               <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
                 {withHighlights(t.about.description[0], t.about.p1Highlights)}
               </p>
@@ -156,33 +176,40 @@ export default function AboutSection() {
               <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
                 {withHighlights(t.about.description[2], [t.about.p3Highlight])}
               </p>
-            </div>
+            </motion.div>
 
-            <a
+            <motion.a
+              variants={fadeUp}
               href="#contact"
               className="inline-flex items-center justify-center self-start border-2 border-[#E67E22] text-white font-semibold text-lg rounded-[18px] px-[30px] py-[14px] whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
             >
               {t.about.cta}
-            </a>
+            </motion.a>
 
-            {/* ── Tech stack ── */}
-            <div className="flex flex-col gap-3 pt-2">
-              <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">
+            {/* ── Tech stack — stagger the label then cascade badges ── */}
+            <motion.div variants={staggerFast} className="flex flex-col gap-3 pt-2">
+              <motion.span
+                variants={fadeUp}
+                className="text-white/40 text-xs font-semibold uppercase tracking-widest"
+              >
                 {t.about.techLabel}
-              </span>
-              <div className="flex flex-wrap gap-2">
+              </motion.span>
+
+              {/* Badges grid: each badge gets its own stagger */}
+              <motion.div variants={staggerFast} className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <div
-                    key={skill.name}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-white/70 text-xs font-medium hover:shadow-[0_0_12px_rgba(230,126,34,0.45)] hover:scale-105 hover:border-brand-orange/30 transition-all duration-200 cursor-default"
-                  >
-                    <Icon icon={skill.icon} width={16} height={16} />
-                    {skill.name}
-                  </div>
+                  /* Wrapper handles the scroll animation; inner div keeps CSS hover intact */
+                  <motion.div key={skill.name} variants={fadeUp}>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-white/70 text-xs font-medium hover:shadow-[0_0_12px_rgba(230,126,34,0.45)] hover:scale-105 hover:border-brand-orange/30 transition-all duration-200 cursor-default">
+                      <Icon icon={skill.icon} width={16} height={16} />
+                      {skill.name}
+                    </div>
+                  </motion.div>
                 ))}
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+
+          </motion.div>
 
         </div>
       </div>
