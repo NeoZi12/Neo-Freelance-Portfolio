@@ -78,7 +78,7 @@ export default function ServicesSection() {
              * would override Tailwind hover:scale on the same element).
              */
             <motion.div
-              key={service.title}
+              key={i}
               variants={fadeUp}
               className="w-full max-w-[300px] lg:w-[300px]"
             >
