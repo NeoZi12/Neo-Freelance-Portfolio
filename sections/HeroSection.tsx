@@ -134,8 +134,6 @@ export default function HeroSection() {
                 {t.hero.greeting}{" "}
                 <span className="text-[#E67E22]">{t.hero.name}</span>
                 {t.hero.greetingRole}
-                <br />
-                <span className="text-[#E67E22]">{t.hero.greetingCta}</span>
               </motion.p>
 
               {/* Headline — second */}
@@ -147,6 +145,8 @@ export default function HeroSection() {
               >
                 {isHe ? (
                   <>
+                    <span className="text-xl lg:text-[26px] font-medium">{t.hero.greetingCta}</span>
+                    <br />
                     אתרים ש
                     <span className="text-[#E67E22]">מביאים</span>{" "}
                     <span className="text-[#E67E22]">לקוחות.</span>
@@ -157,6 +157,8 @@ export default function HeroSection() {
                   </>
                 ) : (
                   <>
+                    <span className="text-xl lg:text-[26px] font-medium">{t.hero.greetingCta}</span>
+                    <br />
                     Websites that{" "}
                     <span className="text-[#E67E22]">bring</span>{" "}
                     <span className="text-[#E67E22]">clients.</span>
