@@ -104,8 +104,8 @@ export default function Navbar() {
 
   const navLinksBase = [
     { label: t.nav.home, href: "/" as NavHref, id: "home" },
-    { label: t.nav.about, href: "/about" as NavHref, id: "about" },
     { label: t.nav.services, href: "/services" as NavHref, id: "services" },
+    { label: t.nav.about, href: "/about" as NavHref, id: "about" },
     { label: t.nav.howItWorks, href: "/how-it-works" as NavHref, id: "how-it-works" },
     { label: t.nav.portfolio, href: "/portfolio" as NavHref, id: "portfolio" },
     { label: t.nav.contact, href: "/contact" as NavHref, id: "contact" },
@@ -141,7 +141,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const sectionIds: string[] = ["home", "about", "services", "how-it-works", "portfolio", "contact"];
+    const sectionIds: string[] = ["home", "services", "about", "how-it-works", "portfolio", "contact"];
     const observers: IntersectionObserver[] = [];
 
     sectionIds.forEach((id) => {

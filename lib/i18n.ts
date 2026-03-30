@@ -11,53 +11,59 @@ export const translations = {
       contact: "Contact",
     },
     hero: {
-      greeting: "Hi, i'm",
+      greeting: "Hi, I'm",
       name: "Neo",
-      headline1: "Freelance",
-      headline2: "Web",
-      headline3: "Developer",
-      description:
-        "I design and build clean, modern websites that help businesses turn visitors into clients.",
-      cta1: "My Work",
-      cta2: "Contact Me",
+      greetingRole: " — Freelance Web Developer.",
+      greetingCta: "I build:",
+      scrollCta: "What I can do for you",
+      cta1: "View My Work",
+      cta2: "Get Your Website",
     },
     about: {
       title1: "About",
       title2: "Me",
-      description: [
-        "I'm a 23-year-old software engineer and freelance web developer who cares about building websites that feel alive — not just something that works.",
-        "I see every website as a story. It should reflect who you are, what you do, and how you want people to feel when they land on it. That's what I focus on — creating something that actually connects with people, not just another generic site.",
-        "My goal is simple: build websites that look great, feel natural to use, and represent your brand in the best way possible.",
+      description:
+        "I'm Neo, a software engineer and freelance web developer. I'm passionate about creating websites that stand out, tell a story, and actually connect with people — not just something that works.",
+      descHighlights: ["Neo", "stand out", "connect"],
+      whyTitle1: "Why",
+      whyTitle2: "Work With Me",
+      bullets: [
+        "Strong and clear online presence",
+        "Design that truly represents your business",
+        "More clients through a website that converts",
+        "Fully-custom system that makes your business efficient and accessible",
       ],
-      cta: "Contact Me",
       techLabel: "Technologies I work with",
-      p1Highlights: ["freelance web developer", "websites that feel alive"],
-      p3Highlight: "represent your brand",
     },
     services: {
-      headingRegular: "My",
-      headingOrange: "Services",
-      cta: "Contact Me",
-      items: [
-        {
-          title: "Portfolio Page",
-          description:
-            "Modern portfolio websites for freelancers and individuals, designed to present your work clearly and help you stand out online.",
-          highlights: ["for freelancers and individuals", "present your work"],
-        },
-        {
-          title: "Landing Page",
-          description:
-            "Clean landing pages for businesses, designed to strengthen your digital footprint and present your business clearly to potential customers.",
-          highlights: ["for businesses", "present your business"],
-        },
-        {
-          title: "Full-Stack Website",
-          description:
-            "Custom websites for businesses, built with the features, data, and functionality needed to create a fully functioning online experience.",
-          highlights: ["for businesses", "data", "fully functioning"],
-        },
-      ],
+      titleOrange: "How",
+      titleWhite: "I Help Businesses Grow",
+      left: {
+        eyebrow: "Growth Oriented",
+        heading: "Websites that bring clients",
+        description:
+          "For small businesses and professionals who want to stand out, build a strong online presence, and turn visitors into real clients.",
+        items: [
+          "Business websites",
+          "Landing pages",
+          "Portfolio websites",
+          "Marketing sites",
+        ],
+        cta: "Get Your Website",
+      },
+      right: {
+        eyebrow: "Operational Excellence",
+        heading: "Systems that run your business",
+        description:
+          "For businesses that want to scale online, automate processes, and make their operations more efficient and accessible.",
+        items: [
+          "Booking systems",
+          "Payments & automation",
+          "Client dashboards",
+          "Fully-customizable systems",
+        ],
+        cta: "Get Your Custom System",
+      },
     },
     howItWorks: {
       sectionTitle1: "How It",
@@ -194,51 +200,58 @@ export const translations = {
     hero: {
       greeting: "היי, אני",
       name: "ניאו",
-      headline1: "מפתח",
-      headline2: "אתרים",
-      headline3: "פרילנסר",
-      description:
-        "אני מעצב ובונה אתרים נקיים ומודרניים שעוזרים לעסקים להפוך מבקרים ללקוחות.",
-      cta1: "העבודות שלי",
-      cta2: "יצירת קשר",
+      greetingRole: " — מפתח אתרים פרילנסר.",
+      greetingCta: "אני בונה:",
+      scrollCta: "מה אני יכול לעשות עבורך",
+      cta1: "צפה בעבודות שלי",
+      cta2: "קבל את האתר שלך",
     },
     about: {
       title1: "קצת",
       title2: "עליי",
-      description: [
-        "אני בוגר הנדסת תוכנה בן 23 ומפתח אתרים פרילנסר שאכפת לו לבנות אתרים שמרגישים חיים — לא רק משהו שעובד.",
-        "אני רואה כל אתר כסיפור. הוא צריך לשקף מי אתה, מה אתה עושה, ואיך אתה רוצה שאנשים ירגישו כשהם נוחתים עליו. על זה אני מתמקד — ליצור משהו שבאמת מתחבר לאנשים, לא עוד אתר גנרי.",
-        "המטרה שלי פשוטה: לבנות אתרים שנראים מעולה, מרגישים טבעיים לשימוש, ומייצגים את המותג שלך בצורה הטובה ביותר.",
+      description:
+        "אני ניאו, בוגר הנדסת תוכנה ומפתח אתרים פרילנסר. אני אוהב ליצור אתרים שבולטים, מספרים סיפור, ומתחברים עם אנשים — לא רק משהו שעובד.",
+      descHighlights: ["ניאו", "שבולטים", "מתחברים"],
+      whyTitle1: "למה",
+      whyTitle2: "לעבוד איתי",
+      bullets: [
+        "נוכחות דיגיטלית חזקה וברורה",
+        "עיצוב שמייצג באמת את העסק שלך",
+        "יותר לקוחות דרך אתר שממיר",
+        "מערכת מותאמת אישית שהופכת את העסק שלך ליעיל ונגיש",
       ],
-      cta: "יצירת קשר",
       techLabel: "טכנולוגיות שאני עובד איתן",
-      p1Highlights: ["מפתח אתרים פרילנסר", "אתרים שמרגישים חיים"],
-      p3Highlight: "מייצגים את המותג שלך",
     },
     services: {
-      headingRegular: "מה אני",
-      headingOrange: "מציע",
-      cta: "יצירת קשר",
-      items: [
-        {
-          title: "דף פורטפוליו",
-          description:
-            "אתרי פורטפוליו מודרניים לפרילנסרים ואנשים פרטיים, שנועדו להציג את העבודות שלך בצורה ברורה ולעזור לך לבלוט ברשת.",
-          highlights: ["לפרילנסרים ואנשים פרטיים", "להציג את העבודות שלך"],
-        },
-        {
-          title: "דף נחיתה",
-          description:
-            "דפי נחיתה נקיים לעסקים, שנועדו לחזק את הנוכחות הדיגיטלית שלך ולהציג את העסק שלך בצורה ברורה ללקוחות פוטנציאליים.",
-          highlights: ["לעסקים", "להציג את העסק שלך"],
-        },
-        {
-          title: "אתר פול-סטאק",
-          description:
-            "בניית אתרים מותאמים אישית לעסקים, הכוללים עבודה עם נתונים ומערכת מתפקדת, ליצירת חוויית שימוש מלאה ואפקטיבית.",
-          highlights: ["לעסקים", "נתונים", "מלאה ואפקטיבית"],
-        },
-      ],
+      // TODO: update with client-provided Hebrew translations
+      titleOrange: "How",
+      titleWhite: "I Help Businesses Grow",
+      left: {
+        eyebrow: "Growth Oriented",
+        heading: "Websites that bring clients",
+        description:
+          "For small businesses and professionals who want to stand out, build a strong online presence, and turn visitors into real clients.",
+        items: [
+          "Business websites",
+          "Landing pages",
+          "Portfolio websites",
+          "Marketing sites",
+        ],
+        cta: "Get Your Website",
+      },
+      right: {
+        eyebrow: "Operational Excellence",
+        heading: "Systems that run your business",
+        description:
+          "For businesses that want to scale online, automate processes, and make their operations more efficient and accessible.",
+        items: [
+          "Booking systems",
+          "Payments & automation",
+          "Client dashboards",
+          "Fully-customizable systems",
+        ],
+        cta: "Get Your Custom System",
+      },
     },
     howItWorks: {
       sectionTitle1: "איך זה",

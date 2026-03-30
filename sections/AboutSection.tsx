@@ -9,6 +9,13 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeUp, fadeLeft, stagger, staggerFast, viewport } from "@/lib/motion";
 
+const whyIcons: string[] = [
+  "tabler:world",
+  "tabler:palette",
+  "tabler:trending-up",
+  "tabler:adjustments-horizontal",
+];
+
 const skills = [
   { name: "JavaScript", icon: "logos:javascript" },
   { name: "TypeScript", icon: "logos:typescript-icon" },
@@ -163,28 +170,41 @@ export default function AboutSection() {
               <span className="text-[#E67E22]">{t.about.title2}</span>
             </motion.h2>
 
-            <motion.div
+            <motion.p
               variants={fadeUp}
-              className="flex flex-col gap-3 max-w-[484px]"
+              className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[484px] leading-relaxed"
             >
-              <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
-                {withHighlights(t.about.description[0], t.about.p1Highlights)}
-              </p>
-              <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
-                {t.about.description[1]}
-              </p>
-              <p className="text-sm lg:text-[15px] font-medium text-white/90 leading-relaxed">
-                {withHighlights(t.about.description[2], [t.about.p3Highlight])}
-              </p>
-            </motion.div>
+              {withHighlights(t.about.description, t.about.descHighlights)}
+            </motion.p>
 
-            <motion.a
-              variants={fadeUp}
-              href="#contact"
-              className="inline-flex items-center justify-center self-start border-2 border-[#E67E22] text-white font-semibold text-lg rounded-[18px] px-[30px] py-[14px] whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
-            >
-              {t.about.cta}
-            </motion.a>
+            <motion.div variants={stagger} className="flex flex-col gap-2.5 max-w-[484px]">
+              <motion.h3
+                variants={fadeUp}
+                className="text-xl lg:text-[22px] font-semibold text-white mb-0.5"
+              >
+                <span className="text-[#E67E22]">{t.about.whyTitle1}</span>{" "}
+                {t.about.whyTitle2}
+              </motion.h3>
+              {t.about.bullets.map((bullet, i) => (
+                <motion.div
+                  key={i}
+                  variants={fadeUp}
+                  className="flex items-center gap-3.5 px-4 py-3 rounded-xl border border-white/10 bg-white/5 [box-shadow:inset_0_0_0_1px_rgba(230,126,34,0.15)]"
+                >
+                  <div className="flex items-center justify-center w-8 h-8 shrink-0">
+                    <Icon
+                      icon={whyIcons[i] ?? ""}
+                      width={17}
+                      height={17}
+                      className="text-[#E67E22]"
+                    />
+                  </div>
+                  <span className="text-sm lg:text-[15px] text-white/90 font-medium leading-snug">
+                    {bullet}
+                  </span>
+                </motion.div>
+              ))}
+            </motion.div>
 
             {/* ── Tech stack — stagger the label then cascade badges ── */}
             <motion.div variants={staggerFast} className="flex flex-col gap-3 pt-2">

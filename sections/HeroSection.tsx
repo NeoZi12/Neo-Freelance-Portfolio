@@ -19,7 +19,10 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
   const portraitH = Math.round(circle * (1024 / 768));
 
   return (
-    <div className="relative" style={{ width: circle, height: circle + popOut }}>
+    <div
+      className="relative"
+      style={{ width: circle, height: circle + popOut }}
+    >
       {/* Glow — radiates from the circle area */}
       <div
         className="absolute left-0 right-0 bottom-0 rounded-full"
@@ -101,7 +104,7 @@ export default function HeroSection() {
     <section
       id="home"
       className={cn(
-        "relative min-h-[100dvh] lg:h-[100dvh] w-full lg:overflow-hidden scroll-mt-16 lg:scroll-mt-0",
+        "relative h-[100dvh] w-full overflow-hidden scroll-mt-0",
         "bg-[url('/images/orange-mountains.jpg')] bg-cover bg-center bg-no-repeat",
         montserrat.className,
       )}
@@ -116,7 +119,6 @@ export default function HeroSection() {
         {/* Content area */}
         <div className="flex-1 flex items-start lg:items-center px-6 sm:px-10 lg:px-[60px] xl:px-[130px] py-4">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_480px] gap-4 lg:gap-14 xl:gap-20 items-center w-full">
-
             {/* ── Left column: Text ── */}
             <div
               className={cn("flex flex-col gap-5", isHe && "text-right")}
@@ -131,6 +133,9 @@ export default function HeroSection() {
               >
                 {t.hero.greeting}{" "}
                 <span className="text-[#E67E22]">{t.hero.name}</span>
+                {t.hero.greetingRole}
+                <br />
+                <span className="text-[#E67E22]">{t.hero.greetingCta}</span>
               </motion.p>
 
               {/* Headline — second */}
@@ -140,12 +145,27 @@ export default function HeroSection() {
                 animate={heroAnimate}
                 transition={heroTransition(0.35)}
               >
-                {t.hero.headline1}{" "}
-                <span className="text-[#E67E22]">
-                  {t.hero.headline2}
-                  <br />
-                  {t.hero.headline3}
-                </span>
+                {isHe ? (
+                  <>
+                    אתרים ש
+                    <span className="text-[#E67E22]">מביאים</span>{" "}
+                    <span className="text-[#E67E22]">לקוחות.</span>
+                    <br />
+                    מערכות ש
+                    <span className="text-[#E67E22]">מנהלות</span>{" "}
+                    <span className="text-[#E67E22]">אותם.</span>
+                  </>
+                ) : (
+                  <>
+                    Websites that{" "}
+                    <span className="text-[#E67E22]">bring</span>{" "}
+                    <span className="text-[#E67E22]">clients.</span>
+                    <br />
+                    Systems that{" "}
+                    <span className="text-[#E67E22]">manage</span>{" "}
+                    <span className="text-[#E67E22]">them.</span>
+                  </>
+                )}
               </motion.h1>
 
               {/* Description — third */}
@@ -157,19 +177,23 @@ export default function HeroSection() {
               >
                 {isHe ? (
                   <>
-                    אני מעצב ובונה{" "}
-                    <span className="text-[#E67E22]">אתרים</span>{" "}
-                    נקיים ומודרניים שעוזרים לעסקים{" "}
-                    <span className="text-[#E67E22]">להפוך מבקרים ללקוחות</span>
-                    .
+                    אני בונה{" "}
+                    <span className="text-[#E67E22]">דפי נחיתה</span>{" "}
+                    שמביאים לך לקוחות, ו
+                    <span className="text-[#E67E22]">מערכות מותאמות אישית</span>{" "}
+                    שעוזרות לך לנהל ו
+                    <span className="text-[#E67E22]">לתפעל את העסק שלך</span>{" "}
+                    אונליין.
                   </>
                 ) : (
                   <>
-                    I design and build clean, modern{" "}
-                    <span className="text-[#E67E22]">websites</span>{" "}
-                    that help businesses{" "}
-                    <span className="text-[#E67E22]">turn visitors into clients</span>
-                    .
+                    I build{" "}
+                    <span className="text-[#E67E22]">landing pages</span> that
+                    bring you clients, and{" "}
+                    <span className="text-[#E67E22]">custom systems</span> that
+                    help you manage and{" "}
+                    <span className="text-[#E67E22]">run your business</span>{" "}
+                    online.
                   </>
                 )}
               </motion.p>
@@ -203,19 +227,51 @@ export default function HeroSection() {
               animate={heroAnimate}
               transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
             >
-              {/* Mobile (< lg): 280px circle */}
+              {/* Mobile (< lg): 220px circle */}
               <div className="lg:hidden">
-                <AvatarCircle circle={280} popOut={58} />
+                <AvatarCircle circle={220} popOut={44} />
               </div>
               {/* Desktop (lg+): 340px */}
               <div className="hidden lg:block">
                 <AvatarCircle circle={340} popOut={70} />
               </div>
             </motion.div>
-
           </div>
         </div>
       </div>
+
+      {/* Scroll indicator — rendered after content div so it always paints on top */}
+      <motion.div
+        className="absolute bottom-8 sm:bottom-10 inset-x-0 flex flex-col items-center gap-2.5 z-20 pointer-events-none"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: DUR, ease: EASE, delay: 0.9 }}
+      >
+        <p className="text-white/60 text-[11px] font-medium tracking-[0.18em] uppercase select-none">
+          {t.hero.scrollCta}
+        </p>
+        <motion.a
+          href="#services"
+          className="pointer-events-auto w-11 h-11 rounded-full border-2 border-[#E67E22] flex items-center justify-center text-[#E67E22] hover:bg-[#E67E22]/10 transition-colors duration-200"
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          aria-label="Scroll to services"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="12" y1="4" x2="12" y2="18" />
+            <polyline points="6 12 12 19 18 12" />
+          </svg>
+        </motion.a>
+      </motion.div>
     </section>
   );
 }
