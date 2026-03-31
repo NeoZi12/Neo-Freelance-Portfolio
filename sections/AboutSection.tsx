@@ -9,13 +9,6 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeUp, fadeLeft, stagger, staggerFast, viewport } from "@/lib/motion";
 
-const whyIcons: string[] = [
-  "tabler:world",
-  "tabler:palette",
-  "tabler:trending-up",
-  "tabler:adjustments-horizontal",
-];
-
 const skills = [
   { name: "JavaScript", icon: "logos:javascript" },
   { name: "TypeScript", icon: "logos:typescript-icon" },
@@ -69,10 +62,10 @@ function PhotoFrame({
         style={{ width: photoW, height: photoH }}
       >
         <Image
-          src="/images/about-pic.jpeg"
+          src="/images/about-pic.jpg"
           alt="Neo Zino – Freelance Web Developer"
           fill
-          className="object-cover"
+          className="object-cover object-top"
         />
       </div>
     </div>
@@ -117,7 +110,6 @@ export default function AboutSection() {
 
       <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-[130px] py-16 lg:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-10 items-center w-full">
-
           {/* ── Left on desktop (photo) — below text on mobile ── */}
           {/* Fades in from the left — it IS the left column */}
           <motion.div
@@ -177,37 +169,11 @@ export default function AboutSection() {
               {withHighlights(t.about.description, t.about.descHighlights)}
             </motion.p>
 
-            <motion.div variants={stagger} className="flex flex-col gap-2.5 max-w-[484px]">
-              <motion.h3
-                variants={fadeUp}
-                className="text-xl lg:text-[22px] font-semibold text-white mb-0.5"
-              >
-                <span className="text-[#E67E22]">{t.about.whyTitle1}</span>{" "}
-                {t.about.whyTitle2}
-              </motion.h3>
-              {t.about.bullets.map((bullet, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeUp}
-                  className="flex items-center gap-3.5 px-4 py-3 rounded-xl border border-white/10 bg-white/5 [box-shadow:inset_0_0_0_1px_rgba(230,126,34,0.15)]"
-                >
-                  <div className="flex items-center justify-center w-8 h-8 shrink-0">
-                    <Icon
-                      icon={whyIcons[i] ?? ""}
-                      width={17}
-                      height={17}
-                      className="text-[#E67E22]"
-                    />
-                  </div>
-                  <span className="text-sm lg:text-[15px] text-white/90 font-medium leading-snug">
-                    {bullet}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
-
             {/* ── Tech stack — stagger the label then cascade badges ── */}
-            <motion.div variants={staggerFast} className="flex flex-col gap-3 pt-2">
+            <motion.div
+              variants={staggerFast}
+              className="flex flex-col gap-3 pt-2"
+            >
               <motion.span
                 variants={fadeUp}
                 className="text-white/40 text-xs font-semibold uppercase tracking-widest"
@@ -216,7 +182,10 @@ export default function AboutSection() {
               </motion.span>
 
               {/* Badges grid: each badge gets its own stagger */}
-              <motion.div variants={staggerFast} className="flex flex-wrap gap-2">
+              <motion.div
+                variants={staggerFast}
+                className="flex flex-wrap gap-2"
+              >
                 {skills.map((skill) => (
                   /* Wrapper handles the scroll animation; inner div keeps CSS hover intact */
                   <motion.div key={skill.name} variants={fadeUp}>
@@ -228,9 +197,7 @@ export default function AboutSection() {
                 ))}
               </motion.div>
             </motion.div>
-
           </motion.div>
-
         </div>
       </div>
     </section>

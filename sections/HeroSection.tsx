@@ -104,7 +104,7 @@ export default function HeroSection() {
     <section
       id="home"
       className={cn(
-        "relative h-[100dvh] w-full overflow-hidden scroll-mt-0",
+        "relative min-h-[100dvh] w-full scroll-mt-0",
         "bg-[url('/images/orange-mountains.jpg')] bg-cover bg-center bg-no-repeat",
         montserrat.className,
       )}
@@ -112,7 +112,7 @@ export default function HeroSection() {
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/68 pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col min-h-[100dvh]">
         {/* Spacer matching the fixed navbar height */}
         <div className="h-[64px] lg:h-[90px] shrink-0" />
 
@@ -145,26 +145,20 @@ export default function HeroSection() {
               >
                 {isHe ? (
                   <>
-                    <span className="text-xl lg:text-[26px] font-medium">{t.hero.greetingCta}</span>
-                    <br />
-                    אתרים ש
-                    <span className="text-[#E67E22]">מביאים</span>{" "}
+                    אתרים ש<span className="text-[#E67E22]">מביאים</span>{" "}
                     <span className="text-[#E67E22]">לקוחות.</span>
                     <br />
-                    מערכות ש
-                    <span className="text-[#E67E22]">מנהלות</span>{" "}
+                    מערכות ש<span className="text-[#E67E22]">מנהלות</span>{" "}
                     <span className="text-[#E67E22]">אותם.</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-xl lg:text-[26px] font-medium">{t.hero.greetingCta}</span>
-                    <br />
-                    Websites that{" "}
-                    <span className="text-[#E67E22]">bring</span>{" "}
+                    Websites that <span className="text-[#E67E22]">bring</span>{" "}
                     <span className="text-[#E67E22]">clients.</span>
                     <br />
-                    Systems that{" "}
-                    <span className="text-[#E67E22]">manage</span>{" "}
+                    Systems that <span className="text-[#E67E22]">
+                      manage
+                    </span>{" "}
                     <span className="text-[#E67E22]">them.</span>
                   </>
                 )}
@@ -179,8 +173,7 @@ export default function HeroSection() {
               >
                 {isHe ? (
                   <>
-                    אני בונה{" "}
-                    <span className="text-[#E67E22]">דפי נחיתה</span>{" "}
+                    אני בונה <span className="text-[#E67E22]">דפי נחיתה</span>{" "}
                     שמביאים לך לקוחות, ו
                     <span className="text-[#E67E22]">מערכות מותאמות אישית</span>{" "}
                     שעוזרות לך לנהל ו
@@ -244,7 +237,7 @@ export default function HeroSection() {
 
       {/* Scroll indicator — rendered after content div so it always paints on top */}
       <motion.div
-        className="absolute bottom-8 sm:bottom-10 inset-x-0 flex flex-col items-center gap-2.5 z-20 pointer-events-none"
+        className="absolute bottom-8 sm:bottom-10 inset-x-0 hidden sm:flex flex-col items-center gap-2.5 z-20 pointer-events-none [@media(max-height:700px)]:hidden"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: DUR, ease: EASE, delay: 0.9 }}

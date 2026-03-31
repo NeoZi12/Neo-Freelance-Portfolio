@@ -173,7 +173,7 @@ export default function ContactSection() {
       id="contact"
       className={cn(
         "bg-gradient-to-b from-contact-dark to-contact-warm scroll-mt-16 lg:scroll-mt-0",
-        "min-h-screen lg:h-screen flex flex-col",
+        "min-h-screen flex flex-col",
         montserrat.className,
       )}
     >

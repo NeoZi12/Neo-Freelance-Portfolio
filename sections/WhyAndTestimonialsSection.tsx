@@ -35,7 +35,7 @@ export default function WhyAndTestimonialsSection() {
   return (
     <section
       id="why-us"
-      className="bg-[#131313] flex flex-col lg:h-screen overflow-hidden scroll-mt-16 lg:scroll-mt-0"
+      className="bg-[#131313] flex flex-col lg:min-h-screen scroll-mt-16 lg:scroll-mt-0"
     >
       {/* Navbar spacer — desktop only */}
       <div className="hidden lg:block h-[90px] shrink-0" />
