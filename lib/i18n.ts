@@ -22,7 +22,7 @@ export const translations = {
       title1: "About",
       title2: "Me",
       description:
-        "I'm Neo, a software engineer and freelance web developer. I'm passionate about creating websites that stand out, tell a story, and actually connect with people — not just something that works.",
+        "I'm Neo, a software engineer and freelance web developer. I'm passionate about creating websites that stand out, tell a story, and actually connect with people — more than something that just works.",
       descHighlights: ["Neo", "stand out", "connect"],
       techLabel: "Technologies I work with",
     },
@@ -233,13 +233,13 @@ export const translations = {
       title1: "קצת",
       title2: "עליי",
       description:
-        "אני ניאו, בוגר הנדסת תוכנה ומפתח אתרים פרילנסר. אני אוהב ליצור אתרים שבולטים, מספרים סיפור, ומתחברים עם אנשים — לא רק משהו שעובד.",
+        "אני ניאו, בוגר הנדסת תוכנה ומפתח אתרים פרילנסר. אני אוהב ליצור אתרים שבולטים, מספרים סיפור, ומתחברים עם אנשים — מעבר למשהו שפשוט עובד.",
       descHighlights: ["ניאו", "שבולטים", "מתחברים"],
       techLabel: "טכנולוגיות שאני עובד איתן",
     },
     whyUs: {
       titleOrange: "למה",
-      titleWhite: "לעבוד איתי",
+      titleWhite: "כדאי לעבוד איתי",
       bullets: [
         "נוכחות דיגיטלית חזקה וברורה",
         "עיצוב שמייצג באמת את העסק שלך",

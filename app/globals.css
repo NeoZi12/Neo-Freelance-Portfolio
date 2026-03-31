@@ -79,3 +79,42 @@ textarea:-webkit-autofill:focus {
   -webkit-text-fill-color: #ffffff !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+/* ── Tech Marquee ──────────────────────────────────────────────────────────
+   Infinite horizontal scroll. Items are duplicated in the DOM so
+   translateX(-50%) produces a seamless loop. GPU-composited (transform only).
+   ─────────────────────────────────────────────────────────────────────────── */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee-scroll 30s linear infinite;
+  will-change: transform;
+}
+
+/* RTL variant: starts at -50% and moves back to 0 (visually right-moving) */
+@keyframes marquee-scroll-rtl {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.marquee-track-rtl {
+  animation: marquee-scroll-rtl 30s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover,
+.marquee-track-rtl:hover {
+  animation-play-state: paused;
+}
+
+/* CSS animations are NOT controlled by Framer Motion's MotionConfig.
+   Must be handled here separately. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .marquee-track-rtl {
+    animation: none;
+  }
+}

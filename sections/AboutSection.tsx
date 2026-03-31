@@ -4,23 +4,10 @@ import React from "react";
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
 import { motion } from "framer-motion";
-import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fadeUp, fadeLeft, stagger, staggerFast, viewport } from "@/lib/motion";
-
-const skills = [
-  { name: "JavaScript", icon: "logos:javascript" },
-  { name: "TypeScript", icon: "logos:typescript-icon" },
-  { name: "React", icon: "logos:react" },
-  { name: "Next.js", icon: "logos:nextjs-icon" },
-  { name: "Node.js", icon: "logos:nodejs-icon" },
-  { name: "SQL", icon: "logos:postgresql" },
-  { name: "Tailwind", icon: "logos:tailwindcss-icon" },
-  { name: "Git", icon: "logos:git-icon" },
-  { name: "HTML", icon: "logos:html-5" },
-  { name: "CSS", icon: "logos:css-3" },
-];
+import { fadeUp, fadeLeft, stagger, viewport } from "@/lib/motion";
+import TechMarquee from "@/components/TechMarquee";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -169,34 +156,8 @@ export default function AboutSection() {
               {withHighlights(t.about.description, t.about.descHighlights)}
             </motion.p>
 
-            {/* ── Tech stack — stagger the label then cascade badges ── */}
-            <motion.div
-              variants={staggerFast}
-              className="flex flex-col gap-3 pt-2"
-            >
-              <motion.span
-                variants={fadeUp}
-                className="text-white/40 text-xs font-semibold uppercase tracking-widest"
-              >
-                {t.about.techLabel}
-              </motion.span>
-
-              {/* Badges grid: each badge gets its own stagger */}
-              <motion.div
-                variants={staggerFast}
-                className="flex flex-wrap gap-2"
-              >
-                {skills.map((skill) => (
-                  /* Wrapper handles the scroll animation; inner div keeps CSS hover intact */
-                  <motion.div key={skill.name} variants={fadeUp}>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-white/70 text-xs font-medium hover:shadow-[0_0_12px_rgba(230,126,34,0.45)] hover:scale-105 hover:border-brand-orange/30 transition-all duration-200 cursor-default">
-                      <Icon icon={skill.icon} width={16} height={16} />
-                      {skill.name}
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
+            {/* ── Tech Marquee — fades up on scroll, then runs continuously ── */}
+            <TechMarquee label={t.about.techLabel} />
           </motion.div>
         </div>
       </div>
