@@ -19,7 +19,13 @@ const navFont = Montserrat({
   display: "swap",
 });
 
-type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact";
+type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact" | "/why-us";
+
+// Sections that have no nav link — they keep a parent nav item highlighted instead
+const NAV_MAP: Record<string, NavHref> = {
+  "why-us": "/portfolio",
+  "how-it-works": "/portfolio",
+};
 
 // ── Language Switcher ──────────────────────────────────────────────────────────
 
@@ -103,12 +109,11 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState<NavHref>("/");
 
   const navLinksBase = [
-    { label: t.nav.home, href: "/" as NavHref, id: "home" },
-    { label: t.nav.services, href: "/services" as NavHref, id: "services" },
-    { label: t.nav.about, href: "/about" as NavHref, id: "about" },
-    { label: t.nav.howItWorks, href: "/how-it-works" as NavHref, id: "how-it-works" },
+    { label: t.nav.home,      href: "/" as NavHref,          id: "home" },
+    { label: t.nav.services,  href: "/services" as NavHref,  id: "services" },
+    { label: t.nav.about,     href: "/about" as NavHref,     id: "about" },
     { label: t.nav.portfolio, href: "/portfolio" as NavHref, id: "portfolio" },
-    { label: t.nav.contact, href: "/contact" as NavHref, id: "contact" },
+    { label: t.nav.contact,   href: "/contact" as NavHref,   id: "contact" },
   ];
   const isHe = locale === "he";
   const navLinks = isHe ? [...navLinksBase].reverse() : navLinksBase;
@@ -141,7 +146,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const sectionIds: string[] = ["home", "services", "about", "how-it-works", "portfolio", "contact"];
+    const sectionIds: string[] = ["home", "services", "portfolio", "why-us", "how-it-works", "about", "contact"];
     const observers: IntersectionObserver[] = [];
 
     sectionIds.forEach((id) => {
@@ -150,9 +155,15 @@ export default function Navbar() {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            const href = id === "home" ? "/" : `/${id}`;
-            setActiveLink(href as NavHref);
-            window.history.replaceState(null, "", withLang(href));
+            const mapped = NAV_MAP[id];
+            if (mapped) {
+              // Non-nav section: keep parent link highlighted, don't change URL
+              setActiveLink(mapped);
+            } else {
+              const href = id === "home" ? "/" : `/${id}` as NavHref;
+              setActiveLink(href);
+              window.history.replaceState(null, "", withLang(href));
+            }
           }
         },
         { threshold: 0.5 }

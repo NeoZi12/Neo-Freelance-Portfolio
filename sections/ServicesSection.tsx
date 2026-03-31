@@ -7,37 +7,19 @@ import { cn } from '@/lib/utils'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { fadeUp, stagger, viewport } from '@/lib/motion'
 
-// Highlight phrases painted orange inside description text
-const LEFT_HIGHLIGHTS  = ['small businesses', 'professionals', 'online presence'] as const
-const RIGHT_HIGHLIGHTS = ['businesses', 'scale', 'automate'] as const
-
-function withHighlights(text: string, phrases: readonly string[]) {
-  const nodes: React.ReactNode[] = []
-  let remaining = text
-  for (const phrase of phrases) {
-    const idx = remaining.indexOf(phrase)
-    if (idx === -1) continue
-    if (idx > 0) nodes.push(remaining.slice(0, idx))
-    nodes.push(<span key={phrase} className="text-[#E67E22]">{phrase}</span>)
-    remaining = remaining.slice(idx + phrase.length)
-  }
-  if (remaining) nodes.push(remaining)
-  return nodes
-}
-
 // One icon per item — index matches s.left.items / s.right.items order
 const LEFT_ICONS = [
-  'tabler:world',        // Business websites
-  'tabler:browser',      // Landing pages
-  'tabler:briefcase',    // Portfolio websites
-  'tabler:speakerphone', // Marketing sites
+  'tabler:user-check',   // Turn visitors into clients
+  'tabler:world',        // Build a strong online presence
+  'tabler:presentation', // Present your business clearly
+  'tabler:search',       // SEO-optimized structure
 ]
 
 const RIGHT_ICONS = [
-  'tabler:calendar',              // Booking systems
-  'tabler:credit-card',           // Payments & automation
-  'tabler:chart-bar',             // Client dashboards
-  'tabler:adjustments-horizontal',// Fully-customizable systems
+  'tabler:settings-2',    // Fully customizable to your business needs
+  'tabler:calendar-event',// Manage bookings and client interactions
+  'tabler:bolt',          // Automate payments and processes
+  'tabler:rocket',        // Fast, scalable, high-performance system
 ]
 
 const jakarta = Plus_Jakarta_Sans({
@@ -57,6 +39,7 @@ const inter = Inter({
   weight: ['400', '600'],
   display: 'swap',
 })
+
 
 export default function ServicesSection() {
   const { locale, t } = useLanguage()
@@ -82,13 +65,12 @@ export default function ServicesSection() {
       />
 
       {/* ── Content area ── */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-10">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-6 lg:py-8">
         <div className="w-full max-w-[1280px] mx-auto flex flex-col items-center">
-
           {/* ── Section title ── */}
           <motion.h2
             className={cn(
-              'text-[32px] lg:text-[36px] font-bold text-center mb-10 lg:mb-12 leading-tight',
+              "text-[32px] lg:text-[38px] font-bold text-center mb-5 lg:mb-7 leading-tight",
               montserrat.className,
             )}
             variants={fadeUp}
@@ -96,8 +78,8 @@ export default function ServicesSection() {
             whileInView="show"
             viewport={viewport}
           >
-            <span className="text-[#E67E22]">{s.titleOrange} </span>
-            <span className="text-white">{s.titleWhite}</span>
+            <span className="text-white">{s.titleWhite} </span>
+            <span className="text-[#E67E22]">{s.titleOrange}</span>
           </motion.h2>
 
           {/*
@@ -112,122 +94,175 @@ export default function ServicesSection() {
            * first (order 1–5), then all right-column items (order 6–10),
            * with a top margin on the first right item for visual separation.
            *)
-          */}
+           */}
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 relative">
-
             {/* Center divider — desktop only */}
             <div
               aria-hidden
               className="hidden lg:block absolute top-0 bottom-0 left-1/2 w-px -translate-x-px pointer-events-none"
               style={{
                 background:
-                  'linear-gradient(180deg, rgba(230,126,34,0) 0%, #E67E22 50%, rgba(230,126,34,0) 100%)',
-                filter: 'drop-shadow(0px 0px 15px rgba(255,140,0,0.3))',
+                  "linear-gradient(180deg, rgba(230,126,34,0) 0%, #E67E22 50%, rgba(230,126,34,0) 100%)",
+                filter: "drop-shadow(0px 0px 15px rgba(255,140,0,0.3))",
               }}
             />
 
-            {/* ── ROW 1: Eyebrows ── */}
-            <motion.p
-              dir={isHe ? 'rtl' : 'ltr'}
-              className={cn(
-                'order-1 lg:order-none',
-                'text-[11px] font-semibold uppercase tracking-[3.6px] text-white',
-                'lg:pr-16 pb-3',
-                inter.className,
-              )}
+            {/* ── ROW 1: Big service titles ── */}
+            <motion.div
+              dir={isHe ? "rtl" : "ltr"}
+              className="order-1 lg:order-none lg:pr-16 pb-3"
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={viewport}
             >
-              {s.left.eyebrow}
-            </motion.p>
+              <span
+                className={cn(
+                  "block text-[16px] font-semibold tracking-[5px] text-[#E67E22]/65 mb-2",
+                  montserrat.className,
+                )}
+              >
+                {s.left.number}
+              </span>
+              <h3
+                className={cn(
+                  "text-[40px] lg:text-[50px] font-extrabold leading-tight",
+                  jakarta.className,
+                )}
+              >
+                <span className="text-white">{s.left.titleA} </span>
+                <br />
+                <span className="text-[#E67E22]">{s.left.titleB}</span>
+              </h3>
+            </motion.div>
 
-            <motion.p
-              dir={isHe ? 'rtl' : 'ltr'}
-              className={cn(
-                'order-6 lg:order-none',
-                'text-[11px] font-semibold uppercase tracking-[3.6px] text-[#E67E22]',
-                'mt-12 lg:mt-0 lg:pl-16 pb-3',
-                inter.className,
-              )}
+            <motion.div
+              dir={isHe ? "rtl" : "ltr"}
+              className="order-6 lg:order-none mt-10 lg:mt-0 lg:pl-16 pb-3"
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={viewport}
             >
-              {s.right.eyebrow}
-            </motion.p>
+              <span
+                className={cn(
+                  "block text-[16px] font-semibold tracking-[5px] text-[#E67E22]/65 mb-2",
+                  montserrat.className,
+                )}
+              >
+                {s.right.number}
+              </span>
+              <h3
+                className={cn(
+                  "text-[40px] lg:text-[50px] font-extrabold leading-tight",
+                  jakarta.className,
+                )}
+              >
+                <span className="text-white">{s.right.titleA} </span> <br />
+                <span className="text-[#E67E22]">{s.right.titleB}</span>
+              </h3>
+            </motion.div>
 
-            {/* ── ROW 2: Headings ── */}
-            <motion.h3
-              dir={isHe ? 'rtl' : 'ltr'}
-              className={cn(
-                'order-2 lg:order-none',
-                'text-[38px] lg:text-[48px] font-extrabold leading-[1.05] text-[#E67E22]',
-                'lg:pr-16 pb-4',
-                jakarta.className,
-              )}
+            {/* ── ROW 2: Who is it for ── */}
+            <motion.div
+              dir={isHe ? "rtl" : "ltr"}
+              className="order-2 lg:order-none lg:pr-16 pb-3"
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={viewport}
             >
-              {s.left.heading}
-            </motion.h3>
+              <p
+                className={cn(
+                  "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[3.5px] mb-2 text-white/40",
+                  inter.className,
+                )}
+              >
+                <span className="text-[13px] leading-none text-[#E67E22]">
+                  ✦
+                </span>
+                {s.whoLabel}
+              </p>
+              <p
+                className={cn(
+                  "text-[17px] lg:text-[19px] font-semibold leading-snug text-white/90",
+                  isHe && "text-right",
+                  jakarta.className,
+                )}
+              >
+                {s.left.whoAnswer}
+              </p>
+            </motion.div>
 
-            <motion.h3
-              dir={isHe ? 'rtl' : 'ltr'}
-              className={cn(
-                'order-7 lg:order-none',
-                'text-[38px] lg:text-[48px] font-extrabold leading-[1.05] text-[#E5E2E1]',
-                'lg:pl-16 pb-4',
-                jakarta.className,
-              )}
+            <motion.div
+              dir={isHe ? "rtl" : "ltr"}
+              className="order-7 lg:order-none lg:pl-16 pb-3"
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={viewport}
             >
-              {s.right.heading}
-            </motion.h3>
+              <p
+                className={cn(
+                  "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[3.5px] mb-2 text-white/40",
+                  inter.className,
+                )}
+              >
+                <span className="text-[13px] leading-none text-[#E67E22]">
+                  ✦
+                </span>
+                {s.whoLabel}
+              </p>
+              <p
+                className={cn(
+                  "text-[17px] lg:text-[19px] font-semibold leading-snug text-white/90",
+                  isHe && "text-right",
+                  jakarta.className,
+                )}
+              >
+                {s.right.whoAnswer}
+              </p>
+            </motion.div>
 
             {/* ── ROW 3: Descriptions ── */}
-            <motion.p
-              dir={isHe ? 'rtl' : 'ltr'}
-              className={cn(
-                'order-3 lg:order-none',
-                'text-sm lg:text-[15px] font-medium text-[#B8AFA8] max-w-[448px] leading-relaxed',
-                'lg:pr-16 pb-6',
-                inter.className,
-              )}
+            <motion.div
+              dir={isHe ? "rtl" : "ltr"}
+              className="order-3 lg:order-none lg:pr-16 pb-2"
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={viewport}
             >
-              {withHighlights(s.left.description, LEFT_HIGHLIGHTS)}
-            </motion.p>
+              <p className={cn(
+                "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
+                isHe && "text-right",
+                inter.className,
+              )}>
+                {s.left.description}
+              </p>
+            </motion.div>
 
-            <motion.p
-              dir={isHe ? 'rtl' : 'ltr'}
-              className={cn(
-                'order-8 lg:order-none',
-                'text-sm lg:text-[15px] font-medium text-[#B8AFA8] max-w-[448px] leading-relaxed',
-                'lg:pl-16 pb-6',
-                inter.className,
-              )}
+            <motion.div
+              dir={isHe ? "rtl" : "ltr"}
+              className="order-8 lg:order-none lg:pl-16 pb-2"
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={viewport}
             >
-              {withHighlights(s.right.description, RIGHT_HIGHLIGHTS)}
-            </motion.p>
+              <p className={cn(
+                "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
+                isHe && "text-right",
+                inter.className,
+              )}>
+                {s.right.description}
+              </p>
+            </motion.div>
 
             {/* ── ROW 4: Lists ── */}
             <motion.ul
-              className="order-4 lg:order-none lg:pr-16 pb-7 flex flex-col"
+              key={`left-${locale}`}
+              className="order-4 lg:order-none lg:pr-16 pb-5 flex flex-col"
               variants={stagger}
               initial="hidden"
               whileInView="show"
@@ -237,16 +272,22 @@ export default function ServicesSection() {
                 <motion.li
                   key={item}
                   variants={fadeUp}
-                  dir={isHe ? 'rtl' : 'ltr'}
-                  className="flex flex-row items-center py-3 border-b border-[rgba(86,67,52,0.25)]"
+                  dir={isHe ? "rtl" : "ltr"}
+                  className="flex flex-row items-center gap-3 py-4 border-b border-[rgba(86,67,52,0.25)]"
                 >
                   <Icon
-                    icon={LEFT_ICONS[i] ?? 'tabler:circle'}
+                    icon={LEFT_ICONS[i] ?? "tabler:circle"}
                     width={17}
                     height={17}
                     className="shrink-0 text-[#E67E22]"
                   />
-                  <span className={cn('ml-3 text-[16px] font-medium leading-[26px] text-[#E5E2E1]', jakarta.className)}>
+                  <span
+                    className={cn(
+                      "text-[16px] font-medium leading-[26px] text-[#E5E2E1]",
+                      isHe && "text-right",
+                      jakarta.className,
+                    )}
+                  >
                     {item}
                   </span>
                 </motion.li>
@@ -254,7 +295,8 @@ export default function ServicesSection() {
             </motion.ul>
 
             <motion.ul
-              className="order-9 lg:order-none lg:pl-16 pb-7 flex flex-col"
+              key={`right-${locale}`}
+              className="order-9 lg:order-none lg:pl-16 pb-5 flex flex-col"
               variants={stagger}
               initial="hidden"
               whileInView="show"
@@ -264,16 +306,22 @@ export default function ServicesSection() {
                 <motion.li
                   key={item}
                   variants={fadeUp}
-                  dir={isHe ? 'rtl' : 'ltr'}
-                  className="flex flex-row items-center py-3 border-b border-[rgba(86,67,52,0.25)]"
+                  dir={isHe ? "rtl" : "ltr"}
+                  className="flex flex-row items-center gap-3 py-4 border-b border-[rgba(86,67,52,0.25)]"
                 >
                   <Icon
-                    icon={RIGHT_ICONS[i] ?? 'tabler:circle'}
+                    icon={RIGHT_ICONS[i] ?? "tabler:circle"}
                     width={17}
                     height={17}
-                    className="shrink-0 text-[#9CA3AF]"
+                    className="shrink-0 text-[#E67E22]"
                   />
-                  <span className={cn('ml-3 text-[16px] font-medium leading-[26px] text-[#E5E2E1]', jakarta.className)}>
+                  <span
+                    className={cn(
+                      "text-[16px] font-medium leading-[26px] text-[#E5E2E1]",
+                      isHe && "text-right",
+                      jakarta.className,
+                    )}
+                  >
                     {item}
                   </span>
                 </motion.li>
@@ -282,19 +330,26 @@ export default function ServicesSection() {
 
             {/* ── ROW 5: CTAs ── */}
             <motion.div
-              className="order-5 lg:order-none lg:pr-16"
+              className={cn(
+                "order-5 lg:order-none lg:pr-16",
+                isHe && "flex justify-end",
+              )}
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
-              viewport={viewport}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{
+                delay: 1.2,
+                duration: 0.65,
+                ease: [0.22, 1, 0.36, 1],
+              }}
             >
-              {/* Outline/dark — matches hero "Get Your Website" button */}
               <a
                 href="#contact"
                 className={cn(
-                  'inline-flex items-center justify-center min-w-[200px]',
-                  'border-2 border-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3 text-sm whitespace-nowrap',
-                  'shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200',
+                  "inline-flex items-center justify-center min-w-[200px]",
+                  "bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3 text-sm whitespace-nowrap",
+                  "shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200",
                   montserrat.className,
                 )}
               >
@@ -303,29 +358,35 @@ export default function ServicesSection() {
             </motion.div>
 
             <motion.div
-              className="order-10 lg:order-none lg:pl-16"
+              className={cn(
+                "order-10 lg:order-none lg:pl-16",
+                isHe && "flex justify-end",
+              )}
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
-              viewport={viewport}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{
+                delay: 1.2,
+                duration: 0.65,
+                ease: [0.22, 1, 0.36, 1],
+              }}
             >
-              {/* Solid orange — matches hero "View My Work" button */}
               <a
                 href="#contact"
                 className={cn(
-                  'inline-flex items-center justify-center min-w-[200px]',
-                  'bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3 text-sm whitespace-nowrap',
-                  'shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200',
+                  "inline-flex items-center justify-center min-w-[200px]",
+                  "bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3 text-sm whitespace-nowrap",
+                  "shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200",
                   montserrat.className,
                 )}
               >
                 {s.right.cta}
               </a>
             </motion.div>
-
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
