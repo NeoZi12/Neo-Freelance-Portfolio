@@ -110,6 +110,70 @@ textarea:-webkit-autofill:focus {
   animation-play-state: paused;
 }
 
+/* ── Marquee edge-fade mask — responsive ────────────────────────────────────
+   72px fade on desktop, narrower on mobile so less screen real estate is lost.
+   Both prefixes required for Safari. Applied via class so media queries work
+   (inline styles cannot be overridden by media queries).
+   ─────────────────────────────────────────────────────────────────────────── */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 72px,
+    black calc(100% - 72px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 72px,
+    black calc(100% - 72px),
+    transparent 100%
+  );
+}
+
+/* ── Mobile-specific marquee optimisations (< 640px = below Tailwind `sm`) ──
+   • Speed: 24s = ~20% faster than desktop (30s) — feels lighter and less sluggish.
+   • Mask: narrower fade stops so more icons are visible on small screens.
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 639px) {
+  .marquee-track {
+    animation-duration: 24s;
+  }
+
+  .marquee-track-rtl {
+    animation-duration: 24s;
+  }
+
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 40px,
+      black calc(100% - 40px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 40px,
+      black calc(100% - 40px),
+      transparent 100%
+    );
+  }
+}
+
+/* ── Touch device icon state ────────────────────────────────────────────────
+   Framer Motion dims icons to brightness(0.85) in the idle (non-hovered) state.
+   On touch screens there is no hover, so icons would always appear dimmed.
+   Reset to full brightness via !important to override the inline style.
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (hover: none) {
+  .tech-icon {
+    filter: brightness(1) !important;
+  }
+}
+
 /* CSS animations are NOT controlled by Framer Motion's MotionConfig.
    Must be handled here separately. */
 @media (prefers-reduced-motion: reduce) {

@@ -38,7 +38,7 @@ function TechIcon({ name, icon, style }: Tech) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Tooltip — fades in above the icon */}
+      {/* Tooltip — fades in above the icon (mouse-only; touch screens never hover) */}
       <AnimatePresence>
         {hovered && (
           <motion.div
@@ -55,9 +55,11 @@ function TechIcon({ name, icon, style }: Tech) {
         )}
       </AnimatePresence>
 
-      {/* Icon — scales and brightens on hover */}
+      {/* Icon — scales and brightens on hover.
+          `tech-icon` class lets CSS reset the filter on touch devices so icons
+          are never stuck at the dimmed idle state on mobile. */}
       <motion.div
-        className="cursor-pointer select-none"
+        className="tech-icon cursor-pointer select-none"
         animate={
           hovered
             ? { scale: 1.18, filter: "brightness(1.25)" }
@@ -65,7 +67,9 @@ function TechIcon({ name, icon, style }: Tech) {
         }
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Icon icon={icon} className="w-9 h-9 sm:w-11 sm:h-11" style={style} aria-hidden="true" />
+        {/* Mobile: w-8 h-8 (32 px, ~11% smaller than desktop base).
+            sm+: keep the original w-11 h-11 (44 px). */}
+        <Icon icon={icon} className="w-8 h-8 sm:w-11 sm:h-11" style={style} aria-hidden="true" />
       </motion.div>
     </div>
   );
@@ -79,15 +83,6 @@ interface TechMarqueeProps {
 export default function TechMarquee({ label }: TechMarqueeProps) {
   const { locale } = useLanguage();
   const isHe = locale === "he";
-  // overflow-x: clip (not hidden) clips horizontally without creating a scroll
-  // container — this keeps overflow-y: visible so tooltips can escape upward.
-  // Both mask prefixes required for Safari.
-  const maskStyle = {
-    WebkitMaskImage:
-      "linear-gradient(to right, transparent 0%, black 72px, black calc(100% - 72px), transparent 100%)",
-    maskImage:
-      "linear-gradient(to right, transparent 0%, black 72px, black calc(100% - 72px), transparent 100%)",
-  } as React.CSSProperties;
 
   return (
     <motion.div
@@ -101,11 +96,11 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
       {/*
         [overflow-x:clip] clips the scrolling track horizontally while
         leaving overflow-y: visible so tooltips positioned above icons
-        are never cut off. pt-12 gives headroom for the tooltip + animation.
+        are never cut off. pt-9 gives headroom for the tooltip + animation.
+        marquee-mask applies the responsive edge-fade (72px desktop / 40px mobile).
       */}
       <div
-        className="relative w-full [overflow-x:clip] pt-9 pb-3"
-        style={maskStyle}
+        className="marquee-mask relative w-full [overflow-x:clip] pt-9 pb-3"
         dir="ltr"
         role="region"
         aria-label={label}
@@ -113,9 +108,10 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
         {/* Track: items rendered twice for seamless translateX(-50%) loop.
             dir="ltr" on the parent ensures flex always lays out L→R regardless
             of page locale, so the -50% translateX trick works correctly.
-            RTL uses the reversed keyframe (starts at -50%, ends at 0). */}
+            RTL uses the reversed keyframe (starts at -50%, ends at 0).
+            Mobile gap: gap-x-5 (20px) — slightly tighter than desktop gap-x-8 (32px). */}
         <div
-          className={isHe ? "marquee-track-rtl flex items-center gap-x-6 sm:gap-x-8 w-max" : "marquee-track flex items-center gap-x-6 sm:gap-x-8 w-max"}
+          className={isHe ? "marquee-track-rtl flex items-center gap-x-5 sm:gap-x-8 w-max" : "marquee-track flex items-center gap-x-5 sm:gap-x-8 w-max"}
           aria-hidden="true"
         >
           {TECHS.map((tech) => (
