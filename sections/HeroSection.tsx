@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EASE, DUR } from "@/lib/motion";
@@ -40,19 +40,38 @@ const HE_LINE2 = [
 
 function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
   const portraitH = Math.round(circle * (1024 / 768));
+  const prefersReducedMotion = useReducedMotion();
+
+  // Hover scale only on true pointer devices — never on touch screens
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => {
+    setCanHover(
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    );
+  }, []);
 
   return (
-    <div
+    <motion.div
       className="relative"
       style={{ width: circle, height: circle + popOut }}
+      // Desktop-only scale on hover: smooth, refined, not dramatic
+      whileHover={canHover && !prefersReducedMotion ? { scale: 1.025 } : undefined}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Glow — radiates from the circle area */}
-      <div
+      {/* Glow — static box-shadow, only opacity pulses (GPU-composited, zero repaint) */}
+      <motion.div
         className="absolute left-0 right-0 bottom-0 rounded-full"
         style={{
           height: circle,
           boxShadow:
-            "0 0 60px 20px rgba(230,126,34,0.30), 0 0 130px 60px rgba(230,126,34,0.12)",
+            "0 0 64px 22px rgba(230,126,34,0.32), 0 0 140px 64px rgba(230,126,34,0.13)",
+        }}
+        animate={prefersReducedMotion ? undefined : { opacity: [0.5, 1, 0.5] }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+          repeatType: "loop",
         }}
       />
 
@@ -106,7 +125,7 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
         className="absolute left-0 right-0 bottom-0 rounded-full border-4 border-[#E67E22] pointer-events-none z-[5]"
         style={{ height: circle }}
       />
-    </div>
+    </motion.div>
   );
 }
 
