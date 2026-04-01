@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeUp, stagger, viewport } from "@/lib/motion";
@@ -14,6 +14,8 @@ import x from "@iconify-icons/lucide/x";
 import chevronLeft from "@iconify-icons/lucide/chevron-left";
 import chevronRight from "@iconify-icons/lucide/chevron-right";
 import externalLink from "@iconify-icons/lucide/external-link";
+import maximize2 from "@iconify-icons/lucide/maximize-2";
+import minimize2 from "@iconify-icons/lucide/minimize-2";
 
 /* ─── Static data (images / URLs only) ─────────────────────────────────── */
 
@@ -158,6 +160,7 @@ function ProjectModal({
   onClose: () => void;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const prev = () =>
     setCurrentSlide((i) => (i === 0 ? project.screenshots.length - 1 : i - 1));
@@ -166,47 +169,78 @@ function ProjectModal({
 
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (isFullscreen) setIsFullscreen(false);
+        else onClose();
+      }
     };
     document.addEventListener("keydown", fn);
     return () => document.removeEventListener("keydown", fn);
-  }, [onClose]);
+  }, [onClose, isFullscreen]);
 
   useEffect(() => {
     setCurrentSlide(0);
   }, [project.id]);
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
   return (
-    <div
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+    <motion.div
+      className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
       onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div
+      <motion.div
         className={cn(
-          "relative bg-brand-dark rounded-2xl max-w-4xl w-full p-4 md:p-7",
-          "max-h-[90vh] overflow-y-hidden",
-          "border border-brand-orange/40",
+          "relative bg-brand-dark flex flex-col overflow-hidden",
+          "border border-brand-orange/30",
+          "shadow-[0_0_0_1px_rgba(230,126,34,0.08),0_8px_48px_rgba(0,0,0,0.6)]",
+          isFullscreen
+            ? "fixed inset-0 w-screen h-[100dvh] rounded-none p-4"
+            // Mobile: content-driven height (fits the image naturally, no black void)
+            // Desktop: fixed 85vh so the preview fills the panel
+            : "rounded-2xl w-full sm:w-[min(90vw,1300px)] max-h-[92dvh] sm:h-[85vh] sm:max-h-none p-3 sm:p-5",
         )}
         onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-white/70 hover:text-white transition-colors duration-200 z-10"
-          aria-label="Close modal"
-        >
-          <Icon icon={x} width={22} height={22} />
-        </button>
+        {/* Controls — fullscreen toggle (desktop only) + close */}
+        <div className="absolute top-3 right-3 flex items-center gap-1 z-10">
+          <button
+            onClick={() => setIsFullscreen((f) => !f)}
+            className="hidden sm:block text-white/70 hover:text-white transition-colors duration-200 p-1"
+            aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          >
+            <Icon icon={isFullscreen ? minimize2 : maximize2} width={20} height={20} />
+          </button>
+          <button
+            onClick={onClose}
+            className="text-white/70 hover:text-white transition-colors duration-200 p-1"
+            aria-label="Close modal"
+          >
+            <Icon icon={x} width={22} height={22} />
+          </button>
+        </div>
 
-        {/* Title + CTA — swap order in Hebrew */}
+        {/* Header — stacked on mobile, single row on desktop */}
         <div className={cn(
-          "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pr-7",
+          "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 shrink-0 pr-14",
           isHe && "sm:flex-row-reverse",
         )}>
           <h2
             className={cn(
               montserrat.className,
-              "text-brand-orange font-bold text-lg sm:text-2xl leading-snug",
+              "text-brand-orange font-bold leading-snug truncate min-w-0",
+              "text-base sm:text-2xl",
               isHe && "text-right",
             )}
           >
@@ -219,7 +253,8 @@ function ProjectModal({
             className={cn(
               montserrat.className,
               "inline-flex items-center justify-center gap-1.5 self-start sm:shrink-0",
-              "border-2 border-brand-orange text-white font-semibold text-sm rounded-[18px] px-4 py-2",
+              "border-2 border-brand-orange text-white font-semibold rounded-[18px]",
+              "text-xs px-3 py-1.5 sm:text-sm sm:px-4 sm:py-2",
               "shadow-[0px_6px_16px_rgba(230,126,34,0.3)] hover:shadow-[0px_8px_20px_rgba(230,126,34,0.5)] transition-shadow duration-200",
             )}
             onClick={(e) => e.stopPropagation()}
@@ -230,58 +265,131 @@ function ProjectModal({
           </a>
         </div>
 
-        <div className="relative overflow-hidden rounded-xl aspect-video bg-black shadow-[0_8px_32px_rgba(230,126,34,0.45)]">
-          <Image
-            src={project.screenshots[currentSlide]}
-            alt={`${project.name} screenshot ${currentSlide + 1}`}
-            fill
-            className="object-contain"
-          />
+        {/* Preview + controls wrapper */}
+        <div className="flex-1 min-h-0 flex flex-col">
 
+          {/* Image area
+              Mobile: aspect-video container — sizes itself to the image ratio,
+                      eliminating the empty black void that came from flex-1 in a tall modal.
+              Desktop / fullscreen: flex-1 min-h-0 — fills remaining panel height as before. */}
+          <div className={cn(
+            "relative overflow-hidden rounded-xl bg-black",
+            "shadow-[0_8px_32px_rgba(230,126,34,0.45)]",
+            isFullscreen
+              ? "flex-1 min-h-0"
+              : "aspect-video sm:aspect-auto sm:flex-1 sm:min-h-0",
+          )}>
+            <Image
+              src={project.screenshots[currentSlide]}
+              alt={`${project.name} screenshot ${currentSlide + 1}`}
+              fill
+              className="object-contain"
+            />
+
+            {/* Mobile tap zones — invisible full-height halves, no visual clutter */}
+            {project.screenshots.length > 1 && (
+              <>
+                <button
+                  onClick={prev}
+                  className="sm:hidden absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer"
+                  aria-label="Previous screenshot"
+                />
+                <button
+                  onClick={next}
+                  className="sm:hidden absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer"
+                  aria-label="Next screenshot"
+                />
+              </>
+            )}
+
+            {/* Side nav columns — desktop only, hidden on mobile */}
+            {project.screenshots.length > 1 && (
+              <>
+                <button
+                  onClick={prev}
+                  className={cn(
+                    "hidden sm:flex",
+                    "absolute inset-y-0 left-0 w-[6%]",
+                    "items-center justify-center",
+                    "bg-gradient-to-r from-neutral-900/65 to-neutral-800/35",
+                    "hover:from-neutral-900/75 hover:to-neutral-800/45",
+                    "border-r border-white/[0.05] rounded-l-xl cursor-pointer",
+                    "text-white/75 hover:text-white transition-all duration-200",
+                  )}
+                  aria-label="Previous screenshot"
+                >
+                  <Icon icon={chevronLeft} width={20} height={20} />
+                </button>
+
+                <button
+                  onClick={next}
+                  className={cn(
+                    "hidden sm:flex",
+                    "absolute inset-y-0 right-0 w-[6%]",
+                    "items-center justify-center",
+                    "bg-gradient-to-l from-neutral-900/65 to-neutral-800/35",
+                    "hover:from-neutral-900/75 hover:to-neutral-800/45",
+                    "border-l border-white/[0.05] rounded-r-xl cursor-pointer",
+                    "text-white/75 hover:text-white transition-all duration-200",
+                  )}
+                  aria-label="Next screenshot"
+                >
+                  <Icon icon={chevronRight} width={20} height={20} />
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Bottom controls — dots (all sizes) + flanking arrows (mobile only) */}
           {project.screenshots.length > 1 && (
-            <>
+            <div className="shrink-0 pt-2 sm:pt-3 flex items-center justify-center gap-3">
               <button
                 onClick={prev}
                 className={cn(
-                  "absolute left-3 top-1/2 -translate-y-1/2",
-                  "w-9 h-9 rounded-full bg-black/50 hover:bg-black/80",
-                  "flex items-center justify-center text-white transition-colors duration-200",
+                  "sm:hidden w-11 h-11 rounded-full shrink-0",
+                  "flex items-center justify-center",
+                  "bg-neutral-800/70 hover:bg-neutral-700/80",
+                  "text-white/80 hover:text-white",
+                  "transition-all duration-200",
                 )}
                 aria-label="Previous screenshot"
               >
-                <Icon icon={chevronLeft} width={20} height={20} />
+                <Icon icon={chevronLeft} width={26} height={26} />
               </button>
 
-              <button
-                onClick={next}
-                className={cn(
-                  "absolute right-3 top-1/2 -translate-y-1/2",
-                  "w-9 h-9 rounded-full bg-black/50 hover:bg-black/80",
-                  "flex items-center justify-center text-white transition-colors duration-200",
-                )}
-                aria-label="Next screenshot"
-              >
-                <Icon icon={chevronRight} width={20} height={20} />
-              </button>
-
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+              <div className="flex gap-2">
                 {project.screenshots.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentSlide(i)}
                     className={cn(
                       "w-2 h-2 rounded-full transition-colors duration-200",
-                      i === currentSlide ? "bg-white" : "bg-white/40",
+                      i === currentSlide ? "bg-white" : "bg-white/35",
                     )}
                     aria-label={`Go to screenshot ${i + 1}`}
                   />
                 ))}
               </div>
-            </>
+
+              <button
+                onClick={next}
+                className={cn(
+                  "sm:hidden w-11 h-11 rounded-full shrink-0",
+                  "flex items-center justify-center",
+                  "bg-neutral-800/70 hover:bg-neutral-700/80",
+                  "text-white/80 hover:text-white",
+                  "transition-all duration-200",
+                )}
+                aria-label="Next screenshot"
+              >
+                <Icon icon={chevronRight} width={26} height={26} />
+              </button>
+            </div>
           )}
+
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -362,14 +470,16 @@ export default function PortfolioSection() {
         <div className="hidden lg:block" />
       </div>
 
-      {selectedProject && (
-        <ProjectModal
-          project={selectedProject}
-          goToWebsiteLabel={t.portfolio.goToWebsite}
-          isHe={isHe}
-          onClose={closeModal}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectModal
+            project={selectedProject}
+            goToWebsiteLabel={t.portfolio.goToWebsite}
+            isHe={isHe}
+            onClose={closeModal}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }

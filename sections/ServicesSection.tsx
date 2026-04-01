@@ -37,19 +37,19 @@ const RIGHT_ICONS = [
 // Tighter stagger than the global default (90ms vs 130ms) for a crisper read-in.
 const bulletStagger: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
 }
 
 // LTR: each bullet slides in from the left
 const bulletFadeLeft: Variants = {
   hidden: { opacity: 0, x: -10 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.35, ease: EASE } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE } },
 }
 
 // RTL (Hebrew): each bullet slides in from the right
 const bulletFadeRight: Variants = {
   hidden: { opacity: 0, x: 10 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.35, ease: EASE } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE } },
 }
 
 // ── Card hover state ───────────────────────────────────────────────────────────
@@ -271,8 +271,8 @@ export default function ServicesSection() {
                 whileInView="show"
                 viewport={{ once: true, margin: "0px" }}
                 transition={{
-                  delay: 1.2,
-                  duration: 0.65,
+                  delay: 0.4,
+                  duration: 0.75,
                   ease: [0.22, 1, 0.36, 1],
                 }}
               >
@@ -416,8 +416,8 @@ export default function ServicesSection() {
                 whileInView="show"
                 viewport={{ once: true, margin: "0px" }}
                 transition={{
-                  delay: 1.2,
-                  duration: 0.65,
+                  delay: 0.4,
+                  duration: 0.75,
                   ease: [0.22, 1, 0.36, 1],
                 }}
               >

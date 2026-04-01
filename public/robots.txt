@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://neo-freelance-portfolio.vercel.app/sitemap.xml

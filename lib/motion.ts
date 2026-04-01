@@ -6,30 +6,30 @@ import type { Variants } from "framer-motion";
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
 /** Base transition duration (most elements) */
-export const DUR = 0.65;
+export const DUR = 0.75;
 
 // ── Viewport config ────────────────────────────────────────────────────────
 
-/** Trigger animation when element is 80px into the viewport, only once */
-export const viewport = { once: true, margin: "-80px 0px" } as const;
+/** Trigger animation when element is 100px into the viewport, only once */
+export const viewport = { once: true, margin: "-100px 0px" } as const;
 
 // ── Base variants ──────────────────────────────────────────────────────────
 
 /** Default: fade up — used for most content elements */
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 20 },
   show:   { opacity: 1, y: 0,  transition: { duration: DUR, ease: EASE } },
 };
 
 /** Fade from the left — left-column content in split layouts */
 export const fadeLeft: Variants = {
-  hidden: { opacity: 0, x: -32 },
+  hidden: { opacity: 0, x: -24 },
   show:   { opacity: 1, x: 0,   transition: { duration: DUR, ease: EASE } },
 };
 
 /** Fade from the right — right-column content in split layouts */
 export const fadeRight: Variants = {
-  hidden: { opacity: 0, x: 32 },
+  hidden: { opacity: 0, x: 24 },
   show:   { opacity: 1, x: 0,  transition: { duration: DUR, ease: EASE } },
 };
 
@@ -41,7 +41,7 @@ export const fadeRight: Variants = {
  */
 export const stagger: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.13, delayChildren: 0.05 } },
+  show:   { transition: { staggerChildren: 0.16, delayChildren: 0.1 } },
 };
 
 /**
@@ -49,5 +49,5 @@ export const stagger: Variants = {
  */
 export const staggerFast: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+  show:   { transition: { staggerChildren: 0.08, delayChildren: 0.06 } },
 };

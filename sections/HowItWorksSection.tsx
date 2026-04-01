@@ -9,6 +9,61 @@ import { fadeUp, fadeLeft, fadeRight, viewport } from '@/lib/motion'
 import { montserrat } from '@/lib/fonts'
 import chevronDown from '@iconify-icons/mdi/chevron-down'
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Do I need to have all the content ready before we start?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Not at all. If you already have content, that's great — but if not, I'll guide you through exactly what's needed and can help you create or structure it so everything fits your website perfectly.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How long does the whole process take?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "It depends on the scope of the project. Smaller projects like landing pages or portfolio websites are usually completed relatively quickly, while larger or more complex websites take more time. The timeline also depends on how quickly content and feedback are provided.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I request changes during the project?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, of course. The process includes revisions, and we'll work together to refine everything until you're happy with the result.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What if I don't have a design or know what I want?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "That's completely fine. I'll help you define the direction, style, and structure based on your business and goals, so you don't need any design or technical background.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How do I handle domain and hosting?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "If you'd like a custom domain, you can purchase one — but it's completely optional. For hosting, I typically recommend reliable platforms like Vercel. If you're unsure about any part of the process, I'll guide you step by step to make everything simple and stress-free.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Will my website work on mobile devices?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, it will work on all screen sizes — including mobile, tablet, and desktop — and will be fully optimized for a smooth experience.",
+      },
+    },
+  ],
+};
+
 export default function HowItWorksSection() {
   const { locale, t } = useLanguage()
   const isHe = locale === 'he'
@@ -30,6 +85,11 @@ export default function HowItWorksSection() {
         montserrat.className,
       )}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       {/* Navbar spacer (desktop only) */}
       <div className="hidden lg:block h-[90px] shrink-0" />
 
@@ -150,6 +210,7 @@ export default function HowItWorksSection() {
                       )}
                       onClick={() => setOpenFaq(isOpen ? null : i)}
                       aria-expanded={isOpen}
+                      aria-label={faq.q}
                     >
                       <span className="font-semibold text-white text-sm lg:text-base leading-snug">
                         {faq.q}

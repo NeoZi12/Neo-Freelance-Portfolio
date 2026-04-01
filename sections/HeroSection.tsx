@@ -116,7 +116,7 @@ function heroTransition(delay: number) {
   return { duration: DUR, ease: EASE, delay };
 }
 
-const heroInitial = { opacity: 0, y: 24 } as const;
+const heroInitial = { opacity: 0, y: 16 } as const;
 const heroAnimate = { opacity: 1, y: 0 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ export default function HeroSection() {
                 className="text-2xl lg:text-[28px] font-semibold text-white leading-snug"
                 initial={heroInitial}
                 animate={heroAnimate}
-                transition={heroTransition(0.15)}
+                transition={heroTransition(0.2)}
               >
                 {t.hero.greeting}{" "}
                 <span className="text-[#E67E22]">{t.hero.name}</span>
@@ -186,7 +186,7 @@ export default function HeroSection() {
                 className="text-4xl lg:text-[50px] font-semibold text-white leading-tight"
                 initial={heroInitial}
                 animate={heroAnimate}
-                transition={heroTransition(0.35)}
+                transition={heroTransition(0.42)}
               >
                 {isHe ? (
                   <>
@@ -228,7 +228,7 @@ export default function HeroSection() {
                 className="text-sm lg:text-[15px] font-medium text-white/90 max-w-[420px] leading-relaxed"
                 initial={heroInitial}
                 animate={heroAnimate}
-                transition={heroTransition(0.55)}
+                transition={heroTransition(0.62)}
               >
                 {isHe ? (
                   <>
@@ -257,7 +257,7 @@ export default function HeroSection() {
                 className="flex flex-row flex-wrap gap-5 mt-2"
                 initial={heroInitial}
                 animate={heroAnimate}
-                transition={heroTransition(0.72)}
+                transition={heroTransition(0.80)}
               >
                 <a
                   href="#portfolio"
