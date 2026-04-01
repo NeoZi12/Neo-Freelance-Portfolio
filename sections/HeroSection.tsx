@@ -1,11 +1,40 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EASE, DUR } from "@/lib/motion";
+import { RotatingPhrase } from "@/components/RotatingPhrase";
+
+// Paired phrase sets — both lines rotate together in sync.
+// Keep each phrase close in length to the current text to avoid line-wrap shifts.
+const EN_LINE1 = [
+  "bring clients.",
+  "convert visitors.",
+  "generate leads.",
+  "drive results.",
+] as const;
+const EN_LINE2 = [
+  "manage them.",
+  "run automatically.",
+  "scale with you.",
+  "save you time.",
+] as const;
+const HE_LINE1 = [
+  "מביאים לקוחות.",
+  "ממירים גולשים.",
+  "מגדילים פניות.",
+  "מייצרים ערך.",
+] as const;
+const HE_LINE2 = [
+  "מנהלות אותם.",
+  "עובדות אוטומטית.",
+  "גדלות איתך.",
+  "חוסכות לך זמן.",
+] as const;
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -100,6 +129,16 @@ export default function HeroSection() {
   const { locale, t } = useLanguage();
   const isHe = locale === "he";
 
+  // Shared index drives both lines so they always rotate together
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(
+      () => setPhraseIndex((i) => (i + 1) % EN_LINE1.length),
+      4000,
+    );
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <section
       id="home"
@@ -145,21 +184,35 @@ export default function HeroSection() {
               >
                 {isHe ? (
                   <>
-                    אתרים ש<span className="text-[#E67E22]">מביאים</span>{" "}
-                    <span className="text-[#E67E22]">לקוחות.</span>
+                    {"אתרים ש"}
+                    <RotatingPhrase
+                      phrases={HE_LINE1}
+                      index={phraseIndex}
+                      className="text-[#E67E22]"
+                    />
                     <br />
-                    מערכות ש<span className="text-[#E67E22]">מנהלות</span>{" "}
-                    <span className="text-[#E67E22]">אותם.</span>
+                    {"מערכות ש"}
+                    <RotatingPhrase
+                      phrases={HE_LINE2}
+                      index={phraseIndex}
+                      className="text-[#E67E22]"
+                    />
                   </>
                 ) : (
                   <>
-                    Websites that <span className="text-[#E67E22]">bring</span>{" "}
-                    <span className="text-[#E67E22]">clients.</span>
+                    {"Websites that "}
+                    <RotatingPhrase
+                      phrases={EN_LINE1}
+                      index={phraseIndex}
+                      className="text-[#E67E22]"
+                    />
                     <br />
-                    Systems that <span className="text-[#E67E22]">
-                      manage
-                    </span>{" "}
-                    <span className="text-[#E67E22]">them.</span>
+                    {"Systems that "}
+                    <RotatingPhrase
+                      phrases={EN_LINE2}
+                      index={phraseIndex}
+                      className="text-[#E67E22]"
+                    />
                   </>
                 )}
               </motion.h1>
