@@ -1,30 +1,17 @@
 'use client'
 
-import { Plus_Jakarta_Sans, Montserrat } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { Icon } from '@iconify/react'
 import { cn } from '@/lib/utils'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { fadeUp, stagger, viewport } from '@/lib/motion'
+import { montserrat, jakarta } from '@/lib/fonts'
+import world from '@iconify-icons/tabler/world'
+import palette from '@iconify-icons/tabler/palette'
+import trendingUp from '@iconify-icons/tabler/trending-up'
+import adjustmentsHorizontal from '@iconify-icons/tabler/adjustments-horizontal'
 
-const whyIcons = [
-  'tabler:world',
-  'tabler:palette',
-  'tabler:trending-up',
-  'tabler:adjustments-horizontal',
-]
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['500', '700'],
-  display: 'swap',
-})
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['700'],
-  display: 'swap',
-})
+const whyIcons = [world, palette, trendingUp, adjustmentsHorizontal]
 
 export default function WhyAndTestimonialsSection() {
   const { locale, t } = useLanguage()
@@ -74,7 +61,7 @@ export default function WhyAndTestimonialsSection() {
               {/* Icon in a soft orange-tinted badge */}
               <div className="w-10 h-10 rounded-lg bg-[#E67E22]/10 flex items-center justify-center shrink-0">
                 <Icon
-                  icon={whyIcons[i] ?? 'tabler:circle'}
+                  icon={whyIcons[i]}
                   width={20}
                   height={20}
                   className="text-[#E67E22]"

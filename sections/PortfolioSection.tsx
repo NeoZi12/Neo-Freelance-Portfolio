@@ -3,13 +3,17 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-import { Montserrat } from "next/font/google";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeUp, stagger, viewport } from "@/lib/motion";
-
-const montserrat = Montserrat({ subsets: ["latin"] });
+import { montserrat } from "@/lib/fonts";
+import arrowLeft from "@iconify-icons/lucide/arrow-left";
+import arrowRight from "@iconify-icons/lucide/arrow-right";
+import x from "@iconify-icons/lucide/x";
+import chevronLeft from "@iconify-icons/lucide/chevron-left";
+import chevronRight from "@iconify-icons/lucide/chevron-right";
+import externalLink from "@iconify-icons/lucide/external-link";
 
 /* ─── Static data (images / URLs only) ─────────────────────────────────── */
 
@@ -97,6 +101,8 @@ function ProjectCard({
           src={project.thumbnail}
           alt={project.name}
           fill
+          loading="lazy"
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
@@ -128,9 +134,9 @@ function ProjectCard({
               "shadow-[0px_6px_16px_rgba(230,126,34,0.4)]",
             )}
           >
-            {isHe && <Icon icon="lucide:arrow-left" width={14} height={14} />}
+            {isHe && <Icon icon={arrowLeft} width={14} height={14} />}
             {viewProjectLabel}
-            {!isHe && <Icon icon="lucide:arrow-right" width={14} height={14} />}
+            {!isHe && <Icon icon={arrowRight} width={14} height={14} />}
           </span>
         </div>
       </div>
@@ -189,7 +195,7 @@ function ProjectModal({
           className="absolute top-3 right-3 text-white/70 hover:text-white transition-colors duration-200 z-10"
           aria-label="Close modal"
         >
-          <Icon icon="lucide:x" width={22} height={22} />
+          <Icon icon={x} width={22} height={22} />
         </button>
 
         {/* Title + CTA — swap order in Hebrew */}
@@ -218,9 +224,9 @@ function ProjectModal({
             )}
             onClick={(e) => e.stopPropagation()}
           >
-            {isHe && <Icon icon="lucide:external-link" width={14} height={14} />}
+            {isHe && <Icon icon={externalLink} width={14} height={14} />}
             {goToWebsiteLabel}
-            {!isHe && <Icon icon="lucide:external-link" width={14} height={14} />}
+            {!isHe && <Icon icon={externalLink} width={14} height={14} />}
           </a>
         </div>
 
@@ -243,7 +249,7 @@ function ProjectModal({
                 )}
                 aria-label="Previous screenshot"
               >
-                <Icon icon="lucide:chevron-left" width={20} height={20} />
+                <Icon icon={chevronLeft} width={20} height={20} />
               </button>
 
               <button
@@ -255,7 +261,7 @@ function ProjectModal({
                 )}
                 aria-label="Next screenshot"
               >
-                <Icon icon="lucide:chevron-right" width={20} height={20} />
+                <Icon icon={chevronRight} width={20} height={20} />
               </button>
 
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">

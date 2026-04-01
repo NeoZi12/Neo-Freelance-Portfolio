@@ -2,17 +2,12 @@
 
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
-import { Montserrat } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { fadeUp, fadeLeft, fadeRight, viewport } from '@/lib/motion'
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-})
+import { montserrat } from '@/lib/fonts'
+import chevronDown from '@iconify-icons/mdi/chevron-down'
 
 export default function HowItWorksSection() {
   const { locale, t } = useLanguage()
@@ -43,6 +38,7 @@ export default function HowItWorksSection() {
 
         {/* Section heading */}
         <motion.div
+          dir={isHe ? 'rtl' : 'ltr'}
           className="text-center mb-12"
           variants={fadeUp}
           initial="hidden"
@@ -159,7 +155,7 @@ export default function HowItWorksSection() {
                         {faq.q}
                       </span>
                       <Icon
-                        icon="mdi:chevron-down"
+                        icon={chevronDown}
                         width={20}
                         height={20}
                         className={cn(

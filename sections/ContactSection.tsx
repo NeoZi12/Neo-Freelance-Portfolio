@@ -1,35 +1,40 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Icon } from "@iconify/react";
-import { Montserrat } from "next/font/google";
+import { Icon, type IconifyIcon } from "@iconify/react";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeLeft, fadeRight, viewport } from "@/lib/motion";
+import { montserrat } from "@/lib/fonts";
+import linkedin from "@iconify-icons/mdi/linkedin";
+import whatsapp from "@iconify-icons/mdi/whatsapp";
+import emailOutline from "@iconify-icons/mdi/email-outline";
+import github from "@iconify-icons/mdi/github";
+import loaderCircle from "@iconify-icons/lucide/loader-2";
+import checkCircle from "@iconify-icons/lucide/check-circle";
+import alertCircle from "@iconify-icons/lucide/alert-circle";
 
 const COOLDOWN_MS = 60_000;
 const COOLDOWN_KEY = "contact_last_sent";
 const MSG_MAX = 500;
 
-const montserrat = Montserrat({ subsets: ["latin"], display: "swap" });
-
 /* ─── Static social data (icons / hrefs / platform keys) ───────────────── */
 
 const socialMeta = [
-  { platform: "linkedin", label: "LinkedIn",  icon: "mdi:linkedin",      href: "https://www.linkedin.com/in/neozino/" },
-  { platform: "whatsapp", label: "WhatsApp",  icon: "mdi:whatsapp",      href: "https://wa.me/972525930575",          fixedSublabel: "+972 52 593 0575" },
-  { platform: "email",    label: "Email",     icon: "mdi:email-outline",  href: "mailto:neozi2014@gmail.com",          fixedSublabel: "neozi2014@gmail.com" },
-  { platform: "github",   label: "GitHub",    icon: "mdi:github",        href: "https://github.com/NeoZi12" },
-] as const;
+  { platform: "linkedin", label: "LinkedIn",  icon: linkedin,      href: "https://www.linkedin.com/in/neozino/" },
+  { platform: "whatsapp", label: "WhatsApp",  icon: whatsapp,      href: "https://wa.me/972525930575",          fixedSublabel: "+972 52 593 0575" },
+  { platform: "email",    label: "Email",     icon: emailOutline,  href: "mailto:neozi2014@gmail.com",          fixedSublabel: "neozi2014@gmail.com" },
+  { platform: "github",   label: "GitHub",    icon: github,        href: "https://github.com/NeoZi12" },
+];
 
 /* ─── SocialLinkItem ────────────────────────────────────────────────────── */
 
 function SocialLinkItem({
   platform, label, icon, href, sublabel, isHe,
 }: {
-  platform: string; label: string; icon: string;
+  platform: string; label: string; icon: IconifyIcon;
   href: string; sublabel: string | null; isHe: boolean;
 }) {
   return (
@@ -156,9 +161,8 @@ export default function ContactSection() {
   // Merge static social meta with locale sublabels
   const socialLinks = socialMeta.map((s) => ({
     ...s,
-    sublabel: "fixedSublabel" in s
-      ? s.fixedSublabel
-      : isHe ? null : tc.social[s.platform as keyof typeof tc.social],
+    sublabel: ("fixedSublabel" in s ? s.fixedSublabel : null) ??
+      (isHe ? null : tc.social[s.platform as keyof typeof tc.social] ?? null),
   }));
 
   /*
@@ -327,7 +331,7 @@ export default function ContactSection() {
                 >
                   {status === "sending" ? (
                     <>
-                      <Icon icon="lucide:loader-circle" width={16} height={16} className="animate-spin" />
+                      <Icon icon={loaderCircle} width={16} height={16} className="animate-spin" />
                       {tc.sending}
                     </>
                   ) : cooldownSecs > 0 ? (
@@ -339,13 +343,13 @@ export default function ContactSection() {
 
                 {status === "success" && (
                   <p className={cn("flex items-center gap-2 text-green-400 text-sm font-medium", isHe && "flex-row-reverse")}>
-                    <Icon icon="lucide:check-circle" width={16} height={16} />
+                    <Icon icon={checkCircle} width={16} height={16} />
                     {tc.success}
                   </p>
                 )}
                 {status === "error" && (
                   <p className={cn("flex items-center gap-2 text-red-400 text-sm font-medium", isHe && "flex-row-reverse")}>
-                    <Icon icon="lucide:alert-circle" width={16} height={16} />
+                    <Icon icon={alertCircle} width={16} height={16} />
                     {tc.error}
                   </p>
                 )}

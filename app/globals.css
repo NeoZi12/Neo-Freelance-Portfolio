@@ -37,6 +37,18 @@
 }
 
 /* ─────────────────────────────────────────────
+   Hebrew Typography: Heebo
+   Applied to all [dir="rtl"] containers and their descendants.
+   Specificity 0,1,1 (html element + attribute selector) beats
+   any component-level next/font class (specificity 0,1,0),
+   so no !important is needed.
+   ───────────────────────────────────────────── */
+html [dir="rtl"],
+html [dir="rtl"] * {
+  font-family: var(--font-heebo), sans-serif;
+}
+
+/* ─────────────────────────────────────────────
    Base Styles
    ───────────────────────────────────────────── */
 *,
@@ -164,13 +176,13 @@ textarea:-webkit-autofill:focus {
 }
 
 /* ── Touch device icon state ────────────────────────────────────────────────
-   Framer Motion dims icons to brightness(0.85) in the idle (non-hovered) state.
+   Framer Motion dims icons to opacity 0.75 in the idle (non-hovered) state.
    On touch screens there is no hover, so icons would always appear dimmed.
-   Reset to full brightness via !important to override the inline style.
+   Reset to full opacity via !important to override the inline style.
    ─────────────────────────────────────────────────────────────────────────── */
 @media (hover: none) {
   .tech-icon {
-    filter: brightness(1) !important;
+    opacity: 1 !important;
   }
 }
 

@@ -1,23 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Island_Moments, Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Locale } from "@/lib/i18n";
+import { logoFont, montserrat } from "@/lib/fonts";
 
-// Exact Figma font: Island Moments, weight 400
-const logoFont = Island_Moments({
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const navFont = Montserrat({
-  weight: ["700"],
-  subsets: ["latin"],
-  display: "swap",
-});
+const navFont = montserrat;
 
 type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact" | "/why-us";
 

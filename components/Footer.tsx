@@ -1,15 +1,12 @@
 "use client";
 
-import { Montserrat } from "next/font/google";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { montserrat } from "@/lib/fonts";
+import arrowUp from "@iconify-icons/lucide/arrow-up";
 
-const bodyFont = Montserrat({
-  weight: ["400", "500"],
-  subsets: ["latin"],
-  display: "swap",
-});
+const bodyFont = montserrat;
 
 export default function Footer() {
   const { locale, t } = useLanguage();
@@ -50,7 +47,7 @@ export default function Footer() {
                 "transition-all duration-300",
               )}
             >
-              <Icon icon="lucide:arrow-up" width={13} height={13} />
+              <Icon icon={arrowUp} width={13} height={13} />
             </span>
           )}
           <span className="hidden sm:inline">{t.footer.backToTop}</span>
@@ -63,7 +60,7 @@ export default function Footer() {
                 "transition-all duration-300",
               )}
             >
-              <Icon icon="lucide:arrow-up" width={13} height={13} />
+              <Icon icon={arrowUp} width={13} height={13} />
             </span>
           )}
         </button>

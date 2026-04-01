@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
   Suspense,
   type ReactNode,
@@ -44,10 +45,14 @@ function LanguageProviderInner({ children }: { children: ReactNode }) {
     router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
   }
 
+  const value = useMemo(
+    () => ({ locale, setLocale, t: translations[locale] }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [locale],
+  );
+
   return (
-    <LanguageContext.Provider
-      value={{ locale, setLocale, t: translations[locale] }}
-    >
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

@@ -2,18 +2,12 @@
 
 import React from "react";
 import Image from "next/image";
-import { Montserrat } from "next/font/google";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeUp, fadeLeft, stagger, viewport } from "@/lib/motion";
 import TechMarquee from "@/components/TechMarquee";
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
+import { montserrat } from "@/lib/fonts";
 
 // ── Photo frame helper ────────────────────────────────────────────────────────
 
@@ -52,6 +46,8 @@ function PhotoFrame({
           src="/images/about-pic.jpg"
           alt="Neo Zino – Freelance Web Developer"
           fill
+          loading="lazy"
+          sizes="(min-width: 1024px) 50vw, 100vw"
           className="object-cover object-top"
         />
       </div>

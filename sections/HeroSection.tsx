@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Montserrat } from "next/font/google";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EASE, DUR } from "@/lib/motion";
 import { RotatingPhrase } from "@/components/RotatingPhrase";
+import { montserrat } from "@/lib/fonts";
 
 // Paired phrase sets — both lines rotate together in sync.
 // Keep each phrase close in length to the current text to avoid line-wrap shifts.
@@ -35,12 +35,6 @@ const HE_LINE2 = [
   "גדלות איתך.",
   "חוסכות לך זמן.",
 ] as const;
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 // ── Avatar helper ─────────────────────────────────────────────────────────────
 
@@ -83,8 +77,9 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
             src="/images/neo2d.png"
             alt="Neo Zino – Freelance Web Developer"
             fill
-            className="object-contain object-top"
             priority
+            sizes="(min-width: 1024px) 340px, 220px"
+            className="object-contain object-top"
           />
         </div>
 
@@ -99,6 +94,7 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
             src="/images/neo2d.png"
             alt=""
             fill
+            sizes="(min-width: 1024px) 340px, 220px"
             className="object-contain object-top"
             aria-hidden
           />
@@ -144,10 +140,20 @@ export default function HeroSection() {
       id="home"
       className={cn(
         "relative min-h-[100dvh] w-full scroll-mt-0",
-        "bg-[url('/images/orange-mountains.jpg')] bg-cover bg-center bg-no-repeat",
         montserrat.className,
       )}
     >
+      {/* Hero background — Next.js Image: WebP conversion + LCP priority signal */}
+      <Image
+        src="/images/orange-mountains.jpg"
+        alt=""
+        fill
+        priority
+        quality={80}
+        sizes="100vw"
+        className="object-cover object-center"
+        aria-hidden
+      />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/68 pointer-events-none" />
 

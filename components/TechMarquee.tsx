@@ -3,29 +3,43 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@iconify/react";
+import type { IconifyIcon } from "@iconify/react";
 import { fadeUp } from "@/lib/motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import html5 from "@iconify-icons/logos/html-5";
+import css3 from "@iconify-icons/logos/css-3";
+import javascript from "@iconify-icons/logos/javascript";
+import typescriptIcon from "@iconify-icons/logos/typescript-icon";
+import react from "@iconify-icons/logos/react";
+import nextjsIcon from "@iconify-icons/logos/nextjs-icon";
+import tailwindcssIcon from "@iconify-icons/logos/tailwindcss-icon";
+import nodejsIcon from "@iconify-icons/logos/nodejs-icon";
+import postgresql from "@iconify-icons/logos/postgresql";
+import gitIcon from "@iconify-icons/logos/git-icon";
+import githubIcon from "@iconify-icons/mdi/github";
+import vercelIcon from "@iconify-icons/logos/vercel-icon";
+import sanitySimple from "@iconify-icons/simple-icons/sanity";
+import figma from "@iconify-icons/logos/figma";
 
-type Tech = { name: string; icon: string; style?: React.CSSProperties };
+type Tech = { name: string; icon: IconifyIcon; style?: React.CSSProperties };
 
 const TECHS: Tech[] = [
-  { name: "HTML5",        icon: "logos:html-5" },
-  { name: "CSS3",         icon: "logos:css-3" },
-  { name: "JavaScript",   icon: "logos:javascript" },
-  { name: "TypeScript",   icon: "logos:typescript-icon" },
-  { name: "React",        icon: "logos:react" },
-  { name: "Next.js",      icon: "logos:nextjs-icon" },
-  { name: "Tailwind CSS", icon: "logos:tailwindcss-icon" },
-  { name: "Node.js",      icon: "logos:nodejs-icon" },
-  // PostgreSQL — the gray elephant icon
-  { name: "PostgreSQL",   icon: "logos:postgresql" },
-  { name: "Git",          icon: "logos:git-icon" },
+  { name: "HTML5",        icon: html5 },
+  { name: "CSS3",         icon: css3 },
+  { name: "JavaScript",   icon: javascript },
+  { name: "TypeScript",   icon: typescriptIcon },
+  { name: "React",        icon: react },
+  { name: "Next.js",      icon: nextjsIcon },
+  { name: "Tailwind CSS", icon: tailwindcssIcon },
+  { name: "Node.js",      icon: nodejsIcon },
+  { name: "PostgreSQL",   icon: postgresql },
+  { name: "Git",          icon: gitIcon },
   // mdi:github uses currentColor — force white so it's visible on dark bg
-  { name: "GitHub",       icon: "mdi:github", style: { color: "#ffffff" } },
-  { name: "Vercel",       icon: "logos:vercel-icon" },
-  // simple-icons:sanity renders in Sanity's brand red (#F03E2F)
-  { name: "Sanity",       icon: "simple-icons:sanity", style: { color: "#F03E2F" } },
-  { name: "Figma",        icon: "logos:figma" },
+  { name: "GitHub",       icon: githubIcon, style: { color: "#ffffff" } },
+  { name: "Vercel",       icon: vercelIcon },
+  // Sanity's brand red (#F03E2F)
+  { name: "Sanity",       icon: sanitySimple, style: { color: "#F03E2F" } },
+  { name: "Figma",        icon: figma },
 ];
 
 // ── Single icon with tooltip ──────────────────────────────────────────────────
@@ -48,27 +62,25 @@ function TechIcon({ name, icon, style }: Tech) {
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.2, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="block px-3 py-1 rounded-full text-[11px] font-medium tracking-wide text-white/70 bg-white/[0.08] border border-white/[0.12] backdrop-blur-sm">
+            <span className="block px-3 py-1 rounded-full text-[11px] font-medium tracking-wide text-white/70 bg-neutral-900/90 border border-white/[0.12]">
               {name}
             </span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Icon — scales and brightens on hover.
-          `tech-icon` class lets CSS reset the filter on touch devices so icons
-          are never stuck at the dimmed idle state on mobile. */}
+      {/* Icon — scales and dims on idle, full opacity on hover.
+          `tech-icon` class lets CSS reset brightness on touch devices. */}
       <motion.div
         className="tech-icon cursor-pointer select-none"
         animate={
           hovered
-            ? { scale: 1.18, filter: "brightness(1.25)" }
-            : { scale: 1,    filter: "brightness(0.85)" }
+            ? { scale: 1.18, opacity: 1 }
+            : { scale: 1,    opacity: 0.75 }
         }
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Mobile: w-8 h-8 (32 px, ~11% smaller than desktop base).
-            sm+: keep the original w-11 h-11 (44 px). */}
+        {/* Mobile: w-8 h-8 (32 px). sm+: w-11 h-11 (44 px). */}
         <Icon icon={icon} className="w-8 h-8 sm:w-11 sm:h-11" style={style} aria-hidden="true" />
       </motion.div>
     </div>
