@@ -198,11 +198,14 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
           keeping overflow-y visible so tooltips above icons are never cut off.
           stopOnMouseEnter in the plugin handles desktop hover-pause natively.
         */}
-        <div ref={emblaRef} className="[overflow-x:clip]">
-          {/* Embla track — first child of the viewport */}
-          <div className="flex items-center gap-x-5 sm:gap-x-8">
+        <div ref={emblaRef} className="[overflow-x:clip]" dir="ltr">
+          {/* Embla track — first child of the viewport.
+              Spacing is on each slide's padding-left (not gap) so Embla
+              measures it as part of the slide width and applies it
+              consistently at the loop boundary too. */}
+          <div className="flex items-center">
             {SLIDE_TECHS.map((tech, i) => (
-              <div key={`${tech.name}-${i}`} className="flex-none">
+              <div key={`${tech.name}-${i}`} className="flex-none pl-5 sm:pl-8">
                 <TechIcon
                   {...tech}
                   isActive={activeIcon === tech.name}
