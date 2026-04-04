@@ -163,12 +163,12 @@ export default function HeroSection() {
         montserrat.className,
       )}
     >
-      {/* Hero background — Next.js Image: WebP conversion + LCP priority signal */}
+      {/* Hero background — not LCP, eager load without preload to keep the preload slot for the portrait */}
       <Image
         src="/images/orange-mountains.jpg"
         alt=""
         fill
-        priority
+        loading="eager"
         quality={80}
         sizes="100vw"
         className="object-cover object-center"
