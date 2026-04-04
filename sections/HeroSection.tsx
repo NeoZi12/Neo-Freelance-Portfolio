@@ -102,7 +102,8 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
           />
         </div>
 
-        {/* Layer B: hair pop-out */}
+        {/* Layer B: hair pop-out — intentionally no `quality` override so the
+            browser reuses the already-preloaded Layer A resource (same URL). */}
         <div
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
@@ -113,7 +114,6 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
             src="/images/neo2d.png"
             alt=""
             fill
-            quality={30}
             sizes="(min-width: 1024px) 340px, 220px"
             className="object-contain object-top"
             aria-hidden

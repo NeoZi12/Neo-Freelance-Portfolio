@@ -13,6 +13,10 @@ const heebo = Heebo({
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
   variable: "--font-heebo",
+  // Not preloaded — Heebo is only applied when the user switches to Hebrew.
+  // Preloading it for every English visitor wastes a preload slot that should
+  // go to the LCP image (the hero portrait).
+  preload: false,
 });
 
 export const metadata: Metadata = {

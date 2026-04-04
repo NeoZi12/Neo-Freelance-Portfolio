@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Icon, type IconifyIcon } from "@iconify/react";
 import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
+// emailjs is dynamically imported on first form submission — keeps it out of
+// the ContactSection chunk so it doesn't parse on scroll-into-view.
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeLeft, fadeRight, viewport } from "@/lib/motion";
@@ -142,6 +143,7 @@ export default function ContactSection() {
     if (Object.keys(validationErrors).length > 0) return;
     setStatus("sending");
     try {
+      const emailjs = (await import("@emailjs/browser")).default;
       await emailjs.send("service_jfqyste", "template_8vsa8pv", {
         user_name: fields.name,
         user_email: fields.email,

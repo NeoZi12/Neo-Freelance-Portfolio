@@ -25,4 +25,7 @@ export const logoFont = Island_Moments({
   weight: '400',
   subsets: ['latin'],
   display: 'swap',
+  // Not preloaded — logo font is decorative and non-critical for LCP.
+  // The system font fallback shows instantly; Island Moments swaps in silently.
+  preload: false,
 })
