@@ -124,6 +124,13 @@ textarea:-webkit-autofill:focus {
   }
 }
 
+/* JS-controlled pause for touch tap interaction.
+   animation-play-state: paused freezes the current transform — no position reset. */
+.marquee-track.marquee-paused,
+.marquee-track-rtl.marquee-paused {
+  animation-play-state: paused;
+}
+
 /* ── Marquee edge-fade mask — responsive ────────────────────────────────────
    72px fade on desktop, narrower on mobile so less screen real estate is lost.
    Both prefixes required for Safari. Applied via class so media queries work
