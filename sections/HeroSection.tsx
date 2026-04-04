@@ -262,12 +262,10 @@ export default function HeroSection() {
                 ) : (
                   <>
                     I build{" "}
-                    <span className="text-[#E67E22]">landing pages</span> that
-                    bring you clients, and{" "}
-                    <span className="text-[#E67E22]">custom systems</span> that
-                    help you manage and{" "}
-                    <span className="text-[#E67E22]">run your business</span>{" "}
-                    online.
+                    <span className="text-[#E67E22]">high-converting landing pages</span>{" "}
+                    and{" "}
+                    <span className="text-[#E67E22]">custom full-stack websites</span>{" "}
+                    for businesses and professionals who want to attract more clients and run their business online.
                   </>
                 )}
               </motion.p>
