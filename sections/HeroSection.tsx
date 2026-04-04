@@ -252,20 +252,19 @@ export default function HeroSection() {
               >
                 {isHe ? (
                   <>
-                    אני בונה <span className="text-[#E67E22]">דפי נחיתה</span>{" "}
-                    שמביאים לך לקוחות, ו
-                    <span className="text-[#E67E22]">מערכות מותאמות אישית</span>{" "}
-                    שעוזרות לך לנהל ו
-                    <span className="text-[#E67E22]">לתפעל את העסק שלך</span>{" "}
-                    אונליין.
+                    כמפתח אתרים פרילנסר, אני בונה{" "}
+                    <span className="text-[#E67E22]">דפי נחיתה שמביאים תוצאות</span>{" "}
+                    ו
+                    <span className="text-[#E67E22]">אתרי פול-סטאק מותאמים אישית</span>{" "}
+                    לעסקים ואנשי מקצוע שרוצים למשוך יותר לקוחות ולנהל את העסק שלהם אונליין.
                   </>
                 ) : (
                   <>
-                    I build{" "}
+                    As a freelance web developer, I build{" "}
                     <span className="text-[#E67E22]">high-converting landing pages</span>{" "}
                     and{" "}
                     <span className="text-[#E67E22]">custom full-stack websites</span>{" "}
-                    for businesses and professionals who want to attract more clients and run their business online.
+                    for businesses and professionals who want to attract more clients and manage their business online.
                   </>
                 )}
               </motion.p>
