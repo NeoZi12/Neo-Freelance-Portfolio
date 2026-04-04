@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Heebo } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -18,6 +18,10 @@ const heebo = Heebo({
   // go to the LCP image (the hero portrait).
   preload: false,
 });
+
+export const viewport: Viewport = {
+  themeColor: "#E67E22",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://neo-freelance-portfolio.vercel.app"),
@@ -60,9 +64,6 @@ export const metadata: Metadata = {
     description:
       "Freelance web developer based in Israel. I build landing pages and custom full-stack systems that convert visitors into clients and automate your business online.",
     images: ["/images/neo2dmetadata.png"],
-  },
-  other: {
-    "theme-color": "#E67E22",
   },
 };
 

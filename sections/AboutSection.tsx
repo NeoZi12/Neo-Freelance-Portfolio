@@ -44,7 +44,7 @@ function PhotoFrame({
       >
         <Image
           src="/images/about-pic.jpg"
-          alt="Neo Zino – Freelance Web Developer"
+          alt="Photo of Neo Zino, freelance web developer"
           fill
           loading="lazy"
           sizes="(min-width: 1024px) 50vw, 100vw"
