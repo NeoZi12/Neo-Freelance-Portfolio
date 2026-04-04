@@ -117,9 +117,11 @@ textarea:-webkit-autofill:focus {
   will-change: transform;
 }
 
-.marquee-track:hover,
-.marquee-track-rtl:hover {
-  animation-play-state: paused;
+@media (hover: hover) {
+  .marquee-track:hover,
+  .marquee-track-rtl:hover {
+    animation-play-state: paused;
+  }
 }
 
 /* ── Marquee edge-fade mask — responsive ────────────────────────────────────
