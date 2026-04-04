@@ -4,6 +4,8 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@iconify/react";
 import type { IconifyIcon } from "@iconify/react";
+import useEmblaCarousel from "embla-carousel-react";
+import AutoScroll from "embla-carousel-auto-scroll";
 import { fadeUp } from "@/lib/motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import html5 from "@iconify-icons/logos/html-5";
@@ -41,6 +43,9 @@ const TECHS: Tech[] = [
   { name: "Sanity",       icon: sanitySimple, style: { color: "#F03E2F" } },
   { name: "Figma",        icon: figma },
 ];
+
+// Doubled so Embla has enough slide width to loop on any viewport size.
+const SLIDE_TECHS = [...TECHS, ...TECHS];
 
 // ── Single icon with tooltip ──────────────────────────────────────────────────
 type TechIconProps = Tech & { isActive: boolean; onTap: (name: string) => void };
@@ -113,7 +118,8 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
 
   // Mobile tap state: which icon (by name) is currently active. null = none.
   const [activeIcon, setActiveIcon] = useState<string | null>(null);
-  // Ref on the carousel container for outside-tap detection
+
+  // Ref on the outer container for outside-tap detection
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleIconTap = useCallback((name: string) => {
@@ -122,8 +128,7 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
   }, []);
 
   // When an icon is active on touch, listen for taps outside the carousel and
-  // dismiss the active state (which also resumes the animation).
-  // The listener is only attached while something is active — no permanent overhead.
+  // dismiss the active state (which also resumes the scroll).
   useEffect(() => {
     if (activeIcon === null) return;
 
@@ -138,11 +143,35 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
     return () => document.removeEventListener("pointerdown", handleOutside);
   }, [activeIcon]);
 
-  // .marquee-paused is a CSS class that sets animation-play-state: paused.
-  // It freezes the current transform without resetting the position.
-  // Only applied on touch (desktop uses CSS :hover inside @media (hover: hover)).
-  const trackBase = isHe ? "marquee-track-rtl" : "marquee-track";
-  const trackClass = `${trackBase}${activeIcon ? " marquee-paused" : ""} flex items-center gap-x-5 sm:gap-x-8 w-max`;
+  // ── Embla setup ─────────────────────────────────────────────────────────────
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, dragFree: true, align: "start" },
+    [
+      AutoScroll({
+        speed: 0.6,
+        startDelay: 0,
+        // RTL locale: scroll backward (right-to-left visually)
+        direction: isHe ? "backward" : "forward",
+        // Resumes automatically after a drag — no settle listener needed
+        stopOnInteraction: false,
+        // Pause on desktop hover (no-op on touch — mouseenter never fires)
+        stopOnMouseEnter: true,
+      }),
+    ]
+  );
+
+  // Mobile tap: pause auto-scroll while an icon is active, resume when dismissed.
+  // Desktop hover is handled entirely by stopOnMouseEnter above — no conflict
+  // because mouseenter/mouseleave never fire on touch devices.
+  useEffect(() => {
+    const autoScroll = emblaApi?.plugins()?.autoScroll;
+    if (!autoScroll) return;
+    if (activeIcon) {
+      autoScroll.stop();
+    } else {
+      autoScroll.play(0);
+    }
+  }, [emblaApi, activeIcon]);
 
   return (
     <motion.div
@@ -154,41 +183,34 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
       </span>
 
       {/*
-        [overflow-x:clip] clips the scrolling track horizontally while
-        leaving overflow-y: visible so tooltips positioned above icons
-        are never cut off. pt-9 gives headroom for the tooltip + animation.
-        marquee-mask applies the responsive edge-fade (72px desktop / 40px mobile).
+        marquee-mask applies the responsive edge-fade gradient.
+        pt-9 gives headroom for the tooltip above icons.
         containerRef enables outside-tap detection for dismissing active icons.
       */}
       <div
         ref={containerRef}
-        className="marquee-mask relative w-full [overflow-x:clip] pt-9 pb-3"
-        dir="ltr"
+        className="marquee-mask relative w-full pt-9 pb-3"
         role="region"
         aria-label={label}
       >
-        {/* Track: items rendered twice for seamless translateX(-50%) loop.
-            dir="ltr" on the parent ensures flex always lays out L→R regardless
-            of page locale, so the -50% translateX trick works correctly.
-            RTL uses the reversed keyframe (starts at -50%, ends at 0).
-            Mobile gap: gap-x-5 (20px) — slightly tighter than desktop gap-x-8 (32px). */}
-        <div className={trackClass} aria-hidden="true">
-          {TECHS.map((tech) => (
-            <TechIcon
-              key={tech.name}
-              {...tech}
-              isActive={activeIcon === tech.name}
-              onTap={handleIconTap}
-            />
-          ))}
-          {TECHS.map((tech) => (
-            <TechIcon
-              key={`${tech.name}-dup`}
-              {...tech}
-              isActive={activeIcon === tech.name}
-              onTap={handleIconTap}
-            />
-          ))}
+        {/*
+          Embla viewport: [overflow-x:clip] clips the track horizontally while
+          keeping overflow-y visible so tooltips above icons are never cut off.
+          stopOnMouseEnter in the plugin handles desktop hover-pause natively.
+        */}
+        <div ref={emblaRef} className="[overflow-x:clip]">
+          {/* Embla track — first child of the viewport */}
+          <div className="flex items-center gap-x-5 sm:gap-x-8">
+            {SLIDE_TECHS.map((tech, i) => (
+              <div key={`${tech.name}-${i}`} className="flex-none">
+                <TechIcon
+                  {...tech}
+                  isActive={activeIcon === tech.name}
+                  onTap={handleIconTap}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>

@@ -92,45 +92,6 @@ textarea:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* ── Tech Marquee ──────────────────────────────────────────────────────────
-   Infinite horizontal scroll. Items are duplicated in the DOM so
-   translateX(-50%) produces a seamless loop. GPU-composited (transform only).
-   ─────────────────────────────────────────────────────────────────────────── */
-@keyframes marquee-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-.marquee-track {
-  animation: marquee-scroll 30s linear infinite;
-  will-change: transform;
-}
-
-/* RTL variant: starts at -50% and moves back to 0 (visually right-moving) */
-@keyframes marquee-scroll-rtl {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
-}
-
-.marquee-track-rtl {
-  animation: marquee-scroll-rtl 30s linear infinite;
-  will-change: transform;
-}
-
-@media (hover: hover) {
-  .marquee-track:hover,
-  .marquee-track-rtl:hover {
-    animation-play-state: paused;
-  }
-}
-
-/* JS-controlled pause for touch tap interaction.
-   animation-play-state: paused freezes the current transform — no position reset. */
-.marquee-track.marquee-paused,
-.marquee-track-rtl.marquee-paused {
-  animation-play-state: paused;
-}
-
 /* ── Marquee edge-fade mask — responsive ────────────────────────────────────
    72px fade on desktop, narrower on mobile so less screen real estate is lost.
    Both prefixes required for Safari. Applied via class so media queries work
@@ -153,19 +114,8 @@ textarea:-webkit-autofill:focus {
   );
 }
 
-/* ── Mobile-specific marquee optimisations (< 640px = below Tailwind `sm`) ──
-   • Speed: 24s = ~20% faster than desktop (30s) — feels lighter and less sluggish.
-   • Mask: narrower fade stops so more icons are visible on small screens.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── Mobile marquee mask — narrower fade so more icons are visible on small screens */
 @media (max-width: 639px) {
-  .marquee-track {
-    animation-duration: 24s;
-  }
-
-  .marquee-track-rtl {
-    animation-duration: 24s;
-  }
-
   .marquee-mask {
     -webkit-mask-image: linear-gradient(
       to right,
@@ -195,11 +145,3 @@ textarea:-webkit-autofill:focus {
   }
 }
 
-/* CSS animations are NOT controlled by Framer Motion's MotionConfig.
-   Must be handled here separately. */
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track,
-  .marquee-track-rtl {
-    animation: none;
-  }
-}
