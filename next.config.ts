@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Images: add domains here as needed when using next/image with external URLs
   images: {
     remotePatterns: [],
+    deviceSizes: [440, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  },
+  experimental: {
+    cssChunking: false,
   },
   async rewrites() {
     return [

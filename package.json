@@ -24,6 +24,12 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.5.4"
   },
+  "browserslist": [
+    "chrome >= 93",
+    "safari >= 15.4",
+    "firefox >= 92",
+    "edge >= 93"
+  ],
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20",

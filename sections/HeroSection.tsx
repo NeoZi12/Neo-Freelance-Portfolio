@@ -113,6 +113,7 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
             src="/images/neo2d.png"
             alt=""
             fill
+            quality={30}
             sizes="(min-width: 1024px) 340px, 220px"
             className="object-contain object-top"
             aria-hidden
