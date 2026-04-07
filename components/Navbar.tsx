@@ -155,13 +155,6 @@ export default function Navbar() {
     const sectionIds: string[] = ["home", "services", "portfolio", "why-us", "how-it-works", "about", "contact"];
     const observers: IntersectionObserver[] = [];
 
-    // After a pathname change (i.e. a programmatic cross-page navigation) we
-    // suppress URL updates from the IntersectionObserver for long enough to let
-    // the smooth-scroll animation complete (~1 s).  The visual activeLink still
-    // updates immediately so the nav highlight is always correct.
-    let ioCanUpdateUrl = false;
-    const enableTimer = setTimeout(() => { ioCanUpdateUrl = true; }, 1000);
-
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -175,12 +168,9 @@ export default function Navbar() {
             } else {
               const href = id === "home" ? "/" : `/${id}` as NavHref;
               setActiveLink(href);
-              // Only update the URL bar once the scroll animation has settled.
-              // Updating earlier triggers usePathname() → SectionScroller fires
-              // for the wrong section, hijacking the intended scroll target.
-              if (ioCanUpdateUrl) {
-                window.history.replaceState(null, "", href + window.location.search);
-              }
+              // Do NOT call replaceState here — Next.js App Router intercepts it,
+              // updates usePathname(), and triggers SectionScroller to
+              // scrollIntoView(), causing scroll-jacking during normal scrolling.
             }
           }
         },
@@ -191,7 +181,6 @@ export default function Navbar() {
     });
 
     return () => {
-      clearTimeout(enableTimer);
       observers.forEach((o) => o.disconnect());
     };
   }, [pathname]);
