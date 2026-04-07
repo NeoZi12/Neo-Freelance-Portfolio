@@ -13,6 +13,9 @@ import linkedin from "@iconify-icons/mdi/linkedin";
 import whatsapp from "@iconify-icons/mdi/whatsapp";
 import emailOutline from "@iconify-icons/mdi/email-outline";
 import github from "@iconify-icons/mdi/github";
+import instagram from "@iconify-icons/mdi/instagram";
+import tiktok from "@iconify-icons/simple-icons/tiktok";
+import youtube from "@iconify-icons/mdi/youtube";
 import loaderCircle from "@iconify-icons/lucide/loader-2";
 import checkCircle from "@iconify-icons/lucide/check-circle";
 import alertCircle from "@iconify-icons/lucide/alert-circle";
@@ -24,10 +27,13 @@ const MSG_MAX = 500;
 /* ─── Static social data (icons / hrefs / platform keys) ───────────────── */
 
 const socialMeta = [
-  { platform: "linkedin", label: "LinkedIn",  icon: linkedin,      href: "https://www.linkedin.com/in/neozino/" },
-  { platform: "whatsapp", label: "WhatsApp",  icon: whatsapp,      href: "https://wa.me/972525930575",          fixedSublabel: "+972 52 593 0575" },
-  { platform: "email",    label: "Email",     icon: emailOutline,  href: "mailto:neozi2014@gmail.com",          fixedSublabel: "neozi2014@gmail.com" },
-  { platform: "github",   label: "GitHub",    icon: github,        href: "https://github.com/NeoZi12" },
+  { platform: "linkedin",  label: "LinkedIn",   icon: linkedin,     href: "https://www.linkedin.com/in/neozino/" },
+  { platform: "whatsapp",  label: "WhatsApp",   icon: whatsapp,     href: "https://wa.me/972525930575",         fixedSublabel: "+972 52 593 0575" },
+  { platform: "email",     label: "Email",      icon: emailOutline, href: "mailto:neozino.dev@gmail.com",       fixedSublabel: "neozino.dev@gmail.com" },
+  { platform: "github",    label: "GitHub",     icon: github,       href: "https://github.com/NeoZi12" },
+  { platform: "instagram", label: "Instagram",  icon: instagram,    href: "https://www.instagram.com/neozino.dev?igsh=MXEwOW9kZ2ZjZHI2bQ%3D%3D&utm_source=qr", fixedSublabel: "@neozino.dev" },
+  { platform: "tiktok",    label: "TikTok",     icon: tiktok,       href: "https://www.tiktok.com/@neozino.dev?is_from_webapp=1&sender_device=pc",              fixedSublabel: "@neozino.dev" },
+  { platform: "youtube",   label: "YouTube",    icon: youtube,      href: "https://youtube.com/@neozino1?si=kQKD8MqI3ds7UNEz",                                  fixedSublabel: "@neozino1" },
 ];
 
 /* ─── SocialLinkItem ────────────────────────────────────────────────────── */
@@ -213,19 +219,34 @@ export default function ContactSection() {
             {/* Orange divider */}
             <div className={cn("w-12 h-[2px] bg-brand-orange rounded-full", isHe && "ml-auto")} />
 
-            {/* Social links */}
-            <div className={cn("flex flex-col gap-5", isHe && "items-end")}>
-              {socialLinks.map((link) => (
-                <SocialLinkItem
-                  key={link.platform}
-                  platform={link.platform}
-                  label={link.label}
-                  icon={link.icon}
-                  href={link.href}
-                  sublabel={link.sublabel}
-                  isHe={isHe}
-                />
-              ))}
+            {/* Social links — two columns */}
+            <div className={cn("flex gap-8", isHe && "flex-row-reverse")}>
+              <div className="flex flex-col gap-5">
+                {socialLinks.slice(0, 4).map((link) => (
+                  <SocialLinkItem
+                    key={link.platform}
+                    platform={link.platform}
+                    label={link.label}
+                    icon={link.icon}
+                    href={link.href}
+                    sublabel={link.sublabel}
+                    isHe={isHe}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col gap-5">
+                {socialLinks.slice(4).map((link) => (
+                  <SocialLinkItem
+                    key={link.platform}
+                    platform={link.platform}
+                    label={link.label}
+                    icon={link.icon}
+                    href={link.href}
+                    sublabel={link.sublabel}
+                    isHe={isHe}
+                  />
+                ))}
+              </div>
             </div>
           </motion.div>
 

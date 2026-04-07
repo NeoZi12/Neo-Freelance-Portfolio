@@ -100,7 +100,6 @@ export default function ServicesSection() {
       {/* ── Content area ── */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-6 lg:py-8">
         <div className="w-full max-w-[1280px] mx-auto flex flex-col items-center">
-
           {/* ── Section title ── */}
           <motion.h2
             dir={isHe ? "rtl" : "ltr"}
@@ -148,8 +147,8 @@ export default function ServicesSection() {
             {/* ══════════════════ LEFT CARD ══════════════════ */}
             <motion.div
               className="relative z-10 lg:pr-16 flex flex-col"
-              onMouseEnter={() => setHoveredSide('left')}
-              animate={cardAnimate('left')}
+              onMouseEnter={() => setHoveredSide("left")}
+              animate={cardAnimate("left")}
               transition={cardTransition}
             >
               {/* ROW 1: Big service title */}
@@ -196,7 +195,9 @@ export default function ServicesSection() {
                     inter.className,
                   )}
                 >
-                  <span className="text-[13px] leading-none text-[#E67E22]">✦</span>
+                  <span className="text-[13px] leading-none text-[#E67E22]">
+                    ✦
+                  </span>
                   {s.whoLabel}
                 </p>
                 <p
@@ -219,11 +220,13 @@ export default function ServicesSection() {
                 whileInView="show"
                 viewport={viewport}
               >
-                <p className={cn(
-                  "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
-                  isHe && "text-right",
-                  inter.className,
-                )}>
+                <p
+                  className={cn(
+                    "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
+                    isHe && "text-right",
+                    inter.className,
+                  )}
+                >
                   {s.left.description}
                 </p>
               </motion.div>
@@ -293,8 +296,8 @@ export default function ServicesSection() {
             {/* ══════════════════ RIGHT CARD ══════════════════ */}
             <motion.div
               className="relative z-10 mt-10 lg:mt-0 lg:pl-16 flex flex-col"
-              onMouseEnter={() => setHoveredSide('right')}
-              animate={cardAnimate('right')}
+              onMouseEnter={() => setHoveredSide("right")}
+              animate={cardAnimate("right")}
               transition={cardTransition}
             >
               {/* ROW 1: Big service title */}
@@ -341,7 +344,9 @@ export default function ServicesSection() {
                     inter.className,
                   )}
                 >
-                  <span className="text-[13px] leading-none text-[#E67E22]">✦</span>
+                  <span className="text-[13px] leading-none text-[#E67E22]">
+                    ✦
+                  </span>
                   {s.whoLabel}
                 </p>
                 <p
@@ -364,11 +369,13 @@ export default function ServicesSection() {
                 whileInView="show"
                 viewport={viewport}
               >
-                <p className={cn(
-                  "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
-                  isHe && "text-right",
-                  inter.className,
-                )}>
+                <p
+                  className={cn(
+                    "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
+                    isHe && "text-right",
+                    inter.className,
+                  )}
+                >
                   {s.right.description}
                 </p>
               </motion.div>
@@ -434,7 +441,6 @@ export default function ServicesSection() {
                 </a>
               </motion.div>
             </motion.div>
-
           </div>
         </div>
       </div>

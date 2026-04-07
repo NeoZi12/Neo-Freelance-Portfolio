@@ -26,29 +26,32 @@ import figma from "@iconify-icons/logos/figma";
 type Tech = { name: string; icon: IconifyIcon; style?: React.CSSProperties };
 
 const TECHS: Tech[] = [
-  { name: "HTML5",        icon: html5 },
-  { name: "CSS3",         icon: css3 },
-  { name: "JavaScript",   icon: javascript },
-  { name: "TypeScript",   icon: typescriptIcon },
-  { name: "React",        icon: react },
-  { name: "Next.js",      icon: nextjsIcon },
+  { name: "HTML5", icon: html5 },
+  { name: "CSS3", icon: css3 },
+  { name: "JavaScript", icon: javascript },
+  { name: "TypeScript", icon: typescriptIcon },
+  { name: "React", icon: react },
+  { name: "Next.js", icon: nextjsIcon },
   { name: "Tailwind CSS", icon: tailwindcssIcon },
-  { name: "Node.js",      icon: nodejsIcon },
-  { name: "PostgreSQL",   icon: postgresql },
-  { name: "Git",          icon: gitIcon },
+  { name: "Node.js", icon: nodejsIcon },
+  { name: "PostgreSQL", icon: postgresql },
+  { name: "Git", icon: gitIcon },
   // mdi:github uses currentColor — force white so it's visible on dark bg
-  { name: "GitHub",       icon: githubIcon, style: { color: "#ffffff" } },
-  { name: "Vercel",       icon: vercelIcon },
+  { name: "GitHub", icon: githubIcon, style: { color: "#ffffff" } },
+  { name: "Vercel", icon: vercelIcon },
   // Sanity's brand red (#F03E2F)
-  { name: "Sanity",       icon: sanitySimple, style: { color: "#F03E2F" } },
-  { name: "Figma",        icon: figma },
+  { name: "Sanity", icon: sanitySimple, style: { color: "#F03E2F" } },
+  { name: "Figma", icon: figma },
 ];
 
 // Doubled so Embla has enough slide width to loop on any viewport size.
 const SLIDE_TECHS = [...TECHS, ...TECHS];
 
 // ── Single icon with tooltip ──────────────────────────────────────────────────
-type TechIconProps = Tech & { isActive: boolean; onTap: (name: string) => void };
+type TechIconProps = Tech & {
+  isActive: boolean;
+  onTap: (name: string) => void;
+};
 
 function TechIcon({ name, icon, style, isActive, onTap }: TechIconProps) {
   const [hovered, setHovered] = useState(false);
@@ -74,7 +77,11 @@ function TechIcon({ name, icon, style, isActive, onTap }: TechIconProps) {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
-            transition={{ duration: 0.2, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 0.2,
+              delay: 0.08,
+              ease: [0.22, 1, 0.36, 1],
+            }}
           >
             <span className="block px-3 py-1 rounded-full text-[11px] font-medium tracking-wide text-white/70 bg-neutral-900/90 border border-white/[0.12]">
               {name}
@@ -89,19 +96,24 @@ function TechIcon({ name, icon, style, isActive, onTap }: TechIconProps) {
       <motion.div
         className="tech-icon cursor-pointer select-none"
         animate={
-          visible
-            ? { scale: 1.18, opacity: 1 }
-            : { scale: 1,    opacity: 0.75 }
+          visible ? { scale: 1.18, opacity: 1 } : { scale: 1, opacity: 0.75 }
         }
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        onPointerDown={(e) => { lastPointerType.current = e.pointerType; }}
+        onPointerDown={(e) => {
+          lastPointerType.current = e.pointerType;
+        }}
         onClick={() => {
           // Only handle tap on touch — desktop hover already covers mouse interaction
           if (lastPointerType.current === "touch") onTap(name);
         }}
       >
         {/* Mobile: w-8 h-8 (32 px). sm+: w-11 h-11 (44 px). */}
-        <Icon icon={icon} className="w-8 h-8 sm:w-11 sm:h-11" style={style} aria-hidden="true" />
+        <Icon
+          icon={icon}
+          className="w-8 h-8 sm:w-11 sm:h-11"
+          style={style}
+          aria-hidden="true"
+        />
       </motion.div>
     </div>
   );
@@ -124,7 +136,7 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
 
   const handleIconTap = useCallback((name: string) => {
     // Toggle: tapping the active icon dismisses it; tapping another switches directly
-    setActiveIcon(prev => (prev === name ? null : name));
+    setActiveIcon((prev) => (prev === name ? null : name));
   }, []);
 
   // When an icon is active on touch, listen for taps outside the carousel and
@@ -157,7 +169,7 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
         // Pause on desktop hover (no-op on touch — mouseenter never fires)
         stopOnMouseEnter: true,
       }),
-    ]
+    ],
   );
 
   // Mobile tap: pause auto-scroll while an icon is active, resume when dismissed.
@@ -174,10 +186,7 @@ export default function TechMarquee({ label }: TechMarqueeProps) {
   }, [emblaApi, activeIcon]);
 
   return (
-    <motion.div
-      variants={fadeUp}
-      className="flex flex-col gap-3 pt-8 w-full"
-    >
+    <motion.div variants={fadeUp} className="flex flex-col gap-3 pt-8 w-full">
       <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">
         {label}
       </span>

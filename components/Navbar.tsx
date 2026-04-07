@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Locale } from "@/lib/i18n";
@@ -8,7 +9,7 @@ import { logoFont, montserrat } from "@/lib/fonts";
 
 const navFont = montserrat;
 
-type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact" | "/why-us";
+type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact" | "/why-us" | "/free-guide";
 
 // Sections that have no nav link — they keep a parent nav item highlighted instead
 const NAV_MAP: Record<string, NavHref> = {
@@ -94,15 +95,18 @@ function LangSwitcher() {
 
 export default function Navbar() {
   const { t, locale, setLocale } = useLanguage();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<NavHref>("/");
 
-  const navLinksBase = [
-    { label: t.nav.home,      href: "/" as NavHref,          id: "home" },
-    { label: t.nav.services,  href: "/services" as NavHref,  id: "services" },
-    { label: t.nav.about,     href: "/about" as NavHref,     id: "about" },
-    { label: t.nav.portfolio, href: "/portfolio" as NavHref, id: "portfolio" },
-    { label: t.nav.contact,   href: "/contact" as NavHref,   id: "contact" },
+  const navLinksBase: { label: string; href: NavHref; id: string; isRoute?: boolean }[] = [
+    { label: t.nav.home,      href: "/" as NavHref,             id: "home" },
+    { label: t.nav.services,  href: "/services" as NavHref,     id: "services" },
+    { label: t.nav.about,     href: "/about" as NavHref,        id: "about" },
+    { label: t.nav.portfolio, href: "/portfolio" as NavHref,    id: "portfolio" },
+    { label: t.nav.contact,   href: "/contact" as NavHref,      id: "contact" },
+    { label: t.nav.freeGuide, href: "/free-guide" as NavHref,   id: "free-guide", isRoute: true },
   ];
   const isHe = locale === "he";
   const navLinks = isHe ? [...navLinksBase].reverse() : navLinksBase;
@@ -118,25 +122,45 @@ export default function Navbar() {
       el.scrollIntoView({ behavior: "smooth" });
       window.history.replaceState(null, "", withLang(href));
       setActiveLink(href);
+    } else {
+      router.push(withLang(id === "home" ? "/" : href));
     }
   }
 
-  useEffect(() => {
-    // On initial load, scroll to section matching the current path
-    const path = window.location.pathname;
-    if (path !== "/") {
-      const id = path.replace("/", "");
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "auto" });
-        setActiveLink(path as NavHref);
-      }
+  function handleNavClick(id: string, href: NavHref, isRoute?: boolean) {
+    if (isRoute) {
+      setActiveLink(href); // immediate feedback before navigation settles
+      router.push(withLang(href));
+      return;
     }
-  }, []);
+    scrollToSection(id, href);
+  }
 
+  // Sync activeLink on every client-side route change.
+  // The Navbar never unmounts (root layout), so [] effects don't re-run on navigation.
   useEffect(() => {
+    if (pathname === "/free-guide") {
+      setActiveLink("/free-guide");
+    } else {
+      setActiveLink(pathname as NavHref);
+    }
+  }, [pathname]);
+
+  // Re-attach IntersectionObservers whenever pathname changes.
+  // On each navigation back to "/" the sections are fresh DOM nodes — observers
+  // must be set up against the current elements, not the ones from initial mount.
+  useEffect(() => {
+    if (pathname === "/free-guide") return; // no sections to observe on the free guide page
+
     const sectionIds: string[] = ["home", "services", "portfolio", "why-us", "how-it-works", "about", "contact"];
     const observers: IntersectionObserver[] = [];
+
+    // After a pathname change (i.e. a programmatic cross-page navigation) we
+    // suppress URL updates from the IntersectionObserver for long enough to let
+    // the smooth-scroll animation complete (~1 s).  The visual activeLink still
+    // updates immediately so the nav highlight is always correct.
+    let ioCanUpdateUrl = false;
+    const enableTimer = setTimeout(() => { ioCanUpdateUrl = true; }, 1000);
 
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
@@ -151,7 +175,12 @@ export default function Navbar() {
             } else {
               const href = id === "home" ? "/" : `/${id}` as NavHref;
               setActiveLink(href);
-              window.history.replaceState(null, "", withLang(href));
+              // Only update the URL bar once the scroll animation has settled.
+              // Updating earlier triggers usePathname() → SectionScroller fires
+              // for the wrong section, hijacking the intended scroll target.
+              if (ioCanUpdateUrl) {
+                window.history.replaceState(null, "", href + window.location.search);
+              }
             }
           }
         },
@@ -161,8 +190,48 @@ export default function Navbar() {
       observers.push(observer);
     });
 
-    return () => observers.forEach((o) => o.disconnect());
-  }, []);
+    return () => {
+      clearTimeout(enableTimer);
+      observers.forEach((o) => o.disconnect());
+    };
+  }, [pathname]);
+
+  // ── Simplified nav for the free-guide standalone page ──────────────────────
+  if (pathname === "/free-guide") {
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 w-full h-[64px] lg:h-[90px] bg-black">
+        <nav
+          className="flex justify-between items-center h-full px-6 sm:px-10 lg:px-8 xl:px-[70px] max-w-7xl mx-auto"
+          dir={isHe ? "rtl" : "ltr"}
+          aria-label="Guide navigation"
+        >
+          <span
+            className={cn(
+              "text-white/40 text-[11px] font-bold uppercase tracking-[0.25em]",
+              navFont.className,
+            )}
+          >
+            {t.freeGuide.nav.label}
+          </span>
+          <div className="flex items-center gap-6">
+            <LangSwitcher />
+            <button
+              onClick={() => router.push(withLang("/"))}
+              className={cn(
+                "flex items-center gap-2 text-[#E67E22] text-sm font-semibold cursor-pointer",
+                "hover:text-[#E67E22]/70 transition-colors duration-200",
+                navFont.className,
+              )}
+            >
+              {t.freeGuide.nav.back}
+              <span className="ltr:inline rtl:hidden">→</span>
+              <span className="rtl:inline ltr:hidden">←</span>
+            </button>
+          </div>
+        </nav>
+      </header>
+    );
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full h-[64px] lg:h-[90px] bg-black">
@@ -173,7 +242,15 @@ export default function Navbar() {
       >
         {/* Left column — Logo */}
         <button
-          onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("/"); window.history.replaceState(null, "", withLang("/")); }}
+          onClick={() => {
+            if (pathname === "/free-guide") {
+              router.push(withLang("/"));
+            } else {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              setActiveLink("/");
+              window.history.replaceState(null, "", withLang("/"));
+            }
+          }}
           className={cn(
             "inline-flex items-center text-white text-[42px] xl:text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start whitespace-nowrap cursor-pointer",
             logoFont.className,
@@ -190,7 +267,7 @@ export default function Navbar() {
           )}
           role="list"
         >
-          {navLinks.map(({ label, href, id }) => (
+          {navLinks.map(({ label, href, id, isRoute }) => (
             <li
               key={href}
               className={cn(
@@ -204,8 +281,8 @@ export default function Navbar() {
               )}
             >
               <button
-                onClick={() => scrollToSection(id, href)}
-                className="h-full flex items-center lg:px-3 xl:px-8 text-white text-sm xl:text-lg font-semibold whitespace-nowrap cursor-pointer"
+                onClick={() => handleNavClick(id, href, isRoute)}
+                className="h-full flex items-center lg:px-3 xl:px-6 text-white text-sm xl:text-lg font-semibold whitespace-nowrap cursor-pointer"
               >
                 {label}
               </button>
@@ -226,7 +303,15 @@ export default function Navbar() {
           aria-label="Main navigation"
         >
           <button
-            onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setActiveLink("/"); window.history.replaceState(null, "", withLang("/")); }}
+            onClick={() => {
+              if (pathname === "/free-guide") {
+                router.push(withLang("/"));
+              } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setActiveLink("/");
+                window.history.replaceState(null, "", withLang("/"));
+              }
+            }}
             className={cn(
               "text-white text-[2.2rem] leading-none select-none cursor-pointer",
               logoFont.className,
@@ -275,7 +360,7 @@ export default function Navbar() {
             )}
             role="list"
           >
-            {mobileNavLinks.map(({ label, href, id }) => (
+            {mobileNavLinks.map(({ label, href, id, isRoute }) => (
               <li key={href}>
                 <button
                   className={cn(
@@ -286,7 +371,7 @@ export default function Navbar() {
                     activeLink === href ? "after:w-full" : "after:w-0",
                   )}
                   onClick={() => {
-                    scrollToSection(id, href);
+                    handleNavClick(id, href, isRoute);
                     setMenuOpen(false);
                   }}
                 >

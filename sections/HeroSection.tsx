@@ -46,7 +46,7 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
   const [canHover, setCanHover] = useState(false);
   useEffect(() => {
     setCanHover(
-      window.matchMedia("(hover: hover) and (pointer: fine)").matches
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches,
     );
   }, []);
 
@@ -55,7 +55,9 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
       className="relative"
       style={{ width: circle, height: circle + popOut }}
       // Desktop-only scale on hover: smooth, refined, not dramatic
-      whileHover={canHover && !prefersReducedMotion ? { scale: 1.025 } : undefined}
+      whileHover={
+        canHover && !prefersReducedMotion ? { scale: 1.025 } : undefined
+      }
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Glow — static box-shadow, only opacity pulses (GPU-composited, zero repaint) */}
@@ -252,19 +254,23 @@ export default function HeroSection() {
               >
                 {isHe ? (
                   <>
-                    כמפתח אתרים פרילנסר, אני בונה{" "}
-                    <span className="text-[#E67E22]">דפי נחיתה שמביאים תוצאות</span>{" "}
-                    ו
-                    <span className="text-[#E67E22]">אתרי פול-סטאק מותאמים אישית</span>{" "}
-                    לעסקים ואנשי מקצוע שרוצים למשוך יותר לקוחות ולנהל את העסק שלהם אונליין.
+                    אני בונה{" "}
+                    <span className="text-[#E67E22]">דפי נחיתה</span>
+                    {", "}
+                    <span className="text-[#E67E22]">אתרי פורטפוליו</span>
+                    {" ו"}
+                    <span className="text-[#E67E22]">אתרי פול-סטאק מותאמים אישית</span>
+                    {" לעסקים ואנשי מקצוע."}
                   </>
                 ) : (
                   <>
-                    As a freelance web developer, I build{" "}
-                    <span className="text-[#E67E22]">high-converting landing pages</span>{" "}
-                    and{" "}
-                    <span className="text-[#E67E22]">custom full-stack websites</span>{" "}
-                    for businesses and professionals who want to attract more clients and manage their business online.
+                    {"I build high-converting "}
+                    <span className="text-[#E67E22]">landing pages</span>
+                    {", "}
+                    <span className="text-[#E67E22]">portfolio websites</span>
+                    {" and custom "}
+                    <span className="text-[#E67E22]">full-stack websites</span>
+                    {" for businesses and professionals."}
                   </>
                 )}
               </motion.p>
@@ -274,17 +280,11 @@ export default function HeroSection() {
                 className="flex flex-row flex-wrap gap-5 mt-2"
                 initial={heroInitial}
                 animate={heroAnimate}
-                transition={heroTransition(0.80)}
+                transition={heroTransition(0.8)}
               >
                 <a
-                  href="#portfolio"
+                  href="/contact"
                   className="inline-flex items-center justify-center bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
-                >
-                  {t.hero.cta1}
-                </a>
-                <a
-                  href="#contact"
-                  className="inline-flex items-center justify-center border-2 border-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3.5 text-sm whitespace-nowrap shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200"
                 >
                   {t.hero.cta2}
                 </a>
