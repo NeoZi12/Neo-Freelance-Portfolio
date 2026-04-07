@@ -168,9 +168,9 @@ export default function Navbar() {
             } else {
               const href = id === "home" ? "/" : `/${id}` as NavHref;
               setActiveLink(href);
-              // Do NOT call replaceState here — Next.js App Router intercepts it,
-              // updates usePathname(), and triggers SectionScroller to
-              // scrollIntoView(), causing scroll-jacking during normal scrolling.
+              // SectionScroller guards against scroll-jacking by checking whether
+              // the target section is already visible before calling scrollIntoView.
+              window.history.replaceState(null, "", href + window.location.search);
             }
           }
         },
