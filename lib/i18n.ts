@@ -177,6 +177,10 @@ export const translations = {
           description:
             "A software developer portfolio website showcasing projects, technical skills, and real-world applications.",
         },
+        {
+          name: "Tax Consultant landing page - SEO Optimized",
+          description: "",
+        },
       ],
     },
     contact: {
@@ -418,6 +422,10 @@ export const translations = {
           name: "דף פורטפוליו למפתח תוכנה",
           description:
             "אתר פורטפוליו למפתח תוכנה המציג פרויקטים, כישורים טכניים ואפליקציות מהעולם האמיתי.",
+        },
+        {
+          name: "אתר ליועצת מס, עם אופטימיזציה לקידום בגוגל",
+          description: "",
         },
       ],
     },

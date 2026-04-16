@@ -62,6 +62,22 @@ const projectMeta = [
       "/images/project3-5.png",
     ],
   },
+  {
+    id: "4",
+    thumbnail: "/images/project4.png",
+    liveUrl: "https://mia-tax.co.il/",
+    screenshots: [
+      "/images/project4-1.png",
+      "/images/project4-2.png",
+      "/images/project4-3.png",
+      "/images/project4-4.png",
+      "/images/project4-5.png",
+      "/images/project4-6.png",
+      "/images/project4-7.png",
+      "/images/project4-8.png",
+      "/images/project4-9.png",
+    ],
+  },
 ];
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
@@ -420,7 +436,7 @@ export default function PortfolioSection() {
     >
       <div className="hidden lg:block h-[90px] shrink-0" />
 
-      <div className="flex-1 flex flex-col gap-8 px-6 py-10 lg:grid lg:grid-rows-[1fr_auto_1fr] lg:gap-0 lg:py-0 lg:pb-6">
+      <div className="flex-1 flex flex-col gap-14 px-6 py-10 lg:grid lg:grid-rows-[1fr_auto_1fr] lg:gap-0 lg:py-0 lg:pb-6">
         {/* Title */}
         <motion.div
           className="flex items-center justify-center lg:self-center"
@@ -440,7 +456,7 @@ export default function PortfolioSection() {
 
         {/* Cards grid — stagger container */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-x-8 lg:gap-y-5 w-full max-w-[1200px] mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-5 lg:gap-x-8 lg:gap-y-5 w-full max-w-[900px] mx-auto mt-6 lg:mt-12"
           variants={stagger}
           initial="hidden"
           whileInView="show"
