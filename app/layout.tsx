@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Heebo } from "next/font/google";
+import { Heebo, Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
@@ -7,6 +7,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { montserrat, jakarta, inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const heebo = Heebo({
   subsets: ["hebrew"],
@@ -130,7 +132,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn(heebo.variable, montserrat.variable, jakarta.variable, inter.variable)}>
+    <html lang="en" className={cn(heebo.variable, montserrat.variable, jakarta.variable, inter.variable, "font-sans", geist.variable)}>
       <body>
         <MotionProvider>
           <LanguageProvider>
