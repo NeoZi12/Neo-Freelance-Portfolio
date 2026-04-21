@@ -36,6 +36,22 @@ const HE_LINE2 = [
   "חוסכות לך זמן.",
 ] as const;
 
+// ── Viewport helper ───────────────────────────────────────────────────────────
+
+// Tracks whether the viewport is below Tailwind's `md` breakpoint (768px).
+// Used to scale down the Ken Burns motion on small screens.
+function useIsSmallViewport() {
+  const [isSmall, setIsSmall] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 767px)");
+    setIsSmall(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsSmall(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+  return isSmall;
+}
+
 // ── Avatar helper ─────────────────────────────────────────────────────────────
 
 function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
@@ -146,6 +162,16 @@ const heroAnimate = { opacity: 1, y: 0 } as const;
 export default function HeroSection() {
   const { locale, t } = useLanguage();
   const isHe = locale === "he";
+  const prefersReducedMotion = useReducedMotion();
+  const isSmallViewport = useIsSmallViewport();
+
+  // Ken Burns target state — second extreme of the ping-pong.
+  // Mobile halves scale and pan amplitude to reduce GPU load and keep
+  // critical image content (mountain peak) in frame.
+  const kenBurnsRest = { scale: 1, x: "0%", y: "0%" } as const;
+  const kenBurnsTarget = isSmallViewport
+    ? { scale: 1.03, x: "1%", y: "-0.5%" }
+    : { scale: 1.06, x: "2%", y: "-1%" };
 
   // Shared index drives both lines so they always rotate together
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -161,34 +187,87 @@ export default function HeroSection() {
     <section
       id="home"
       className={cn(
-        "relative min-h-[100dvh] w-full scroll-mt-0",
+        // overflow-hidden clips the 1.06x scaled bg so it can't bleed into the next section
+        "relative min-h-[100dvh] w-full scroll-mt-0 overflow-hidden",
         montserrat.className,
       )}
     >
-      {/* Hero background — not LCP, eager load without preload to keep the preload slot for the portrait */}
-      <Image
-        src="/images/orange-mountains.jpg"
-        alt=""
-        fill
-        loading="eager"
-        quality={80}
-        sizes="100vw"
-        className="object-cover object-center"
+      {/* Hero background — Ken Burns layer.
+          Wrapping next/image in a motion.div keeps srcset/AVIF optimization
+          while letting us animate the entire composited layer via transform
+          only (no layout/paint work per frame). */}
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+        }}
+        initial={kenBurnsRest}
+        animate={prefersReducedMotion ? kenBurnsRest : kenBurnsTarget}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : {
+                duration: 20,
+                ease: [0.45, 0, 0.55, 1],
+                repeat: Infinity,
+                repeatType: "reverse",
+              }
+        }
+        aria-hidden
+      >
+        <Image
+          src="/images/bg-hero.webp"
+          alt=""
+          fill
+          loading="eager"
+          quality={80}
+          sizes="100vw"
+          className="object-cover object-center"
+          aria-hidden
+        />
+      </motion.div>
+      {/* Gradient overlay — responsive: mobile uses a vertical gradient so
+          orange accent text stays readable across the full width; desktop
+          uses a left-weighted radial so the mountain/portrait side stays
+          visible. Sits between image and content (z-10 wrapper below). */}
+
+      {/* Mobile overlay (< 768px) — full-width vertical gradient.
+          Top/navbar zone strong, text zone held at ~75%, fades under the
+          portrait, with a bottom anchor. */}
+      <div
+        className="absolute inset-0 pointer-events-none md:hidden"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.92) 10%, rgba(0,0,0,0.90) 55%, rgba(0,0,0,0.68) 75%, rgba(0,0,0,0.78) 100%)",
+        }}
         aria-hidden
       />
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/68 pointer-events-none" />
+
+      {/* Desktop overlay (≥ 768px) — left-weighted radial + bottom anchor. */}
+      <div
+        className="absolute inset-0 pointer-events-none hidden md:block"
+        style={{
+          background: [
+            // Bottom anchor — painted on top of the radial, only dark near the bottom
+            "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 40%)",
+            // Left-side radial — dominant impression is dark hero with orange glow peeking through, not an orange scene
+            "radial-gradient(ellipse 100% 120% at 0% 0%, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 25%, rgba(0,0,0,0.82) 50%, rgba(0,0,0,0.62) 75%, rgba(0,0,0,0.42) 100%)",
+          ].join(", "),
+        }}
+        aria-hidden
+      />
 
       <div className="relative z-10 flex flex-col min-h-[100dvh]">
         {/* Spacer matching the fixed navbar height */}
         <div className="h-[64px] lg:h-[90px] shrink-0" />
 
         {/* Content area */}
-        <div className="flex-1 flex items-start lg:items-center px-6 sm:px-10 lg:px-[60px] xl:px-[130px] py-4">
+        <div className="flex-1 flex items-start lg:items-center px-6 sm:px-10 lg:px-[60px] xl:px-[130px] py-4 [@media(max-height:740px)]:py-2">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_480px] gap-4 lg:gap-14 xl:gap-20 items-center w-full">
             {/* ── Left column: Text ── */}
             <div
-              className={cn("flex flex-col gap-5", isHe && "text-right")}
+              className={cn("flex flex-col gap-5 [@media(max-height:740px)]:gap-3", isHe && "text-right")}
               dir={isHe ? "rtl" : "ltr"}
             >
               {/* Greeting — first to appear */}
@@ -205,7 +284,7 @@ export default function HeroSection() {
 
               {/* Headline — second */}
               <motion.h1
-                className="text-4xl lg:text-[50px] font-semibold text-white leading-tight"
+                className="text-4xl lg:text-[50px] [@media(max-height:740px)]:lg:text-[40px] font-semibold text-white leading-tight"
                 initial={heroInitial}
                 animate={heroAnimate}
                 transition={heroTransition(0.42)}
@@ -302,9 +381,13 @@ export default function HeroSection() {
               <div className="lg:hidden">
                 <AvatarCircle circle={220} popOut={44} />
               </div>
-              {/* Desktop (lg+): 340px */}
-              <div className="hidden lg:block">
+              {/* Desktop (lg+) at tall heights: 340px */}
+              <div className="hidden lg:block [@media(min-width:1024px)_and_(max-height:740px)]:hidden">
                 <AvatarCircle circle={340} popOut={70} />
+              </div>
+              {/* Desktop (lg+) at short landscape heights — shrunk so 1024x600 fits */}
+              <div className="hidden [@media(min-width:1024px)_and_(max-height:740px)]:block">
+                <AvatarCircle circle={260} popOut={50} />
               </div>
             </motion.div>
           </div>

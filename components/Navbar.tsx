@@ -5,7 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Locale } from "@/lib/i18n";
-import { logoFont, montserrat } from "@/lib/fonts";
+import { montserrat } from "@/lib/fonts";
+import AnimatedLogo from "@/components/AnimatedLogo";
 
 const navFont = montserrat;
 
@@ -240,12 +241,10 @@ export default function Navbar() {
               window.history.replaceState(null, "", withLang("/"));
             }
           }}
-          className={cn(
-            "inline-flex items-center text-white text-[42px] xl:text-[60px] leading-none font-normal select-none m-0 p-0 justify-self-start whitespace-nowrap cursor-pointer",
-            logoFont.className,
-          )}
+          aria-label="Neo Zino — home"
+          className="inline-flex items-center select-none m-0 p-0 justify-self-start cursor-pointer"
         >
-          Neo Zino
+          <AnimatedLogo size={88} />
         </button>
 
         {/* Center column — Nav links */}
@@ -301,12 +300,10 @@ export default function Navbar() {
                 window.history.replaceState(null, "", withLang("/"));
               }
             }}
-            className={cn(
-              "text-white text-[2.2rem] leading-none select-none cursor-pointer",
-              logoFont.className,
-            )}
+            aria-label="Neo Zino — home"
+            className="inline-flex items-center select-none cursor-pointer"
           >
-            Neo Zino
+            <AnimatedLogo size={56} />
           </button>
 
           <button
