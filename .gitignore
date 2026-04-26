@@ -34,4 +34,6 @@ next-env.d.ts
 .claude/.last-check.log
 .claude/.last-audit.md
 .claude/.perf-baseline.json
+.claude/asset-backups/
+.claude/lh-*.json
 .playwright-mcp/
