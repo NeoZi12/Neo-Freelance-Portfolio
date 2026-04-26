@@ -2,45 +2,81 @@
 description: Full quality audit — clean build, responsive screenshots at 360/390/412/768/1024 across 6 routes, 3-run median Lighthouse mobile, compare against budget. Reports only, never auto-fixes.
 ---
 
-Run a full quality audit of the site. This is the **manual fallback** path — the hooks already run type-check + lint per edit and `next build` on Stop. Use this command for end-to-end verification (after a feature, before a PR, or to record/refresh the perf baseline).
+Run a full quality audit of the site. This is the **manual fallback** path — the hooks already run type-check + lint per edit. Use this command for end-to-end verification (after a feature, before a PR, or to record/refresh the perf baseline).
+
+All Chromium + Lighthouse work runs through the standalone scripts at `.claude/.audit-screenshots.mjs` and `.claude/.audit-lighthouse.mjs`. Both launch headless — no visible browser windows during an audit. The browser MCPs (`mcp__plugin_playwright_playwright__*`, `mcp__chrome-devtools__*`) remain available for ad-hoc debugging in other contexts but are NOT used here.
 
 ## Steps (execute in order)
 
 ### 1. Pre-flight
 - Read `package.json` to confirm `size-limit` is configured.
 - Determine the audit target:
-  - Ask the user for a Vercel preview URL. If supplied, use it (real CDN / ISR — source of truth).
-  - Otherwise, fall back to localhost: `rm -rf .next && npm run build && npm run start &` then poll `:3000` until ready.
+  - If the user supplied a Vercel preview URL, set `AUDIT_URL=<that-url>` and use it (real CDN / ISR — source of truth).
+  - Otherwise, fall back to localhost: `rm -rf .next && npm run build && npm run start &` then poll until `:3000` responds 200.
 
-### 2. Warmup
-Even without ISR, hitting each route once before measuring stabilizes timing (cold compilation/cache effects on localhost; cold edge worker on Vercel preview). Warm:
-- `/`, `/about`, `/portfolio`, `/services`, `/contact`, `/free-guide`
-- Use `mcp__plugin_playwright_playwright__browser_navigate` to each, wait for load.
+### 2. Server readiness (localhost path only)
+Wait until the server responds:
 
-### 3. Responsive screenshots + overflow check
-For each route in `["/", "/about", "/portfolio", "/services", "/contact", "/free-guide"]`:
-- For each width in `[360, 390, 412, 768, 1024]`:
-  - `mcp__plugin_playwright_playwright__browser_resize` to that width × 900
-  - `mcp__plugin_playwright_playwright__browser_navigate` to the route
-  - `mcp__plugin_playwright_playwright__browser_take_screenshot` → save as `.playwright-mcp/audit-{YYYY-MM-DD}/{route-slug}-{width}.png`
-  - `mcp__plugin_playwright_playwright__browser_evaluate` with `() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth })`. If `sw > cw`, **record as a hard failure** for that route+width.
+```sh
+node .claude/scripts/wait-for-server.mjs
+# or for a non-default port:
+node .claude/scripts/wait-for-server.mjs http://localhost:3001
+```
 
-Repeat the screenshot pass once with `?lang=he` on `/` to spot-check RTL. Don't run all 30 in HE — Hebrew flips logical utilities only; one home-page check per width is enough.
+(Plain `node *` is in the allowlist; an `until curl ...; do ...; done` form would prompt because Claude Code's permission rules only support prefix wildcards.)
 
-### 4. Lighthouse — 3-run median, mobile only
-For `/` (and any other route the user specifies):
-- Run `mcp__chrome-devtools__lighthouse_audit` with mobile preset, three times, sequentially.
-- Record the three Performance scores plus LCP / CLS / INP.
-- Compute the **median** of the three Performance scores.
-- Compare against the budget in `CLAUDE.md` (currently placeholder ≥85; check if a baseline file exists at `.claude/.perf-baseline.json` and use that instead if present).
-- Pass = median ≥ budget − 3 (3-point grace band). Single-shot dips are not failures.
+Skip this step if `AUDIT_URL` points at a Vercel preview — that's already warm enough.
+
+### 3. Responsive screenshots + overflow check (headless Chromium via Playwright)
+Run the standalone screenshot script:
+
+```sh
+node .claude/.audit-screenshots.mjs
+```
+
+What it does:
+- Launches Chromium **headless** (`chromium.launch({ headless: true })`)
+- Iterates 6 routes × 5 widths LTR + 5 widths RTL on `/?lang=he` = **35 checks**
+- Saves screenshots to `.playwright-mcp/audit-{YYYY-MM-DD}/{slug}-{width}.png`
+- Records `scrollWidth > clientWidth` per check
+- Emits `summary.json` with all results
+- Prints one-line-per-check progress and a final failure list
+
+**Hard failure:** any row where `overflow: true` in `summary.json`.
+
+If you want a different date stamp or a custom subset of routes/widths, edit the constants at the top of the script. Don't add CLI args for one-off subsets — the smoke check has its own minimal path.
+
+### 4. Lighthouse — 3-run median, mobile only (headless Chrome via Lighthouse CLI)
+Run the standalone Lighthouse script:
+
+```sh
+# Default: localhost
+node .claude/.audit-lighthouse.mjs
+
+# Or against Vercel preview (authoritative production gate):
+AUDIT_URL=https://<your-preview>.vercel.app/ node .claude/.audit-lighthouse.mjs
+```
+
+What it does:
+- Runs Lighthouse 13 mobile preset **3 times sequentially** against `AUDIT_URL` (default `http://localhost:3000/`)
+- Launches Chrome **headless** via `--chrome-flags=--headless=new --no-sandbox`
+- Captures Performance, LCP, CLS, TBT, FCP, Speed Index per run
+- Computes the median of all metrics
+- Writes summary to `.claude/lighthouse/summary.json`
+
+**Pass = median Performance ≥ baseline − 3** (3-pt grace band; baseline lives in `.claude/.perf-baseline.json` — production block is the gate, localhost block is reference only).
+
+**Windows note:** chrome-launcher races on tmp cleanup and exits non-zero AFTER writing the JSON report. The script treats the JSON file as authoritative and ignores the cleanup exit code.
 
 ### 5. Bundle audit
-- `rm -rf .next && npm run build && npx size-limit` — capture output.
-- Any size-limit failure is a hard failure.
+```sh
+rm -rf .next && npm run build && npx size-limit
+```
+
+Any size-limit failure is a hard failure.
 
 ### 6. Report
-Produce a report at `.claude/.last-audit.md` and print to chat:
+Produce a report at `.claude/.last-audit.md` and print the summary to chat:
 
 ```
 # Quality audit — {YYYY-MM-DD HH:MM}
@@ -48,27 +84,23 @@ Target: {URL}
 Build: clean (.next removed)
 
 ## Responsive (6 routes × 5 widths = 30 checks)
-- ✅ / @ 360 / 390 / 412 / 768 / 1024
-- ❌ /portfolio @ 360 — scrollWidth 412 > clientWidth 360 — likely sections/PortfolioSection.tsx
-- ...
-
-## RTL spot-check (home, 5 widths, ?lang=he)
-- ✅ all widths
+- ✅ all 30 LTR + 5 RTL pass
+(or list the failures with route + width + sw/cw values)
 
 ## Lighthouse mobile median (3 runs)
-- / : 92, 91, 93 → median 92 ✅ (budget ≥85 with grace)
-- LCP: 1.8s · CLS: 0.02 · INP: 140ms — all in band
+- / : runs perf=A,B,C → median X (budget ≥Y with grace)
+- LCP, CLS, TBT/INP — show medians + budget verdicts
 
 ## Bundle (size-limit)
-- All JS chunks: 287 KB / 350 KB ✅
-- All CSS: 14 KB / 20 KB ✅
+- All JS chunks: ___ kB / 1000 kB ✅
+- All CSS: ___ kB / 30 kB ✅
 
-## Failures (0)
-(or list of files + budget deltas)
+## Failures (N)
+(file paths + budget deltas + proposed fix per failure)
 ```
 
 ### 7. On failure — REPORT ONLY
-Do **not** auto-fix. Surface the failures with:
+Do **not** auto-fix. Surface failures with:
 - File paths
 - Specific budget deltas
 - A proposed fix per failure
@@ -76,14 +108,19 @@ Do **not** auto-fix. Surface the failures with:
 
 If the user confirms fixes, load `mobile-responsive` and/or `performance-optimizer` skill, apply changes, re-run `/check-quality`.
 
-### 8. Baseline mode (first run only)
+### 8. Baseline mode
 If `.claude/.perf-baseline.json` does not exist:
 - The first successful audit writes the median LH / LCP / CLS / INP / JS-size into it.
 - Subsequent runs compare against this baseline instead of the placeholder.
-- Tell the user: "Baseline locked. Future audits compare against this with a 3-point grace band."
+
+If it exists and the audit measured a **production** URL, refresh `lighthouse.production.*` with the new medians. If the audit measured **localhost**, refresh only `lighthouse.localhost.*` (production gate is independent).
+
+Tell the user: "Baseline updated. Future audits compare against this with a 3-point grace band."
 
 ## Notes
 - Desktop Lighthouse is **not** gated.
 - PSI Diagnostics ("Reduce unused JS", etc.) are not gated — they don't move the score.
 - Single-shot Lighthouse is too noisy (±3–5 pts on identical builds). Always 3-run median.
-- Existing `/baseline-ui`, `/fixing-accessibility`, `/fixing-motion-performance` slash commands are aesthetic surgical fixes — `/check-quality` is end-to-end measurement. They complement; they don't replace each other.
+- Localhost is the cheap signal; Vercel preview is the production gate. The two are NOT comparable — localhost runs ~13 perf points better than production due to zero network latency.
+- Browser MCPs are explicitly NOT used here — they default to **headed** Chrome which pops a window for every screenshot. The standalone scripts proved more reliable on Windows during the 2026-04-26 audit anyway.
+- `/baseline-ui`, `/fixing-accessibility`, `/fixing-motion-performance` are aesthetic surgical fixes — `/check-quality` is end-to-end measurement. They complement; they don't replace each other.

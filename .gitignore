@@ -36,4 +36,5 @@ next-env.d.ts
 .claude/.perf-baseline.json
 .claude/asset-backups/
 .claude/lh-*.json
+.claude/lighthouse/
 .playwright-mcp/
