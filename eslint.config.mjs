@@ -39,14 +39,17 @@ const eslintConfig = [
     },
   },
 
-  // <Image priority> is allowed only on sections/HeroSection.tsx (the LCP image).
+  // <Image priority> is allowed only on per-route LCP images:
+  //   - sections/HeroSection.tsx          → orange-ringed avatar (homepage LCP)
+  //   - app/free-guide/page.tsx           → eBook cover at top of /free-guide hero (route LCP)
+  // Anywhere else, `priority` wastes preload budget and hurts LCP.
   {
     files: [
       "app/**/*.{ts,tsx}",
       "sections/**/*.{ts,tsx}",
       "components/**/*.{ts,tsx}",
     ],
-    ignores: ["sections/HeroSection.tsx"],
+    ignores: ["sections/HeroSection.tsx", "app/free-guide/page.tsx"],
     rules: {
       "no-restricted-syntax": [
         "error",
@@ -54,7 +57,7 @@ const eslintConfig = [
           selector:
             "JSXOpeningElement[name.name='Image'] > JSXAttribute[name.name='priority']",
           message:
-            "<Image priority> is allowed only on sections/HeroSection.tsx (the LCP image). Below-fold priority wastes preload budget and hurts LCP.",
+            "<Image priority> is allowed only on per-route LCP images (sections/HeroSection.tsx, app/free-guide/page.tsx). Below-fold priority wastes preload budget and hurts LCP.",
         },
       ],
     },

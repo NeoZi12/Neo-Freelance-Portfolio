@@ -6,10 +6,9 @@ import {
   useEffect,
   useMemo,
   useState,
-  Suspense,
   type ReactNode,
 } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { type Locale, translations } from "@/lib/i18n";
 
 type LanguageContextValue = {
@@ -20,29 +19,39 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-function LanguageProviderInner({ children }: { children: ReactNode }) {
+function readLocaleFromURL(): Locale {
+  if (typeof window === "undefined") return "en";
+  const params = new URLSearchParams(window.location.search);
+  const lang = params.get("lang");
+  return lang === "he" ? "he" : "en";
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const rawLang = searchParams.get("lang");
-  const initialLocale: Locale =
-    rawLang === "en" || rawLang === "he" ? rawLang : "en";
+  // Server + first client render default to "en" so the entire page can be
+  // statically rendered. Reading useSearchParams() during render would force
+  // the whole tree to CSR and gut LCP. Hebrew deep-links sync via the effect
+  // below; the brief flash is the cost of getting SSR back.
+  const [locale, setLocaleState] = useState<Locale>("en");
 
-  const [locale, setLocaleState] = useState<Locale>(initialLocale);
-
-  // Keep locale in sync if the URL changes externally (back/forward nav)
   useEffect(() => {
-    const lang = searchParams.get("lang");
-    if (lang === "en" || lang === "he") {
-      setLocaleState(lang);
-    } else {
-      setLocaleState("en");
+    const fromUrl = readLocaleFromURL();
+    if (fromUrl !== "en") setLocaleState(fromUrl);
+  }, []);
+
+  useEffect(() => {
+    function onPopState() {
+      setLocaleState(readLocaleFromURL());
     }
-  }, [searchParams]);
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   function setLocale(next: Locale) {
     const params = new URLSearchParams(window.location.search);
     params.set("lang", next);
     router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+    setLocaleState(next);
   }
 
   const value = useMemo(
@@ -55,14 +64,6 @@ function LanguageProviderInner({ children }: { children: ReactNode }) {
     <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
-  );
-}
-
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  return (
-    <Suspense fallback={null}>
-      <LanguageProviderInner>{children}</LanguageProviderInner>
-    </Suspense>
   );
 }
 

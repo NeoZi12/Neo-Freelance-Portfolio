@@ -115,6 +115,7 @@ function AvatarCircle({ circle, popOut }: { circle: number; popOut: number }) {
             alt="Neo Zino – Freelance Web Developer"
             fill
             priority
+            fetchPriority="high"
             sizes="(min-width: 1024px) 340px, 220px"
             className="object-contain object-top"
           />

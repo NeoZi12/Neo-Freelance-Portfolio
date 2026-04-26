@@ -72,7 +72,6 @@ export default function AnimatedLogo({ size = 40, className }: AnimatedLogoProps
 
   const commonProps = {
     src: "/images/logo-nz.png",
-    alt: "Neo Zino logo",
     width: size,
     height: size,
     draggable: false,
@@ -82,6 +81,7 @@ export default function AnimatedLogo({ size = 40, className }: AnimatedLogoProps
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
+        alt="Neo Zino logo"
         {...commonProps}
         className={cn("block select-none", className)}
         style={{ width: size, height: size }}
@@ -91,6 +91,7 @@ export default function AnimatedLogo({ size = 40, className }: AnimatedLogoProps
 
   return (
     <motion.img
+      alt="Neo Zino logo"
       {...commonProps}
       className={cn("block select-none", className)}
       style={{

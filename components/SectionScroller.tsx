@@ -25,7 +25,6 @@ export default function SectionScroller() {
 
     // Section not yet in DOM — dynamically imported component still loading.
     // Use a MutationObserver to scroll the moment it appears.
-    let timeout: ReturnType<typeof setTimeout>;
     const observer = new MutationObserver(() => {
       const target = document.getElementById(section);
       if (target) {
@@ -35,7 +34,7 @@ export default function SectionScroller() {
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
-    timeout = setTimeout(() => observer.disconnect(), 3000);
+    const timeout = setTimeout(() => observer.disconnect(), 3000);
 
     return () => {
       observer.disconnect();

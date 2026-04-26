@@ -219,8 +219,8 @@ export default function ContactSection() {
             {/* Orange divider */}
             <div className={cn("w-12 h-[2px] bg-brand-orange rounded-full", isHe && "ml-auto")} />
 
-            {/* Social links — two columns */}
-            <div className={cn("flex gap-8", isHe && "flex-row-reverse")}>
+            {/* Social links — single column on mobile, two columns from sm up */}
+            <div className={cn("flex flex-col sm:flex-row gap-5 sm:gap-8", isHe && "sm:flex-row-reverse")}>
               <div className="flex flex-col gap-5">
                 {socialLinks.slice(0, 4).map((link) => (
                   <SocialLinkItem
