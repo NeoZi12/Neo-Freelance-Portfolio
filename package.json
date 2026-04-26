@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "size": "size-limit"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
@@ -38,13 +40,29 @@
     "edge >= 93"
   ],
   "devDependencies": {
+    "@size-limit/preset-app": "^11.2.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^15.0.0",
+    "size-limit": "^11.2.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
-  }
+  },
+  "size-limit": [
+    {
+      "name": "All JS chunks",
+      "path": ".next/static/chunks/**/*.js",
+      "limit": "1000 KB",
+      "gzip": true
+    },
+    {
+      "name": "All CSS",
+      "path": ".next/static/css/**/*.css",
+      "limit": "30 KB",
+      "gzip": true
+    }
+  ]
 }

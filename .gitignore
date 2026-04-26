@@ -28,3 +28,10 @@ next-env.d.ts
 
 # Claude Code — local-only settings (machine paths, personal permissions)
 .claude/settings.local.json
+
+# Quality gate — sentinels, logs, audit outputs
+.claude/.session-edits
+.claude/.last-check.log
+.claude/.last-audit.md
+.claude/.perf-baseline.json
+.playwright-mcp/
