@@ -6,15 +6,13 @@ import { Icon } from "@iconify/react";
 import type { IconifyIcon } from "@iconify/react";
 import check from "@iconify-icons/lucide/check";
 import arrowRight from "@iconify-icons/lucide/arrow-right";
-import siReact from "@iconify-icons/simple-icons/react";
-import siVite from "@iconify-icons/simple-icons/vite";
+import siNextdotjs from "@iconify-icons/simple-icons/nextdotjs";
+import siTypescript from "@iconify-icons/simple-icons/typescript";
 import siTailwindcss from "@iconify-icons/simple-icons/tailwindcss";
 import siFramer from "@iconify-icons/simple-icons/framer";
 import siVercel from "@iconify-icons/simple-icons/vercel";
-import siNodedotjs from "@iconify-icons/simple-icons/nodedotjs";
+import siSupabase from "@iconify-icons/simple-icons/supabase";
 import siPostgresql from "@iconify-icons/simple-icons/postgresql";
-import siPrisma from "@iconify-icons/simple-icons/prisma";
-import siStripe from "@iconify-icons/simple-icons/stripe";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EASE, DUR, viewport } from "@/lib/motion";
@@ -24,19 +22,19 @@ import { montserrat, jakarta, inter } from "@/lib/fonts";
 type TechItem = { name: string; icon: IconifyIcon; color: string };
 
 const TECH_ROW1: TechItem[] = [
-  { name: "React",         icon: siReact,        color: "#61DAFB" },
-  { name: "Vite",          icon: siVite,         color: "#B794F6" },
-  { name: "Tailwind",      icon: siTailwindcss,  color: "#38BDF8" },
-  { name: "Framer Motion", icon: siFramer,       color: "#FFFFFF" },
-  { name: "Vercel",        icon: siVercel,       color: "#FFFFFF" },
+  { name: "Next.js",       icon: siNextdotjs,   color: "#FFFFFF" },
+  { name: "TypeScript",    icon: siTypescript,  color: "#3178C6" },
+  { name: "Tailwind",      icon: siTailwindcss, color: "#38BDF8" },
+  { name: "Framer Motion", icon: siFramer,      color: "#FFFFFF" },
+  { name: "Vercel",        icon: siVercel,      color: "#FFFFFF" },
 ];
 
 const TECH_ROW2: TechItem[] = [
-  { name: "React",      icon: siReact,        color: "#61DAFB" },
-  { name: "Node",       icon: siNodedotjs,    color: "#8CC84B" },
-  { name: "PostgreSQL", icon: siPostgresql,   color: "#4FA8E0" },
-  { name: "Prisma",     icon: siPrisma,       color: "#FFFFFF" },
-  { name: "Stripe",     icon: siStripe,       color: "#9F8AFF" },
+  { name: "Next.js",    icon: siNextdotjs,   color: "#FFFFFF" },
+  { name: "TypeScript", icon: siTypescript,  color: "#3178C6" },
+  { name: "Tailwind",   icon: siTailwindcss, color: "#38BDF8" },
+  { name: "Supabase",   icon: siSupabase,    color: "#3FCF8E" },
+  { name: "PostgreSQL", icon: siPostgresql,  color: "#4FA8E0" },
 ];
 
 // ── Motion variants (row stagger) ─────────────────────────────────────────────
@@ -387,21 +385,39 @@ function MockDashboardMobile() {
 // Mockup compositions per row
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Each device is built once at a single "xl design" reference size so the
+// inner mock contents (bars, paragraphs, buttons, charts) sit in known
+// proportions to the frame. CSS `zoom` on the inner wrapper scales the
+// entire composition — frames AND contents — proportionally at smaller
+// breakpoints, so nothing inside a phone/laptop screen ever overflows.
+//
+// Padding is on the OUTER (un-zoomed) container so the breathing room
+// between the composition and the card edge stays constant in real px
+// regardless of zoom factor.
+const MOCKUP_ZOOM =
+  "[zoom:0.42] sm:[zoom:0.95] md:[zoom:0.6] lg:[zoom:0.8] xl:[zoom:1]";
+
 function MockupRow1() {
   return (
-    // Extra py so the laptop frame (incl. base + drop-shadow) clears the
-    // card's bottom edge with breathing room at every breakpoint.
-    <div className="flex h-full items-center justify-center gap-3 px-4 py-8 md:py-10">
-      <Laptop className="w-[240px] sm:w-[300px] md:w-[320px] lg:w-[400px] xl:w-[440px]">
-        <MockLanding />
-      </Laptop>
-      <div
-        className="relative z-[2]"
-        style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
-      >
-        <Phone className="w-[100px] sm:w-[130px] md:w-[140px] lg:w-[158px] xl:w-[172px]">
-          <MockLandingMobile />
-        </Phone>
+    // Outer: padding stays in real px so card-edge breathing is constant.
+    // py keeps the laptop base + drop-shadow inside the card boundary.
+    <div className="flex h-full items-center justify-center px-4 py-8 md:py-10">
+      <div className={cn("flex items-center gap-12 sm:gap-3", MOCKUP_ZOOM)}>
+        {/* Laptop — hero device. Reduced from 460→320 ref so the phone
+            (Fix 1) reads as clearly secondary at every breakpoint. */}
+        <Laptop className="w-[320px]">
+          <MockLanding />
+        </Laptop>
+        {/* Phone — Fix 1: 172 → 132 ref, ~23% shorter. Slight overlap
+            via z-lift + drop-shadow keeps the depth read intact. */}
+        <div
+          className="relative z-[2]"
+          style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
+        >
+          <Phone className="w-[132px]">
+            <MockLandingMobile />
+          </Phone>
+        </div>
       </div>
     </div>
   );
@@ -409,31 +425,35 @@ function MockupRow1() {
 
 function MockupRow2() {
   return (
-    // Tighter padding + tighter gaps so all three devices fit horizontally
-    // without clipping at the right edge. Tablet is xl+ only (lg pane is too
-    // narrow once tablet/laptop/phone are all in the row).
-    <div className="flex h-full items-center justify-center gap-2 px-4 py-8 md:py-10 xl:gap-3">
-      {/* Tablet — recessed, xl+ only */}
-      <div
-        className="relative z-[1] mt-6 hidden xl:block"
-        style={{ filter: "drop-shadow(0 18px 32px rgba(0,0,0,0.5))" }}
-      >
-        <Tablet className="w-[150px] xl:w-[160px]">
+    // Fix 2: outer px-4 + zoom-fit ref leaves ≥20px of real-px breathing
+    // between the outermost devices and the card's left/right edges at
+    // every breakpoint. Same relative tablet:laptop:phone proportions as
+    // before; all three scaled down in lockstep.
+    <div className="flex h-full items-center justify-center px-4 py-8 md:py-10">
+      <div className={cn("flex items-center gap-12 sm:gap-3", MOCKUP_ZOOM)}>
+        {/* Tablet — recessed for depth. Always rendered now; zoom keeps
+            the three-device composition fitting at every breakpoint. */}
+        <div
+          className="relative z-[1] mt-6"
+          style={{ filter: "drop-shadow(0 18px 32px rgba(0,0,0,0.5))" }}
+        >
+          <Tablet className="w-[120px]">
+            <MockDashboard />
+          </Tablet>
+        </div>
+        {/* Laptop — main subject */}
+        <Laptop className="relative z-[2] w-[240px]">
           <MockDashboard />
-        </Tablet>
-      </div>
-      {/* Laptop — main subject */}
-      <Laptop className="relative z-[2] w-[220px] sm:w-[260px] md:w-[290px] lg:w-[320px] xl:w-[280px]">
-        <MockDashboard />
-      </Laptop>
-      {/* Phone — to the side, slightly lifted */}
-      <div
-        className="relative z-[2]"
-        style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
-      >
-        <Phone className="w-[80px] sm:w-[100px] md:w-[108px] lg:w-[120px] xl:w-[110px]">
-          <MockDashboardMobile />
-        </Phone>
+        </Laptop>
+        {/* Phone — slightly lifted */}
+        <div
+          className="relative z-[2]"
+          style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
+        >
+          <Phone className="w-[90px]">
+            <MockDashboardMobile />
+          </Phone>
+        </div>
       </div>
     </div>
   );

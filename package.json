@@ -56,13 +56,15 @@
       "name": "All JS chunks",
       "path": ".next/static/chunks/**/*.js",
       "limit": "1000 KB",
-      "gzip": true
+      "gzip": true,
+      "running": false
     },
     {
       "name": "All CSS",
       "path": ".next/static/css/**/*.css",
       "limit": "30 KB",
-      "gzip": true
+      "gzip": true,
+      "running": false
     }
   ]
 }
