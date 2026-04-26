@@ -389,8 +389,10 @@ function MockDashboardMobile() {
 
 function MockupRow1() {
   return (
-    <div className="flex h-full items-center justify-center gap-3 px-4 py-4">
-      <Laptop className="w-[260px] sm:w-[320px] md:w-[340px] lg:w-[420px] xl:w-[460px]">
+    // Extra py so the laptop frame (incl. base + drop-shadow) clears the
+    // card's bottom edge with breathing room at every breakpoint.
+    <div className="flex h-full items-center justify-center gap-3 px-4 py-8 md:py-10">
+      <Laptop className="w-[240px] sm:w-[300px] md:w-[320px] lg:w-[400px] xl:w-[440px]">
         <MockLanding />
       </Laptop>
       <div
@@ -407,18 +409,21 @@ function MockupRow1() {
 
 function MockupRow2() {
   return (
-    <div className="flex h-full items-center justify-center gap-3 px-6 py-6">
-      {/* Tablet — recessed, lg+ only (composition is too tight at md) */}
+    // Tighter padding + tighter gaps so all three devices fit horizontally
+    // without clipping at the right edge. Tablet is xl+ only (lg pane is too
+    // narrow once tablet/laptop/phone are all in the row).
+    <div className="flex h-full items-center justify-center gap-2 px-4 py-8 md:py-10 xl:gap-3">
+      {/* Tablet — recessed, xl+ only */}
       <div
-        className="relative z-[1] mt-6 hidden lg:block"
+        className="relative z-[1] mt-6 hidden xl:block"
         style={{ filter: "drop-shadow(0 18px 32px rgba(0,0,0,0.5))" }}
       >
-        <Tablet className="w-[160px] xl:w-[180px]">
+        <Tablet className="w-[150px] xl:w-[160px]">
           <MockDashboard />
         </Tablet>
       </div>
       {/* Laptop — main subject */}
-      <Laptop className="relative z-[2] w-[220px] sm:w-[260px] md:w-[290px] lg:w-[300px] xl:w-[330px]">
+      <Laptop className="relative z-[2] w-[220px] sm:w-[260px] md:w-[290px] lg:w-[320px] xl:w-[280px]">
         <MockDashboard />
       </Laptop>
       {/* Phone — to the side, slightly lifted */}
@@ -426,7 +431,7 @@ function MockupRow2() {
         className="relative z-[2]"
         style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
       >
-        <Phone className="w-[80px] sm:w-[100px] md:w-[108px] lg:w-[110px] xl:w-[120px]">
+        <Phone className="w-[80px] sm:w-[100px] md:w-[108px] lg:w-[120px] xl:w-[110px]">
           <MockDashboardMobile />
         </Phone>
       </div>
@@ -748,7 +753,7 @@ export default function ServicesSection() {
           <ServiceRow
             mockSide="left"
             eyebrow={s.left.whoAnswer}
-            title={`${s.left.titleA}${s.left.titleB}`}
+            title={`${s.left.titleA.trim()} ${s.left.titleB.trim()}`}
             tagline={s.left.description}
             features={[...s.left.items]}
             tech={TECH_ROW1}
@@ -762,7 +767,7 @@ export default function ServicesSection() {
           <ServiceRow
             mockSide="right"
             eyebrow={s.right.whoAnswer}
-            title={`${s.right.titleA}${s.right.titleB}`}
+            title={`${s.right.titleA.trim()} ${s.right.titleB.trim()}`}
             tagline={s.right.description}
             features={[...s.right.items]}
             tech={TECH_ROW2}
