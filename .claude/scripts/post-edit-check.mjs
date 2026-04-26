@@ -8,7 +8,7 @@
 //   2  → checks failed; stderr is fed back to Claude for self-correction
 
 import { spawnSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 
 const PROJECT_DIR = process.env.CLAUDE_PROJECT_DIR || process.cwd();
@@ -66,12 +66,19 @@ if (!isSourcePath(filePath)) {
   process.exit(0);
 }
 
-logLine(`check ${relative(PROJECT_DIR, filePath)}`);
+const relPath = relative(PROJECT_DIR, filePath).replace(/\\/g, "/");
+logLine(`check ${relPath}`);
 
 // Mark this session as having edited source — Stop hook reads this.
+// Sentinel is a deduplicated newline-delimited list of changed source paths,
+// so the Stop hook can lint exactly the files that changed.
 try {
   mkdirSync(dirname(SENTINEL), { recursive: true });
-  writeFileSync(SENTINEL, new Date().toISOString());
+  let existing = "";
+  try { if (existsSync(SENTINEL)) existing = readFileSync(SENTINEL, "utf8"); } catch {}
+  const set = new Set(existing.split("\n").map(s => s.trim()).filter(Boolean));
+  set.add(relPath);
+  writeFileSync(SENTINEL, [...set].join("\n") + "\n");
 } catch {}
 
 const failures = [];
@@ -83,7 +90,6 @@ if (tsc.code !== 0) {
 }
 
 // 2. Lint only the touched file (full repo lint is too slow per-edit).
-const relPath = relative(PROJECT_DIR, filePath).replace(/\\/g, "/");
 const lint = run("npx", ["eslint", relPath]);
 if (lint.code !== 0) {
   failures.push({ name: "eslint", out: (lint.stdout + lint.stderr).trim().slice(0, 4000) });

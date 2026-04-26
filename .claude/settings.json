@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/scripts/stop-build-check.mjs\""
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/scripts/stop-fast-check.mjs\""
           }
         ]
       }
