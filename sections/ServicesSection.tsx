@@ -1,449 +1,780 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import type { Variants } from 'framer-motion'
-import { Icon } from '@iconify/react'
-import { cn } from '@/lib/utils'
-import { useLanguage } from '@/contexts/LanguageContext'
-import { fadeUp, viewport, EASE } from '@/lib/motion'
-import { montserrat, jakarta, inter } from '@/lib/fonts'
-import userCheck from '@iconify-icons/tabler/user-check'
-import world from '@iconify-icons/tabler/world'
-import presentation from '@iconify-icons/tabler/presentation'
-import search from '@iconify-icons/tabler/search'
-import settings2 from '@iconify-icons/tabler/settings-2'
-import calendarEvent from '@iconify-icons/tabler/calendar-event'
-import bolt from '@iconify-icons/tabler/bolt'
-import rocket from '@iconify-icons/tabler/rocket'
-import circle from '@iconify-icons/tabler/circle'
+import { motion, useReducedMotion } from "framer-motion";
+import type { Variants } from "framer-motion";
+import { Icon } from "@iconify/react";
+import type { IconifyIcon } from "@iconify/react";
+import check from "@iconify-icons/lucide/check";
+import arrowRight from "@iconify-icons/lucide/arrow-right";
+import siReact from "@iconify-icons/simple-icons/react";
+import siVite from "@iconify-icons/simple-icons/vite";
+import siTailwindcss from "@iconify-icons/simple-icons/tailwindcss";
+import siFramer from "@iconify-icons/simple-icons/framer";
+import siVercel from "@iconify-icons/simple-icons/vercel";
+import siNodedotjs from "@iconify-icons/simple-icons/nodedotjs";
+import siPostgresql from "@iconify-icons/simple-icons/postgresql";
+import siPrisma from "@iconify-icons/simple-icons/prisma";
+import siStripe from "@iconify-icons/simple-icons/stripe";
+import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { EASE, DUR, viewport } from "@/lib/motion";
+import { montserrat, jakarta, inter } from "@/lib/fonts";
 
-// One icon per item — index matches s.left.items / s.right.items order
-const LEFT_ICONS = [
-  userCheck,   // Turn visitors into clients
-  world,       // Build a strong online presence
-  presentation,// Present your business clearly
-  search,      // SEO-optimized structure
-]
+// ── Tech list (universal — not localized) ─────────────────────────────────────
+type TechItem = { name: string; icon: IconifyIcon; color: string };
 
-const RIGHT_ICONS = [
-  settings2,    // Fully customizable to your business needs
-  calendarEvent,// Manage bookings and client interactions
-  bolt,         // Automate payments and processes
-  rocket,       // Fast, scalable, high-performance system
-]
+const TECH_ROW1: TechItem[] = [
+  { name: "React",         icon: siReact,        color: "#61DAFB" },
+  { name: "Vite",          icon: siVite,         color: "#B794F6" },
+  { name: "Tailwind",      icon: siTailwindcss,  color: "#38BDF8" },
+  { name: "Framer Motion", icon: siFramer,       color: "#FFFFFF" },
+  { name: "Vercel",        icon: siVercel,       color: "#FFFFFF" },
+];
 
-// ── Bullet list animations ─────────────────────────────────────────────────────
-// Tighter stagger than the global default (90ms vs 130ms) for a crisper read-in.
-const bulletStagger: Variants = {
+const TECH_ROW2: TechItem[] = [
+  { name: "React",      icon: siReact,        color: "#61DAFB" },
+  { name: "Node",       icon: siNodedotjs,    color: "#8CC84B" },
+  { name: "PostgreSQL", icon: siPostgresql,   color: "#4FA8E0" },
+  { name: "Prisma",     icon: siPrisma,       color: "#FFFFFF" },
+  { name: "Stripe",     icon: siStripe,       color: "#9F8AFF" },
+];
+
+// ── Motion variants (row stagger) ─────────────────────────────────────────────
+const rowFadeUp: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  show:   { opacity: 1, y: 0, transition: { duration: DUR, ease: EASE } },
+};
+
+const rowsStagger: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
+  show:   { transition: { staggerChildren: 0.14, delayChildren: 0.05 } },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Device chrome — pure JSX/Tailwind. No SVG, no images.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Laptop({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("relative", className)}>
+      {/* screen */}
+      <div className="rounded-t-[10px] rounded-b-[4px] border border-white/10 bg-[#0d0a08] p-2 shadow-[0_30px_60px_rgba(0,0,0,0.5),inset_0_0_0_1px_rgba(255,255,255,0.04)]">
+        <div className="relative aspect-[16/10] overflow-hidden rounded-md border border-white/[0.05] bg-[linear-gradient(160deg,#14100c_0%,#0b0807_100%)]">
+          {children}
+        </div>
+      </div>
+      {/* base */}
+      <div className="relative -mt-px h-2 rounded-b-[14px] bg-[linear-gradient(180deg,#1a1614_0%,#0b0807_100%)] shadow-[0_6px_14px_rgba(0,0,0,0.5)]">
+        <div className="absolute left-1/2 top-0 h-[3px] w-[22%] -translate-x-1/2 rounded-b-md bg-black/50" />
+      </div>
+    </div>
+  );
 }
 
-// LTR: each bullet slides in from the left
-const bulletFadeLeft: Variants = {
-  hidden: { opacity: 0, x: -10 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE } },
+function Tablet({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "aspect-[4/3] rounded-[14px] border border-white/10 bg-[#0d0a08] p-[7px] shadow-[0_24px_48px_rgba(0,0,0,0.55),inset_0_0_0_1px_rgba(255,255,255,0.04)]",
+        className,
+      )}
+    >
+      <div className="relative h-full w-full overflow-hidden rounded-[9px] border border-white/[0.05] bg-[linear-gradient(160deg,#14100c_0%,#0b0807_100%)]">
+        {children}
+      </div>
+    </div>
+  );
 }
 
-// RTL (Hebrew): each bullet slides in from the right
-const bulletFadeRight: Variants = {
-  hidden: { opacity: 0, x: 10 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE } },
+function Phone({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "aspect-[9/19] rounded-[18px] border border-white/[0.12] bg-[#0d0a08] p-[5px] shadow-[0_20px_40px_rgba(0,0,0,0.55),inset_0_0_0_1px_rgba(255,255,255,0.04)]",
+        className,
+      )}
+    >
+      <div className="relative h-full w-full overflow-hidden rounded-[14px] border border-white/[0.05] bg-[linear-gradient(160deg,#14100c_0%,#0b0807_100%)]">
+        {/* notch */}
+        <div className="absolute left-1/2 top-1 z-[2] h-[7px] w-[32%] -translate-x-1/2 rounded bg-[#0b0807]" />
+        {children}
+      </div>
+    </div>
+  );
 }
 
-// ── Card hover state ───────────────────────────────────────────────────────────
-type HoveredSide = 'left' | 'right' | null
+// ─────────────────────────────────────────────────────────────────────────────
+// Stylized UIs — pure divs only. Static (no internal animation).
+// ─────────────────────────────────────────────────────────────────────────────
 
-// Shared transition for all card-level hover animations
-const cardTransition = { duration: 0.25, ease: EASE }
+function MockLanding() {
+  return (
+    <div className="flex h-full flex-col gap-2.5 p-3.5">
+      {/* nav */}
+      <div className="flex items-center justify-between">
+        <div className="h-[7px] w-[22px] rounded-[2px] bg-[rgba(230,126,34,0.85)]" />
+        <div className="flex gap-1.5">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="h-1 w-3.5 rounded-[2px] bg-white/[0.18]" />
+          ))}
+        </div>
+        <div className="h-[9px] w-[26px] rounded-[3px] bg-white/[0.12]" />
+      </div>
 
+      {/* hero */}
+      <div className="mt-3 flex flex-col gap-1.5 pl-1">
+        <div className="h-[5px] w-[30%] rounded-[2px] bg-[rgba(230,126,34,0.6)]" />
+        <div className="h-3.5 w-[85%] rounded-[3px] bg-white/85" />
+        <div className="h-3.5 w-[72%] rounded-[3px] bg-white/85" />
+        <div className="mt-1.5 flex flex-col gap-[3px]">
+          <div className="h-[3px] w-[78%] rounded-[2px] bg-white/[0.22]" />
+          <div className="h-[3px] w-[70%] rounded-[2px] bg-white/[0.22]" />
+          <div className="h-[3px] w-[62%] rounded-[2px] bg-white/[0.22]" />
+        </div>
+        <div className="mt-2 flex gap-1.5">
+          <div className="h-4 w-[60px] rounded-md bg-[#E67E22] shadow-[0_6px_14px_rgba(230,126,34,0.35)]" />
+          <div className="h-4 w-[50px] rounded-md border border-white/[0.18] bg-transparent" />
+        </div>
+      </div>
+
+      {/* feature row at bottom */}
+      <div className="mt-auto grid grid-cols-3 gap-2">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="flex flex-col gap-[3px] rounded-[4px] border border-white/[0.05] bg-white/[0.02] p-1.5"
+          >
+            <div className="h-[9px] w-[9px] rounded-[2px] bg-[rgba(230,126,34,0.7)]" />
+            <div className="h-[3px] w-[85%] rounded-[2px] bg-white/40" />
+            <div className="h-[3px] w-[60%] rounded-[2px] bg-white/[0.18]" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MockLandingMobile() {
+  return (
+    <div className="flex h-full flex-col gap-[7px] px-2 pb-2 pt-4">
+      <div className="flex items-center justify-between pt-1">
+        <div className="h-1 w-3.5 rounded-[2px] bg-[rgba(230,126,34,0.85)]" />
+        <div className="h-2 w-3 rounded-[2px] bg-white/[0.15]" />
+      </div>
+      <div className="mt-1.5 flex flex-col gap-1">
+        <div className="h-[3px] w-[55%] rounded-[2px] bg-[rgba(230,126,34,0.6)]" />
+        <div className="h-2 w-[92%] rounded-[2px] bg-white/85" />
+        <div className="h-2 w-[82%] rounded-[2px] bg-white/85" />
+      </div>
+      <div className="mt-1 flex flex-col gap-[2.5px]">
+        <div className="h-[2.5px] w-[85%] rounded-[2px] bg-white/[0.22]" />
+        <div className="h-[2.5px] w-[78%] rounded-[2px] bg-white/[0.22]" />
+      </div>
+      <div className="mt-1 h-3 w-[75%] rounded bg-[#E67E22] shadow-[0_4px_10px_rgba(230,126,34,0.4)]" />
+      <div className="mt-1 h-2.5 w-[60%] rounded border border-white/[0.18]" />
+
+      {/* image card */}
+      <div className="mt-2 h-[50px] rounded-md border border-white/[0.06] bg-[linear-gradient(135deg,rgba(230,126,34,0.18),rgba(255,255,255,0.04))]" />
+      <div className="mt-1 flex flex-col gap-0.5">
+        <div className="h-[2.5px] w-[75%] rounded-[2px] bg-white/30" />
+        <div className="h-[2.5px] w-[60%] rounded-[2px] bg-white/[0.18]" />
+      </div>
+    </div>
+  );
+}
+
+// Tiny pure-div column-chart used in the dashboard mocks (no SVG).
+function BarChart({ heights, accentIndex }: { heights: number[]; accentIndex: number }) {
+  return (
+    <div className="flex h-full items-end gap-[3px]">
+      {heights.map((h, i) => (
+        <div
+          key={i}
+          className={cn(
+            "flex-1 rounded-t-[2px]",
+            i === accentIndex ? "bg-[#E67E22]" : "bg-white/30",
+          )}
+          style={{ height: `${h}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function MockDashboard() {
+  const sidebarItems = [0, 1, 2, 3, 4];
+  const stats = [
+    { v: "60%", c: "bg-[rgba(230,126,34,0.85)]" },
+    { v: "78%", c: "bg-white/70" },
+    { v: "44%", c: "bg-white/70" },
+  ];
+  return (
+    <div className="grid h-full grid-cols-[60px_1fr]">
+      {/* sidebar */}
+      <div className="flex flex-col gap-2 border-r border-white/[0.06] bg-black/35 p-2.5">
+        <div className="h-1.5 w-4 rounded-[2px] bg-[rgba(230,126,34,0.85)]" />
+        <div className="mt-1.5 flex flex-col gap-[5px]">
+          {sidebarItems.map((i) => {
+            const active = i === 1;
+            return (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-center gap-1 rounded-[3px] px-1 py-[3px]",
+                  active ? "bg-[rgba(230,126,34,0.12)]" : "bg-transparent",
+                )}
+              >
+                <div
+                  className={cn(
+                    "h-1.5 w-1.5 rounded-[1px]",
+                    active ? "bg-[rgba(230,126,34,0.85)]" : "bg-white/25",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "h-[3px] w-[22px] rounded-[2px]",
+                    active ? "bg-[rgba(230,126,34,0.55)]" : "bg-white/[0.18]",
+                  )}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* main */}
+      <div className="flex flex-col gap-2.5 p-3">
+        {/* topbar */}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-0.5">
+            <div className="h-[3px] w-[60px] rounded-[2px] bg-white/25" />
+            <div className="h-[7px] w-[86px] rounded-[2px] bg-white/85" />
+          </div>
+          <div className="flex gap-1">
+            <div className="h-3.5 w-3.5 rounded bg-white/[0.08]" />
+            <div className="h-3.5 w-3.5 rounded-full bg-[rgba(230,126,34,0.65)]" />
+          </div>
+        </div>
+
+        {/* stat cards */}
+        <div className="grid grid-cols-3 gap-1.5">
+          {stats.map((s, i) => (
+            <div
+              key={i}
+              className="flex flex-col gap-1 rounded-[5px] border border-white/[0.06] bg-white/[0.025] p-2"
+            >
+              <div className="h-[2.5px] w-[40%] rounded-[2px] bg-white/25" />
+              <div className={cn("h-2 rounded-[2px]", s.c)} style={{ width: s.v }} />
+              <div className="h-0.5 w-[30%] rounded-[1px] bg-white/15" />
+            </div>
+          ))}
+        </div>
+
+        {/* bar chart (replaces SVG line chart — pure divs) */}
+        <div className="rounded-[5px] border border-white/[0.06] bg-white/[0.025] p-2">
+          <div className="h-9">
+            <BarChart
+              heights={[28, 36, 32, 52, 44, 68, 60, 82, 74, 92, 80, 96]}
+              accentIndex={11}
+            />
+          </div>
+        </div>
+
+        {/* table */}
+        <div className="overflow-hidden rounded-[5px] border border-white/[0.06] bg-white/[0.02]">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={cn(
+                "grid grid-cols-[1fr_50px_30px] items-center gap-1.5 px-2 py-[5px]",
+                i !== 0 && "border-t border-white/[0.04]",
+              )}
+            >
+              <div className="h-[3px] w-[70%] rounded-[2px] bg-white/30" />
+              <div className="h-[3px] w-full rounded-[2px] bg-white/[0.18]" />
+              <div
+                className={cn(
+                  "h-1.5 w-[18px] rounded-[2px]",
+                  i === 0 ? "bg-[rgba(230,126,34,0.55)]" : "bg-white/[0.12]",
+                )}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MockDashboardMobile() {
+  return (
+    <div className="flex h-full flex-col gap-1.5 px-2 pb-2 pt-4">
+      <div className="flex items-center justify-between pt-1">
+        <div className="flex flex-col gap-0.5">
+          <div className="h-[2.5px] w-7 rounded-[2px] bg-white/25" />
+          <div className="h-1 w-[38px] rounded-[2px] bg-white/85" />
+        </div>
+        <div className="h-2.5 w-2.5 rounded-full bg-[rgba(230,126,34,0.65)]" />
+      </div>
+
+      <div className="mt-1 flex flex-col gap-[3px] rounded-[5px] border border-[rgba(230,126,34,0.25)] bg-[linear-gradient(135deg,rgba(230,126,34,0.18),rgba(230,126,34,0.04))] p-2">
+        <div className="h-[2.5px] w-[40%] rounded-[2px] bg-white/40" />
+        <div className="h-2 w-[65%] rounded-[2px] bg-[#E67E22]" />
+        <div className="h-0.5 w-[30%] rounded-[1px] bg-white/30" />
+      </div>
+
+      <div className="mt-0.5 grid grid-cols-2 gap-1">
+        {[0, 1].map((i) => (
+          <div
+            key={i}
+            className="flex flex-col gap-0.5 rounded-[4px] border border-white/[0.05] bg-white/[0.025] p-1.5"
+          >
+            <div className="h-0.5 w-[60%] rounded-[1px] bg-white/[0.22]" />
+            <div className="h-1.5 w-[75%] rounded-[2px] bg-white/70" />
+          </div>
+        ))}
+      </div>
+
+      {/* mini bar chart row */}
+      <div className="mt-1 rounded-[4px] border border-white/[0.05] bg-white/[0.02] p-1.5">
+        <div className="h-6">
+          <BarChart
+            heights={[22, 30, 26, 44, 36, 58, 50, 72, 88]}
+            accentIndex={8}
+          />
+        </div>
+      </div>
+
+      <div className="mt-1 flex flex-col gap-[3px]">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="grid grid-cols-[1fr_16px] items-center gap-1 rounded-[3px] bg-white/[0.02] px-1 py-[3px]"
+          >
+            <div className="h-[2.5px] w-[70%] rounded-[2px] bg-white/30" />
+            <div
+              className={cn(
+                "h-[5px] w-3 rounded-[1.5px]",
+                i === 0 ? "bg-[rgba(230,126,34,0.55)]" : "bg-white/15",
+              )}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mockup compositions per row
+// ─────────────────────────────────────────────────────────────────────────────
+
+function MockupRow1() {
+  return (
+    <div className="flex h-full items-center justify-center gap-3 px-4 py-4">
+      <Laptop className="w-[260px] sm:w-[320px] md:w-[340px] lg:w-[420px] xl:w-[460px]">
+        <MockLanding />
+      </Laptop>
+      <div
+        className="relative z-[2]"
+        style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
+      >
+        <Phone className="w-[100px] sm:w-[130px] md:w-[140px] lg:w-[158px] xl:w-[172px]">
+          <MockLandingMobile />
+        </Phone>
+      </div>
+    </div>
+  );
+}
+
+function MockupRow2() {
+  return (
+    <div className="flex h-full items-center justify-center gap-3 px-6 py-6">
+      {/* Tablet — recessed, lg+ only (composition is too tight at md) */}
+      <div
+        className="relative z-[1] mt-6 hidden lg:block"
+        style={{ filter: "drop-shadow(0 18px 32px rgba(0,0,0,0.5))" }}
+      >
+        <Tablet className="w-[160px] xl:w-[180px]">
+          <MockDashboard />
+        </Tablet>
+      </div>
+      {/* Laptop — main subject */}
+      <Laptop className="relative z-[2] w-[220px] sm:w-[260px] md:w-[290px] lg:w-[300px] xl:w-[330px]">
+        <MockDashboard />
+      </Laptop>
+      {/* Phone — to the side, slightly lifted */}
+      <div
+        className="relative z-[2]"
+        style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
+      >
+        <Phone className="w-[80px] sm:w-[100px] md:w-[108px] lg:w-[110px] xl:w-[120px]">
+          <MockDashboardMobile />
+        </Phone>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tech strip ("Built with …")
+// ─────────────────────────────────────────────────────────────────────────────
+
+function TechStrip({
+  items,
+  label,
+  isHe,
+}: {
+  items: TechItem[];
+  label: string;
+  isHe: boolean;
+}) {
+  return (
+    <div className="mt-1.5 flex flex-col gap-3 border-t border-white/[0.08] pt-4">
+      <span
+        dir={isHe ? "rtl" : "ltr"}
+        className={cn(
+          "text-[10px] font-semibold uppercase tracking-[0.28em] text-white/40",
+          inter.className,
+        )}
+      >
+        {label}
+      </span>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+        {items.map((t) => (
+          <span
+            key={t.name}
+            className={cn(
+              "inline-flex items-center gap-[7px] text-[12px] font-medium text-white/55",
+              inter.className,
+            )}
+          >
+            <Icon
+              icon={t.icon}
+              width={15}
+              height={15}
+              style={{ color: t.color, opacity: 0.7 }}
+            />
+            {t.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Service row card
+// ─────────────────────────────────────────────────────────────────────────────
+
+type RowProps = {
+  mockSide: "left" | "right";
+  eyebrow: string;
+  title: string;
+  tagline: string;
+  features: string[];
+  tech: TechItem[];
+  ctaLabel: string;
+  ctaStyle: "outline" | "filled";
+  builtWithLabel: string;
+  learnMoreLabel: string;
+  isHe: boolean;
+  Mockup: () => React.JSX.Element;
+};
+
+function ServiceRow({
+  mockSide,
+  eyebrow,
+  title,
+  tagline,
+  features,
+  tech,
+  ctaLabel,
+  ctaStyle,
+  builtWithLabel,
+  learnMoreLabel,
+  isHe,
+  Mockup,
+}: RowProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const reverse = mockSide === "right";
+
+  // Hover scale on CTA — refined, not dramatic. Disabled for reduced motion.
+  const hoverScale = prefersReducedMotion ? undefined : { scale: 1.02 };
+
+  return (
+    <motion.article
+      variants={rowFadeUp}
+      whileHover={
+        prefersReducedMotion
+          ? undefined
+          : {
+              boxShadow:
+                "0 28px 60px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(230,126,34,0.16)",
+            }
+      }
+      transition={{ duration: 0.35, ease: EASE }}
+      className="group relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.018] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)]"
+    >
+      <div
+        className={cn(
+          "flex flex-col md:grid md:min-h-[440px]",
+          // Mockup goes first (top) on mobile.
+          // At md+, alternate columns based on mockSide.
+          reverse
+            ? "md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]"
+            : "md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]",
+        )}
+      >
+        {/* ── Mockup pane ── */}
+        <div
+          className={cn(
+            "relative overflow-hidden bg-[linear-gradient(140deg,rgba(230,126,34,0.06)_0%,rgba(255,255,255,0)_60%)]",
+            reverse
+              ? "md:order-2 md:border-l md:border-white/[0.06]"
+              : "md:order-1 md:border-r md:border-white/[0.06]",
+          )}
+        >
+          {/* corner radial glow */}
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute -top-[30%] h-[90%] w-[70%] rounded-full blur-[28px]",
+              reverse ? "-right-[15%]" : "-left-[15%]",
+            )}
+            style={{
+              background:
+                "radial-gradient(closest-side, rgba(230,126,34,0.18), transparent 70%)",
+            }}
+          />
+          {/* faint dot grid (CSS, not SVG) */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)",
+              backgroundSize: "16px 16px",
+              maskImage:
+                "radial-gradient(ellipse at center, black 30%, transparent 75%)",
+              WebkitMaskImage:
+                "radial-gradient(ellipse at center, black 30%, transparent 75%)",
+            }}
+          />
+          <div className="relative h-full">
+            <Mockup />
+          </div>
+        </div>
+
+        {/* ── Content pane ── */}
+        <div
+          dir={isHe ? "rtl" : "ltr"}
+          className={cn(
+            "flex min-w-0 flex-col gap-4 p-6 sm:p-8 md:gap-[18px] md:p-10 lg:p-11",
+            reverse ? "md:order-1" : "md:order-2",
+          )}
+        >
+          <span
+            className={cn(
+              "text-[11px] font-semibold uppercase tracking-[0.28em] text-[#E67E22]",
+              inter.className,
+            )}
+          >
+            {eyebrow}
+          </span>
+
+          <h3
+            className={cn(
+              "m-0 text-[28px] font-bold leading-[1.08] tracking-[-0.02em] text-white text-balance md:text-[32px]",
+              montserrat.className,
+            )}
+          >
+            {title}
+          </h3>
+
+          <p
+            className={cn(
+              "m-0 max-w-[460px] text-[15px] font-medium leading-[1.55] text-white/70 md:text-[15.5px]",
+              inter.className,
+            )}
+          >
+            {tagline}
+          </p>
+
+          <ul className="mt-1.5 grid list-none grid-cols-1 gap-x-[18px] gap-y-2.5 p-0 sm:grid-cols-2">
+            {features.map((f) => (
+              <li
+                key={f}
+                className={cn(
+                  "flex items-center gap-2.5 text-[13.5px] font-medium text-white/[0.86]",
+                  jakarta.className,
+                )}
+              >
+                <Icon
+                  icon={check}
+                  width={14}
+                  height={14}
+                  className="shrink-0 text-[#E67E22]"
+                />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+
+          <TechStrip items={tech} label={builtWithLabel} isHe={isHe} />
+
+          <div className="mt-1 flex flex-wrap items-center gap-x-[18px] gap-y-3">
+            <motion.a
+              href="#contact"
+              whileHover={hoverScale}
+              transition={{ duration: 0.2, ease: EASE }}
+              className={cn(
+                "inline-flex items-center gap-2 whitespace-nowrap rounded-[14px] px-[22px] py-3 text-[13.5px] font-semibold no-underline transition-shadow duration-200",
+                montserrat.className,
+                ctaStyle === "outline"
+                  ? "border border-[#E67E22] bg-transparent text-[#E67E22] hover:bg-[rgba(230,126,34,0.08)]"
+                  : "bg-[#E67E22] text-white shadow-[0_8px_20px_rgba(230,126,34,0.32)] hover:shadow-[0_12px_28px_rgba(230,126,34,0.5)]",
+              )}
+            >
+              {ctaLabel}
+              <Icon icon={arrowRight} width={15} height={15} />
+            </motion.a>
+
+            {/* Learn more — link only, no route yet */}
+            <a
+              href="#"
+              className={cn(
+                "group/lm inline-flex items-center gap-1.5 text-[13.5px] font-medium text-white/60 no-underline transition-colors duration-200 hover:text-white",
+                inter.className,
+              )}
+            >
+              <span>{learnMoreLabel}</span>
+              <Icon
+                icon={arrowRight}
+                width={13}
+                height={13}
+                className="text-white/40 transition-colors duration-200 group-hover/lm:text-white/70"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Note on viewport sizing:
+// The section uses `min-h-[100dvh]` so it's at least one viewport tall, but
+// with two stacked rows of full mockups + content the natural height exceeds
+// 100vh on most desktops. Per the design brief's escape hatch, breathing room
+// (mockups legible, gap ≥ 28px, full type hierarchy) wins over a strict 100vh.
 export default function ServicesSection() {
-  const { locale, t } = useLanguage()
-  const isHe = locale === 'he'
-  const s = t.services
-
-  // Tracks which card is hovered — null when neither is.
-  // Set on each card's onMouseEnter; reset on the grid container's onMouseLeave
-  // so moving directly between cards never briefly hits null.
-  const [hoveredSide, setHoveredSide] = useState<HoveredSide>(null)
-
-  // Scale up the active card; dim the inactive one. Neutral when nothing is hovered.
-  function cardAnimate(side: 'left' | 'right') {
-    return {
-      scale: hoveredSide === side ? 1.015 : 1,
-      opacity: hoveredSide !== null && hoveredSide !== side ? 0.65 : 1,
-    }
-  }
-
-  // Bullet direction matches reading direction
-  const bulletVariant = isHe ? bulletFadeRight : bulletFadeLeft
+  const { locale, t } = useLanguage();
+  const isHe = locale === "he";
+  const s = t.services;
 
   return (
     <section
       id="services"
-      className="relative min-h-screen bg-[#131313] overflow-hidden flex flex-col scroll-mt-16 lg:scroll-mt-0"
+      className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[#0B0907] scroll-mt-16 lg:scroll-mt-0"
     >
       {/* ── Navbar spacer ── */}
-      <div className="hidden lg:block h-[90px] shrink-0" />
+      <div className="hidden h-[90px] shrink-0 lg:block" />
 
-      {/* ── Decorative blur blobs ── */}
+      {/* ── Warm wash ── */}
       <div
         aria-hidden
-        className="hidden sm:block pointer-events-none absolute w-[640px] h-[640px] left-[128px] top-[232px] rounded-full bg-[rgba(255,183,125,0.05)] blur-[60px]"
-      />
-      <div
-        aria-hidden
-        className="hidden sm:block pointer-events-none absolute w-[480px] h-[480px] right-[128px] bottom-[232px] rounded-full bg-[rgba(253,184,129,0.05)] blur-[50px]"
+        className="pointer-events-none absolute -top-40 left-[-10%] h-[520px] w-[120%] blur-[40px]"
+        style={{
+          background:
+            "radial-gradient(50% 60% at 50% 50%, rgba(230,126,34,0.10), transparent 70%)",
+        }}
       />
 
-      {/* ── Content area ── */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-6 lg:py-8">
-        <div className="w-full max-w-[1280px] mx-auto flex flex-col items-center">
-          {/* ── Section title ── */}
-          <motion.h2
-            dir={isHe ? "rtl" : "ltr"}
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={viewport}
+        className="relative z-10 mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-6 py-16 sm:px-10 md:py-20 lg:px-[72px] lg:py-24"
+      >
+        {/* ── Header ── */}
+        <motion.div
+          variants={rowFadeUp}
+          dir={isHe ? "rtl" : "ltr"}
+          className="mb-12 flex flex-col items-center gap-3 text-center md:mb-16"
+        >
+          <span
             className={cn(
-              "text-[32px] lg:text-[38px] font-bold text-center mb-5 lg:mb-7 leading-tight",
+              "text-[11px] font-semibold uppercase tracking-[0.35em] text-[#E67E22]",
+              inter.className,
+            )}
+          >
+            {s.eyebrow}
+          </span>
+          <h2
+            className={cn(
+              "m-0 text-[40px] font-bold leading-[1.02] tracking-[-0.025em] text-white sm:text-[48px] md:text-[56px] lg:text-[60px]",
               montserrat.className,
             )}
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={viewport}
           >
-            <span className="text-white">{s.titleWhite} </span>
-            <span className="text-[#E67E22]">{s.titleOrange}</span>
-          </motion.h2>
+            {s.heading}
+          </h2>
+        </motion.div>
 
-          {/*
-           * ── Two-column grid ──
-           *
-           * Each column is a single motion.div card that handles hover interactions
-           * (scale, opacity, bottom glow). Content rows stack inside each card via
-           * flex-col, preserving all original padding and spacing values.
-           *
-           * onMouseLeave on the grid container (not the cards) prevents a null-flash
-           * when moving the cursor directly from one card to the other.
-           *
-           * Hover effects are pointer-based — they never trigger on touch screens,
-           * so mobile layout is unaffected.
-           */}
-          <div
-            className="w-full grid grid-cols-1 lg:grid-cols-2 relative"
-            onMouseLeave={() => setHoveredSide(null)}
-          >
-            {/* Center divider — desktop only */}
-            <div
-              aria-hidden
-              className="hidden lg:block absolute top-0 bottom-0 left-1/2 w-px -translate-x-px pointer-events-none z-0"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(230,126,34,0) 0%, #E67E22 50%, rgba(230,126,34,0) 100%)",
-                filter: "drop-shadow(0px 0px 15px rgba(255,140,0,0.3))",
-              }}
-            />
-
-            {/* ══════════════════ LEFT CARD ══════════════════ */}
-            <motion.div
-              className="relative z-10 lg:pr-16 flex flex-col"
-              onMouseEnter={() => setHoveredSide("left")}
-              animate={cardAnimate("left")}
-              transition={cardTransition}
-            >
-              {/* ROW 1: Big service title */}
-              <motion.div
-                dir={isHe ? "rtl" : "ltr"}
-                className="pb-3"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                <span
-                  className={cn(
-                    "block text-[16px] font-semibold tracking-[5px] text-[#E67E22]/65 mb-2",
-                    montserrat.className,
-                  )}
-                >
-                  {s.left.number}
-                </span>
-                <h3
-                  className={cn(
-                    "text-[40px] lg:text-[50px] font-extrabold leading-tight",
-                    jakarta.className,
-                  )}
-                >
-                  <span className="text-white">{s.left.titleA} </span>
-                  <br />
-                  <span className="text-[#E67E22]">{s.left.titleB}</span>
-                </h3>
-              </motion.div>
-
-              {/* ROW 2: Who is it for */}
-              <motion.div
-                dir={isHe ? "rtl" : "ltr"}
-                className="pb-3"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                <p
-                  className={cn(
-                    "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[3.5px] mb-2 text-white/40",
-                    inter.className,
-                  )}
-                >
-                  <span className="text-[13px] leading-none text-[#E67E22]">
-                    ✦
-                  </span>
-                  {s.whoLabel}
-                </p>
-                <p
-                  className={cn(
-                    "text-[17px] lg:text-[19px] font-semibold leading-snug text-white/90",
-                    isHe && "text-right",
-                    jakarta.className,
-                  )}
-                >
-                  {s.left.whoAnswer}
-                </p>
-              </motion.div>
-
-              {/* ROW 3: Description */}
-              <motion.div
-                dir={isHe ? "rtl" : "ltr"}
-                className="pb-2"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                <p
-                  className={cn(
-                    "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
-                    isHe && "text-right",
-                    inter.className,
-                  )}
-                >
-                  {s.left.description}
-                </p>
-              </motion.div>
-
-              {/* ROW 4: Bullet list — staggered horizontal slide-in on scroll */}
-              <motion.ul
-                key={`left-${locale}`}
-                className="pb-5 flex flex-col"
-                variants={bulletStagger}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                {s.left.items.map((item, i) => (
-                  <motion.li
-                    key={item}
-                    variants={bulletVariant}
-                    dir={isHe ? "rtl" : "ltr"}
-                    className="flex flex-row items-center gap-3 py-4 border-b border-[rgba(86,67,52,0.25)]"
-                  >
-                    <Icon
-                      icon={LEFT_ICONS[i] ?? circle}
-                      width={17}
-                      height={17}
-                      className="shrink-0 text-[#E67E22]"
-                    />
-                    <span
-                      className={cn(
-                        "text-[16px] font-medium leading-[26px] text-[#E5E2E1]",
-                        isHe && "text-right",
-                        jakarta.className,
-                      )}
-                    >
-                      {item}
-                    </span>
-                  </motion.li>
-                ))}
-              </motion.ul>
-
-              {/* ROW 5: CTA */}
-              <motion.div
-                className={cn(isHe && "flex justify-end")}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: "0px" }}
-                transition={{
-                  delay: 0.4,
-                  duration: 0.75,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                <a
-                  href="#contact"
-                  className={cn(
-                    "inline-flex items-center justify-center min-w-[200px]",
-                    "bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3 text-sm whitespace-nowrap",
-                    "shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200",
-                    montserrat.className,
-                  )}
-                >
-                  {s.left.cta}
-                </a>
-              </motion.div>
-            </motion.div>
-
-            {/* ══════════════════ RIGHT CARD ══════════════════ */}
-            <motion.div
-              className="relative z-10 mt-10 lg:mt-0 lg:pl-16 flex flex-col"
-              onMouseEnter={() => setHoveredSide("right")}
-              animate={cardAnimate("right")}
-              transition={cardTransition}
-            >
-              {/* ROW 1: Big service title */}
-              <motion.div
-                dir={isHe ? "rtl" : "ltr"}
-                className="pb-3"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                <span
-                  className={cn(
-                    "block text-[16px] font-semibold tracking-[5px] text-[#E67E22]/65 mb-2",
-                    montserrat.className,
-                  )}
-                >
-                  {s.right.number}
-                </span>
-                <h3
-                  className={cn(
-                    "text-[40px] lg:text-[50px] font-extrabold leading-tight",
-                    jakarta.className,
-                  )}
-                >
-                  <span className="text-white">{s.right.titleA} </span>
-                  <br />
-                  <span className="text-[#E67E22]">{s.right.titleB}</span>
-                </h3>
-              </motion.div>
-
-              {/* ROW 2: Who is it for */}
-              <motion.div
-                dir={isHe ? "rtl" : "ltr"}
-                className="pb-3"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                <p
-                  className={cn(
-                    "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[3.5px] mb-2 text-white/40",
-                    inter.className,
-                  )}
-                >
-                  <span className="text-[13px] leading-none text-[#E67E22]">
-                    ✦
-                  </span>
-                  {s.whoLabel}
-                </p>
-                <p
-                  className={cn(
-                    "text-[17px] lg:text-[19px] font-semibold leading-snug text-white/90",
-                    isHe && "text-right",
-                    jakarta.className,
-                  )}
-                >
-                  {s.right.whoAnswer}
-                </p>
-              </motion.div>
-
-              {/* ROW 3: Description */}
-              <motion.div
-                dir={isHe ? "rtl" : "ltr"}
-                className="pb-2"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                <p
-                  className={cn(
-                    "text-sm lg:text-[15px] font-medium text-[#B8AFA8] w-full max-w-[448px] leading-relaxed",
-                    isHe && "text-right",
-                    inter.className,
-                  )}
-                >
-                  {s.right.description}
-                </p>
-              </motion.div>
-
-              {/* ROW 4: Bullet list — staggered horizontal slide-in on scroll */}
-              <motion.ul
-                key={`right-${locale}`}
-                className="pb-5 flex flex-col"
-                variants={bulletStagger}
-                initial="hidden"
-                whileInView="show"
-                viewport={viewport}
-              >
-                {s.right.items.map((item, i) => (
-                  <motion.li
-                    key={item}
-                    variants={bulletVariant}
-                    dir={isHe ? "rtl" : "ltr"}
-                    className="flex flex-row items-center gap-3 py-4 border-b border-[rgba(86,67,52,0.25)]"
-                  >
-                    <Icon
-                      icon={RIGHT_ICONS[i] ?? circle}
-                      width={17}
-                      height={17}
-                      className="shrink-0 text-[#E67E22]"
-                    />
-                    <span
-                      className={cn(
-                        "text-[16px] font-medium leading-[26px] text-[#E5E2E1]",
-                        isHe && "text-right",
-                        jakarta.className,
-                      )}
-                    >
-                      {item}
-                    </span>
-                  </motion.li>
-                ))}
-              </motion.ul>
-
-              {/* ROW 5: CTA */}
-              <motion.div
-                className={cn(isHe && "flex justify-end")}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: "0px" }}
-                transition={{
-                  delay: 0.4,
-                  duration: 0.75,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                <a
-                  href="#contact"
-                  className={cn(
-                    "inline-flex items-center justify-center min-w-[200px]",
-                    "bg-[#E67E22] text-white font-semibold rounded-[18px] px-7 py-3 text-sm whitespace-nowrap",
-                    "shadow-[0px_10px_24px_rgba(230,126,34,0.4)] hover:shadow-[0px_14px_30px_rgba(230,126,34,0.6)] transition-shadow duration-200",
-                    montserrat.className,
-                  )}
-                >
-                  {s.right.cta}
-                </a>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
+        {/* ── Two rows ── */}
+        <motion.div variants={rowsStagger} className="flex flex-col gap-7">
+          <ServiceRow
+            mockSide="left"
+            eyebrow={s.left.whoAnswer}
+            title={`${s.left.titleA}${s.left.titleB}`}
+            tagline={s.left.description}
+            features={[...s.left.items]}
+            tech={TECH_ROW1}
+            ctaLabel={s.left.cta}
+            ctaStyle="outline"
+            builtWithLabel={s.builtWith}
+            learnMoreLabel={s.learnMore}
+            isHe={isHe}
+            Mockup={MockupRow1}
+          />
+          <ServiceRow
+            mockSide="right"
+            eyebrow={s.right.whoAnswer}
+            title={`${s.right.titleA}${s.right.titleB}`}
+            tagline={s.right.description}
+            features={[...s.right.items]}
+            tech={TECH_ROW2}
+            ctaLabel={s.right.cta}
+            ctaStyle="filled"
+            builtWithLabel={s.builtWith}
+            learnMoreLabel={s.learnMore}
+            isHe={isHe}
+            Mockup={MockupRow2}
+          />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
