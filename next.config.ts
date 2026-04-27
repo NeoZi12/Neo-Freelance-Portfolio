@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   experimental: {
     optimizePackageImports: ["framer-motion", "@iconify/react"],
+    // Inline all per-page CSS into the HTML <head> so the 5 separate
+    // render-blocking <link rel="stylesheet"> requests collapse into the
+    // initial document. Saves ~440ms of FCP/LCP block time on mobile.
+    // HTML doc grows by ~18KB gzipped per request — acceptable trade.
+    inlineCss: true,
   },
   images: {
     remotePatterns: [],

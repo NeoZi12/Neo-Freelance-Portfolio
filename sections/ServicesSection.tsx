@@ -706,7 +706,6 @@ type RowProps = {
   ctaLabel: string;
   ctaStyle: "outline" | "filled";
   builtWithLabel: string;
-  learnMoreLabel: string;
   isHe: boolean;
   Mockup: () => React.JSX.Element;
 };
@@ -721,7 +720,6 @@ function ServiceRow({
   ctaLabel,
   ctaStyle,
   builtWithLabel,
-  learnMoreLabel,
   isHe,
   Mockup,
 }: RowProps) {
@@ -873,26 +871,6 @@ function ServiceRow({
                 className={cn(isHe && "-scale-x-100")}
               />
             </motion.a>
-
-            {/* Learn more — also routes to the contact section */}
-            <a
-              href="#contact"
-              className={cn(
-                "group/lm inline-flex items-center gap-1.5 text-[13.5px] font-medium text-white/60 no-underline transition-colors duration-200 hover:text-white",
-                inter.className,
-              )}
-            >
-              <span>{learnMoreLabel}</span>
-              <Icon
-                icon={arrowRight}
-                width={13}
-                height={13}
-                className={cn(
-                  "text-white/40 transition-colors duration-200 group-hover/lm:text-white/70",
-                  isHe && "-scale-x-100",
-                )}
-              />
-            </a>
           </div>
         </div>
       </div>
@@ -954,11 +932,12 @@ export default function ServicesSection() {
           </span>
           <h2
             className={cn(
-              "m-0 text-[40px] font-bold leading-[1.02] tracking-[-0.025em] text-white sm:text-[48px] md:text-[56px] lg:text-[60px]",
+              "m-0 text-4xl lg:text-[50px] font-semibold text-white leading-tight",
               montserrat.className,
             )}
           >
-            {s.heading}
+            {s.headingWhite}{" "}
+            <span className="text-[#E67E22]">{s.headingOrange}</span>
           </h2>
         </motion.div>
 
@@ -974,7 +953,6 @@ export default function ServicesSection() {
             ctaLabel={s.left.cta}
             ctaStyle="outline"
             builtWithLabel={s.builtWith}
-            learnMoreLabel={s.learnMore}
             isHe={isHe}
             Mockup={MockupRow1}
           />
@@ -988,7 +966,6 @@ export default function ServicesSection() {
             ctaLabel={s.right.cta}
             ctaStyle="filled"
             builtWithLabel={s.builtWith}
-            learnMoreLabel={s.learnMore}
             isHe={isHe}
             Mockup={MockupRow2}
           />
