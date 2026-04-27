@@ -124,6 +124,7 @@ function Phone({
 // ─────────────────────────────────────────────────────────────────────────────
 
 function MockLanding() {
+  const prefersReducedMotion = useReducedMotion() ?? false;
   return (
     <div className="flex h-full flex-col gap-2.5 p-3.5">
       {/* nav */}
@@ -148,7 +149,17 @@ function MockLanding() {
           <div className="h-[3px] w-[62%] rounded-[2px] bg-white/[0.22]" />
         </div>
         <div className="mt-2 flex gap-1.5">
-          <div className="h-4 w-[60px] rounded-md bg-[#E67E22] shadow-[0_6px_14px_rgba(230,126,34,0.35)]" />
+          {prefersReducedMotion ? (
+            <div className="h-4 w-[60px] rounded-md bg-[#E67E22] shadow-[0_6px_14px_rgba(230,126,34,0.35)]" />
+          ) : (
+            <motion.div
+              className="h-4 w-[60px] rounded-md bg-[#E67E22] shadow-[0_6px_14px_rgba(230,126,34,0.35)] [transform:translateZ(0)] will-change-transform"
+              initial={{ scale: 1 }}
+              whileInView={{ scale: [1, 1.04, 1] }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          )}
           <div className="h-4 w-[50px] rounded-md border border-white/[0.18] bg-transparent" />
         </div>
       </div>
@@ -217,7 +228,59 @@ function BarChart({ heights, accentIndex }: { heights: number[]; accentIndex: nu
   );
 }
 
-function MockDashboard() {
+// SVG line-chart for the laptop dashboard. Animates pathLength 0→1 once
+// when scrolled into view (compiles to stroke-dasharray/dashoffset under the
+// hood — paint-only, no layout). Static when prefers-reduced-motion: reduce.
+function LineChart({ heights }: { heights: number[] }) {
+  const prefersReducedMotion = useReducedMotion() ?? false;
+  const W = 100;
+  const H = 40;
+  const step = heights.length > 1 ? W / (heights.length - 1) : 0;
+  const d = heights
+    .map((p, i) => {
+      const x = (i * step).toFixed(2);
+      const y = (H - (p / 100) * H).toFixed(2);
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
+      className="h-full w-full"
+      aria-hidden
+    >
+      {prefersReducedMotion ? (
+        <path
+          d={d}
+          fill="none"
+          stroke="#E67E22"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
+      ) : (
+        <motion.path
+          d={d}
+          fill="none"
+          stroke="#E67E22"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+          initial={{ pathLength: 0 }}
+          whileInView={{ pathLength: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      )}
+    </svg>
+  );
+}
+
+function MockDashboard({ chart = "bar" }: { chart?: "bar" | "line" } = {}) {
   const sidebarItems = [0, 1, 2, 3, 4];
   const stats = [
     { v: "60%", c: "bg-[rgba(230,126,34,0.85)]" },
@@ -286,13 +349,19 @@ function MockDashboard() {
           ))}
         </div>
 
-        {/* bar chart (replaces SVG line chart — pure divs) */}
+        {/* main chart — laptop instance renders an animated SVG line; tablet keeps bars */}
         <div className="rounded-[5px] border border-white/[0.06] bg-white/[0.025] p-2">
           <div className="h-9">
-            <BarChart
-              heights={[28, 36, 32, 52, 44, 68, 60, 82, 74, 92, 80, 96]}
-              accentIndex={11}
-            />
+            {chart === "line" ? (
+              <LineChart
+                heights={[28, 36, 32, 52, 44, 68, 60, 82, 74, 92, 80, 96]}
+              />
+            ) : (
+              <BarChart
+                heights={[28, 36, 32, 52, 44, 68, 60, 82, 74, 92, 80, 96]}
+                accentIndex={11}
+              />
+            )}
           </div>
         </div>
 
@@ -441,9 +510,9 @@ function MockupRow2() {
             <MockDashboard />
           </Tablet>
         </div>
-        {/* Laptop — main subject */}
+        {/* Laptop — main subject. Animated SVG line chart in main panel. */}
         <Laptop className="relative z-[2] w-[240px]">
-          <MockDashboard />
+          <MockDashboard chart="line" />
         </Laptop>
         {/* Phone — slightly lifted */}
         <div
