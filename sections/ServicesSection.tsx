@@ -874,9 +874,9 @@ function ServiceRow({
               />
             </motion.a>
 
-            {/* Learn more — link only, no route yet */}
+            {/* Learn more — also routes to the contact section */}
             <a
-              href="#"
+              href="#contact"
               className={cn(
                 "group/lm inline-flex items-center gap-1.5 text-[13.5px] font-medium text-white/60 no-underline transition-colors duration-200 hover:text-white",
                 inter.className,
