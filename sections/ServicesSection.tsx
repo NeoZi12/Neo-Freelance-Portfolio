@@ -573,74 +573,105 @@ function MockDashboardMobile() {
 
 // Each device is built once at a single "xl design" reference size so the
 // inner mock contents (bars, paragraphs, buttons, charts) sit in known
-// proportions to the frame. CSS `zoom` on the inner wrapper scales the
-// entire composition — frames AND contents — proportionally at smaller
-// breakpoints, so nothing inside a phone/laptop screen ever overflows.
-//
-// Padding is on the OUTER (un-zoomed) container so the breathing room
-// between the composition and the card edge stays constant in real px
-// regardless of zoom factor.
-const MOCKUP_ZOOM =
-  "[zoom:0.42] sm:[zoom:0.95] md:[zoom:0.6] lg:[zoom:0.8] xl:[zoom:1]";
+// proportions to the frame. A CSS variable `--ms` carries the per-breakpoint
+// scale factor; `ScaledMockup` applies `transform: scale(var(--ms))` to the
+// reference-sized inner box and sets the outer box to the resulting visual
+// size via `calc()`. iOS Safari ≤17 ignores the `zoom` property entirely,
+// which left the devices full-size on iPhone — this transform/calc pair
+// works in every browser.
+const MOCKUP_VAR =
+  "[--ms:0.42] sm:[--ms:0.95] md:[--ms:0.6] lg:[--ms:0.8] xl:[--ms:1]";
+
+function ScaledMockup({
+  refW,
+  refH,
+  children,
+}: {
+  refW: number;
+  refH: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn("relative shrink-0", MOCKUP_VAR)}
+      style={{
+        width: `calc(${refW}px * var(--ms))`,
+        height: `calc(${refH}px * var(--ms))`,
+      }}
+    >
+      <div
+        className="absolute left-0 top-0 origin-top-left"
+        style={{
+          width: `${refW}px`,
+          height: `${refH}px`,
+          transform: "scale(var(--ms))",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function MockupRow1() {
   return (
     // Outer: padding stays in real px so card-edge breathing is constant.
     // py keeps the laptop base + drop-shadow inside the card boundary.
     <div className="flex h-full items-center justify-center px-4 py-8 md:py-10">
-      <div className={cn("flex items-center gap-12 sm:gap-3", MOCKUP_ZOOM)}>
-        {/* Laptop — hero device. Reduced from 460→320 ref so the phone
-            (Fix 1) reads as clearly secondary at every breakpoint. */}
-        <Laptop className="w-[320px]">
-          <MockLanding />
-        </Laptop>
-        {/* Phone — Fix 1: 172 → 132 ref, ~23% shorter. Slight overlap
-            via z-lift + drop-shadow keeps the depth read intact. */}
-        <div
-          className="relative z-[2]"
-          style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
-        >
-          <Phone className="w-[132px]">
-            <MockLandingMobile />
-          </Phone>
+      <ScaledMockup refW={500} refH={279}>
+        <div className="flex h-full w-full items-center justify-center gap-12 sm:gap-3">
+          {/* Laptop — hero device. Reduced from 460→320 ref so the phone
+              reads as clearly secondary at every breakpoint. */}
+          <Laptop className="w-[320px]">
+            <MockLanding />
+          </Laptop>
+          {/* Phone — 132px ref. Slight overlap via z-lift + drop-shadow
+              keeps the depth read intact. */}
+          <div
+            className="relative z-[2]"
+            style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
+          >
+            <Phone className="w-[132px]">
+              <MockLandingMobile />
+            </Phone>
+          </div>
         </div>
-      </div>
+      </ScaledMockup>
     </div>
   );
 }
 
 function MockupRow2() {
   return (
-    // Fix 2: outer px-4 + zoom-fit ref leaves ≥20px of real-px breathing
-    // between the outermost devices and the card's left/right edges at
-    // every breakpoint. Same relative tablet:laptop:phone proportions as
-    // before; all three scaled down in lockstep.
+    // Outer px-4 leaves ≥20px of real-px breathing between the outermost
+    // devices and the card's left/right edges at every breakpoint.
     <div className="flex h-full items-center justify-center px-4 py-8 md:py-10">
-      <div className={cn("flex items-center gap-12 sm:gap-3", MOCKUP_ZOOM)}>
-        {/* Tablet — recessed for depth. Always rendered now; zoom keeps
-            the three-device composition fitting at every breakpoint. */}
-        <div
-          className="relative z-[1] mt-6"
-          style={{ filter: "drop-shadow(0 18px 32px rgba(0,0,0,0.5))" }}
-        >
-          <Tablet className="w-[120px]">
-            <MockDashboard />
-          </Tablet>
+      <ScaledMockup refW={546} refH={200}>
+        <div className="flex h-full w-full items-center justify-center gap-12 sm:gap-3">
+          {/* Tablet — recessed for depth. */}
+          <div
+            className="relative z-[1] mt-6"
+            style={{ filter: "drop-shadow(0 18px 32px rgba(0,0,0,0.5))" }}
+          >
+            <Tablet className="w-[120px]">
+              <MockDashboard />
+            </Tablet>
+          </div>
+          {/* Laptop — main subject. Animated SVG line chart in main panel. */}
+          <Laptop className="relative z-[2] w-[240px]">
+            <MockDashboard chart="line" />
+          </Laptop>
+          {/* Phone — slightly lifted */}
+          <div
+            className="relative z-[2]"
+            style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
+          >
+            <Phone className="w-[90px]">
+              <MockDashboardMobile />
+            </Phone>
+          </div>
         </div>
-        {/* Laptop — main subject. Animated SVG line chart in main panel. */}
-        <Laptop className="relative z-[2] w-[240px]">
-          <MockDashboard chart="line" />
-        </Laptop>
-        {/* Phone — slightly lifted */}
-        <div
-          className="relative z-[2]"
-          style={{ filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.55))" }}
-        >
-          <Phone className="w-[90px]">
-            <MockDashboardMobile />
-          </Phone>
-        </div>
-      </div>
+      </ScaledMockup>
     </div>
   );
 }
