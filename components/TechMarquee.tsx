@@ -15,8 +15,10 @@ import typescriptIcon from "@iconify-icons/logos/typescript-icon";
 import react from "@iconify-icons/logos/react";
 import nextjsIcon from "@iconify-icons/logos/nextjs-icon";
 import tailwindcssIcon from "@iconify-icons/logos/tailwindcss-icon";
+import framerSimple from "@iconify-icons/simple-icons/framer";
 import nodejsIcon from "@iconify-icons/logos/nodejs-icon";
 import postgresql from "@iconify-icons/logos/postgresql";
+import supabaseSimple from "@iconify-icons/simple-icons/supabase";
 import gitIcon from "@iconify-icons/logos/git-icon";
 import githubIcon from "@iconify-icons/mdi/github";
 import vercelIcon from "@iconify-icons/logos/vercel-icon";
@@ -33,8 +35,12 @@ const TECHS: Tech[] = [
   { name: "React", icon: react },
   { name: "Next.js", icon: nextjsIcon },
   { name: "Tailwind CSS", icon: tailwindcssIcon },
+  // simple-icons/framer is the Framer logo (single-color); force white for visibility on dark bg
+  { name: "Framer Motion", icon: framerSimple, style: { color: "#ffffff" } },
   { name: "Node.js", icon: nodejsIcon },
   { name: "PostgreSQL", icon: postgresql },
+  // Supabase brand green (#3FCF8E)
+  { name: "Supabase", icon: supabaseSimple, style: { color: "#3FCF8E" } },
   { name: "Git", icon: gitIcon },
   // mdi:github uses currentColor — force white so it's visible on dark bg
   { name: "GitHub", icon: githubIcon, style: { color: "#ffffff" } },
