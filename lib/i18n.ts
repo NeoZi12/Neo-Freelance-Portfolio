@@ -60,8 +60,7 @@ export const translations = {
       titleOrange: "Service",
       whoLabel: "Who is it for?",
       eyebrow: "Services",
-      headingWhite: "What I",
-      headingOrange: "build",
+      heading: "What I build",
       builtWith: "Built with",
       left: {
         number: "01",
@@ -311,8 +310,7 @@ export const translations = {
       titleOrange: "השירות שלך",
       whoLabel: "למי זה מתאים?",
       eyebrow: "השירותים",
-      headingWhite: "מה אני",
-      headingOrange: "בונה",
+      heading: "מה אני בונה",
       builtWith: "בנוי עם",
       left: {
         number: "01",

@@ -914,7 +914,7 @@ export default function ServicesSection() {
         initial="hidden"
         whileInView="show"
         viewport={viewport}
-        className="relative z-10 mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-6 py-16 sm:px-10 md:py-20 lg:px-[72px] lg:py-24"
+        className="relative z-10 mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-6 pt-8 pb-16 sm:px-10 md:pt-10 md:pb-20 lg:px-[72px] lg:pt-12 lg:pb-24"
       >
         {/* ── Header ── */}
         <motion.div
@@ -932,12 +932,11 @@ export default function ServicesSection() {
           </span>
           <h2
             className={cn(
-              "m-0 text-4xl lg:text-[50px] font-semibold text-white leading-tight",
+              "m-0 text-[40px] font-bold leading-[1.02] tracking-[-0.025em] text-white sm:text-[48px] md:text-[56px] lg:text-[60px]",
               montserrat.className,
             )}
           >
-            {s.headingWhite}{" "}
-            <span className="text-[#E67E22]">{s.headingOrange}</span>
+            {s.heading}
           </h2>
         </motion.div>
 
