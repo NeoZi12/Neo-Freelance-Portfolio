@@ -866,7 +866,12 @@ function ServiceRow({
               )}
             >
               {ctaLabel}
-              <Icon icon={arrowRight} width={15} height={15} />
+              <Icon
+                icon={arrowRight}
+                width={15}
+                height={15}
+                className={cn(isHe && "-scale-x-100")}
+              />
             </motion.a>
 
             {/* Learn more — link only, no route yet */}
@@ -882,7 +887,10 @@ function ServiceRow({
                 icon={arrowRight}
                 width={13}
                 height={13}
-                className="text-white/40 transition-colors duration-200 group-hover/lm:text-white/70"
+                className={cn(
+                  "text-white/40 transition-colors duration-200 group-hover/lm:text-white/70",
+                  isHe && "-scale-x-100",
+                )}
               />
             </a>
           </div>
