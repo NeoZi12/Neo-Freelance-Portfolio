@@ -125,8 +125,24 @@ function Phone({
 
 function MockLanding() {
   const prefersReducedMotion = useReducedMotion() ?? false;
+
+  // Cursor click loop (5s total). Phases (s):
+  //   fadeIn 0.4 → travel 1.8 → click 0.3 → hold 0.5 → fadeOut 0.4 → invisible reset → wait 1.5
+  // Both the cursor's keyframes and the CTA's "click press" wrapper share
+  // these times so the press lands exactly on the cursor's tap. The CTA's
+  // existing pulse runs on its own 2.5s loop in an inner motion.div; the two
+  // scales compose via the transform matrix, so the press momentarily layers
+  // on top of the pulse and the pulse continues uninterrupted.
+  // Coordinates are in the laptop's zoom=1 reference frame (~320×200 screen);
+  // CSS `zoom` on parents scales the cursor's translate values automatically.
+  const CURSOR_TIMES = [0, 0.08, 0.44, 0.47, 0.5, 0.6, 0.68, 0.685, 1] as const;
+  const CURSOR_START_X = 235;
+  const CURSOR_START_Y = 30;
+  const CURSOR_CTA_X = 46;
+  const CURSOR_CTA_Y = 137;
+
   return (
-    <div className="flex h-full flex-col gap-2.5 p-3.5">
+    <div className="relative flex h-full flex-col gap-2.5 p-3.5">
       {/* nav */}
       <div className="flex items-center justify-between">
         <div className="h-[7px] w-[22px] rounded-[2px] bg-[rgba(230,126,34,0.85)]" />
@@ -153,12 +169,24 @@ function MockLanding() {
             <div className="h-4 w-[60px] rounded-md bg-[#E67E22] shadow-[0_6px_14px_rgba(230,126,34,0.35)]" />
           ) : (
             <motion.div
-              className="h-4 w-[60px] rounded-md bg-[#E67E22] shadow-[0_6px_14px_rgba(230,126,34,0.35)] [transform:translateZ(0)] will-change-transform"
               initial={{ scale: 1 }}
-              whileInView={{ scale: [1, 1.04, 1] }}
+              whileInView={{ scale: [1, 1, 1, 0.95, 1, 1, 1, 1, 1] }}
               viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            />
+              transition={{
+                duration: 5,
+                times: [...CURSOR_TIMES],
+                ease: "easeInOut",
+                repeat: Infinity,
+              }}
+            >
+              <motion.div
+                className="h-4 w-[60px] rounded-md bg-[#E67E22] shadow-[0_6px_14px_rgba(230,126,34,0.35)] [transform:translateZ(0)] will-change-transform"
+                initial={{ scale: 1 }}
+                whileInView={{ scale: [1, 1.04, 1] }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </motion.div>
           )}
           <div className="h-4 w-[50px] rounded-md border border-white/[0.18] bg-transparent" />
         </div>
@@ -193,6 +221,65 @@ function MockLanding() {
           </div>
         ))}
       </div>
+
+      {/* Cursor — travels from upper-right to the CTA, "clicks", fades, loops.
+          Skipped entirely under prefers-reduced-motion. */}
+      {!prefersReducedMotion && (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute left-0 top-0 z-10 origin-top-left"
+          initial={{
+            opacity: 0,
+            x: CURSOR_START_X,
+            y: CURSOR_START_Y,
+            scale: 1,
+          }}
+          whileInView={{
+            opacity: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+            x: [
+              CURSOR_START_X,
+              CURSOR_START_X,
+              CURSOR_CTA_X,
+              CURSOR_CTA_X,
+              CURSOR_CTA_X,
+              CURSOR_CTA_X,
+              CURSOR_CTA_X,
+              CURSOR_START_X,
+              CURSOR_START_X,
+            ],
+            y: [
+              CURSOR_START_Y,
+              CURSOR_START_Y,
+              CURSOR_CTA_Y,
+              CURSOR_CTA_Y,
+              CURSOR_CTA_Y,
+              CURSOR_CTA_Y,
+              CURSOR_CTA_Y,
+              CURSOR_START_Y,
+              CURSOR_START_Y,
+            ],
+            scale: [1, 1, 1, 0.9, 1, 1, 1, 1, 1],
+          }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{
+            duration: 5,
+            times: [...CURSOR_TIMES],
+            ease: "easeInOut",
+            repeat: Infinity,
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M4 4 L 11.07 21 L 13.58 13.61 L 21 11.07 Z"
+              fill="white"
+              stroke="rgba(0,0,0,0.6)"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+          </svg>
+        </motion.div>
+      )}
     </div>
   );
 }
