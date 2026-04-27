@@ -164,14 +164,30 @@ function MockLanding() {
         </div>
       </div>
 
-      {/* feature row at bottom */}
+      {/* feature row at bottom — orange icons cycle opacity in a staggered
+          wave (0.6s offset) for a continuous, viewport-gated loop. */}
       <div className="mt-auto grid grid-cols-3 gap-2">
         {[0, 1, 2].map((i) => (
           <div
             key={i}
             className="flex flex-col gap-[3px] rounded-[4px] border border-white/[0.05] bg-white/[0.02] p-1.5"
           >
-            <div className="h-[9px] w-[9px] rounded-[2px] bg-[rgba(230,126,34,0.7)]" />
+            {prefersReducedMotion ? (
+              <div className="h-[9px] w-[9px] rounded-[2px] bg-[rgba(230,126,34,0.7)]" />
+            ) : (
+              <motion.div
+                className="h-[9px] w-[9px] rounded-[2px] bg-[#E67E22]"
+                initial={{ opacity: 0.45 }}
+                whileInView={{ opacity: [0.45, 1, 0.45] }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{
+                  duration: 2.4,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  delay: i * 0.6,
+                }}
+              />
+            )}
             <div className="h-[3px] w-[85%] rounded-[2px] bg-white/40" />
             <div className="h-[3px] w-[60%] rounded-[2px] bg-white/[0.18]" />
           </div>
@@ -228,9 +244,10 @@ function BarChart({ heights, accentIndex }: { heights: number[]; accentIndex: nu
   );
 }
 
-// SVG line-chart for the laptop dashboard. Animates pathLength 0→1 once
-// when scrolled into view (compiles to stroke-dasharray/dashoffset under the
-// hood — paint-only, no layout). Static when prefers-reduced-motion: reduce.
+// SVG line-chart for the laptop dashboard. pathLength loops 0↔1 (mirrored
+// easeInOut) while in view — compiles to stroke-dasharray/dashoffset under
+// the hood, so paint-only, no layout. Pauses when offscreen (`once: false`).
+// Static when prefers-reduced-motion: reduce.
 function LineChart({ heights }: { heights: number[] }) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const W = 100;
@@ -272,8 +289,13 @@ function LineChart({ heights }: { heights: number[] }) {
           vectorEffect="non-scaling-stroke"
           initial={{ pathLength: 0 }}
           whileInView={{ pathLength: 1 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{
+            duration: 1.5,
+            ease: "easeInOut",
+            repeat: Infinity,
+            repeatType: "mirror",
+          }}
         />
       )}
     </svg>
