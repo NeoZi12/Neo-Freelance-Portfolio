@@ -90,9 +90,7 @@ export default function AnimatedLogo({ size = 40, className }: AnimatedLogoProps
   }
 
   return (
-    <motion.img
-      alt="Neo Zino logo"
-      {...commonProps}
+    <motion.div
       className={cn("block select-none", className)}
       style={{
         rotate: rotation,
@@ -102,7 +100,17 @@ export default function AnimatedLogo({ size = 40, className }: AnimatedLogoProps
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-    />
+    >
+      {/* Plain <img> inside a motion.div: rotation runs as a pure compositor
+          transform on the wrapper, with no img-intrinsic layout interaction
+          per frame. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt="Neo Zino logo"
+        {...commonProps}
+        className="block w-full h-full"
+      />
+    </motion.div>
   );
 }
 

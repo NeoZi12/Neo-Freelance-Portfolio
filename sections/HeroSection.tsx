@@ -169,10 +169,12 @@ export default function HeroSection() {
   // Ken Burns target state — second extreme of the ping-pong.
   // Mobile halves scale and pan amplitude to reduce GPU load and keep
   // critical image content (mountain peak) in frame.
-  const kenBurnsRest = { scale: 1, x: "0%", y: "0%" } as const;
+  // Pixels (not %) so framer-motion never reads offsetWidth/Height per frame —
+  // percentage transforms force a layout-measure pass on each animation tick.
+  const kenBurnsRest = { scale: 1, x: 0, y: 0 } as const;
   const kenBurnsTarget = isSmallViewport
-    ? { scale: 1.03, x: "1%", y: "-0.5%" }
-    : { scale: 1.06, x: "2%", y: "-1%" };
+    ? { scale: 1.03, x: 4, y: -3 }
+    : { scale: 1.06, x: 24, y: -8 };
 
   // Shared index drives both lines so they always rotate together
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -217,11 +219,15 @@ export default function HeroSection() {
         }
         aria-hidden
       >
+        {/* No `priority` and no `loading="eager"` — both make Next.js auto-emit a
+            preload <link> for this 582KB background, which competes with the
+            avatar (the actual LCP) for early bandwidth. The image is in the
+            initial viewport so the browser still loads it eagerly via
+            IntersectionObserver; we just stop it from jumping the preload queue. */}
         <Image
           src="/images/bg-hero.webp"
           alt=""
           fill
-          loading="eager"
           quality={80}
           sizes="100vw"
           className="object-cover object-center"
@@ -371,12 +377,19 @@ export default function HeroSection() {
               </motion.div>
             </div>
 
-            {/* ── Right column: Avatar — concurrent with headline ── */}
+            {/* ── Right column: Avatar — concurrent with headline ──
+                Custom easing here (not EASE) is intentional: the avatar is the
+                LCP element. With the default easing, opacity 0 → 1 takes the
+                full 800ms and Lighthouse waits for the final paint, inflating
+                LCP by ~1s. This curve ramps opacity to ~95% in the first 80ms
+                so the element registers as "rendered" almost immediately;
+                the remaining 5% settles over the rest of the duration so the
+                fade still feels intentional, not snapped. */}
             <motion.div
               className="flex items-center justify-center"
               initial={heroInitial}
               animate={heroAnimate}
-              transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
+              transition={{ duration: 0.8, ease: [0.05, 0.95, 0.1, 1], delay: 0.3 }}
             >
               {/* Mobile (< lg): 220px circle */}
               <div className="lg:hidden">

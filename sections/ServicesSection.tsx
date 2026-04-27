@@ -274,7 +274,7 @@ function LineChart({ heights }: { heights: number[] }) {
           fill="none"
           stroke="#E67E22"
           strokeWidth={1.5}
-          strokeLinecap="round"
+          strokeLinecap="butt"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
         />
@@ -284,7 +284,7 @@ function LineChart({ heights }: { heights: number[] }) {
           fill="none"
           stroke="#E67E22"
           strokeWidth={1.5}
-          strokeLinecap="round"
+          strokeLinecap="butt"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
           initial={{ pathLength: 0 }}
