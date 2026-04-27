@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
+// NEXT_DIST_DIR lets perf-check builds write to .next-prod-check/ so they don't
+// collide with a running `npm run dev` (which writes to .next/). Unset in dev.
 const nextConfig: NextConfig = {
-  // Tells Next.js to re-export only the specific named exports used, instead
-  // of importing the entire barrel file. Reduces JS parsed on the main thread.
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   experimental: {
     optimizePackageImports: ["framer-motion", "@iconify/react"],
   },

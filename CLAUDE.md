@@ -75,8 +75,8 @@ This project enforces an automatic quality gate on top of the impeccable / ui-sk
 ## Performance budget (enforced by /check-quality)
 - Mobile Lighthouse Performance: **median of 3 runs** ≥ 85 (placeholder until first `/check-quality` run records a real baseline), 3-point grace band
 - LCP ≤ 2.5s · CLS ≤ 0.1 · INP ≤ 200ms (Web Vitals "good")
-- JS chunks total (gzip, all of `.next/static/chunks/**/*.js`): ≤ **1000 KB** — current baseline 963 KB (note: most of this is from the 5 `@iconify-icons/*` sets; tightening after icon-set sweep is a future task)
-- CSS total (gzip, all of `.next/static/css/**/*.css`): ≤ **30 KB** — current baseline 17 KB
+- JS chunks total (gzip, all of `.next-prod-check/static/chunks/**/*.js`): ≤ **1000 KB** — current baseline 963 KB (note: most of this is from the 5 `@iconify-icons/*` sets; tightening after icon-set sweep is a future task)
+- CSS total (gzip, all of `.next-prod-check/static/css/**/*.css`): ≤ **30 KB** — current baseline 17 KB
 - No new dependencies without justifying bundle impact in PR description
 - Lighthouse runs against the **Vercel preview URL** — localhost only as fallback (no real CDN/ISR)
 
@@ -86,7 +86,11 @@ Bundle baselines locked from the first clean `next build --no-lint` of `chore/qu
 - **`<Image priority>` is allowed only on `sections/HeroSection.tsx`** (the orange-ringed avatar `<Image>` is the LCP). Anywhere else wastes preload budget and hurts LCP. Lint enforces.
 - **No raw `getBoundingClientRect()` inside scroll/resize listeners** without `requestAnimationFrame` coalescing.
 - **Tailwind only.** No CSS Modules (`*.module.css` import), no `@emotion/*`, no `styled-components`. Lint enforces via `no-restricted-imports`.
-- **`rm -rf .next` before any production-build measurement.** Even on webpack-default Next 15 this produces predictable bundle numbers.
+- **NEVER `rm -rf .next` or write to `.next/` while sessions are active.** The user runs `npm run dev` in a separate terminal continuously, and `.next/` is its live build cache. Wiping or rebuilding it from this session corrupts dev's webpack chunk graph and produces `TypeError: a[d] is not a function` 500s. Production-build measurements MUST go to the isolated `.next-prod-check/` directory:
+  ```sh
+  rm -rf .next-prod-check && NEXT_DIST_DIR=.next-prod-check npx next build && npx size-limit
+  ```
+  `next.config.ts` reads `NEXT_DIST_DIR` (env var only — unset in dev). `size-limit` paths in `package.json` already point at `.next-prod-check/static/...`. Never touch `.next/` from a Bash tool call.
 
 ## Animations (frozen — DO NOT degrade for perf)
 - framer-motion via direct `motion.*` API (no LazyMotion here)
@@ -129,5 +133,5 @@ Use the tokens already defined in `app/globals.css` `@theme` block. Don't introd
 
 ## Automatic check loop — what runs and when
 - **PostToolUse** (Edit/Write to `app/`, `sections/`, `components/`, `lib/`, `contexts/`, `hooks/` (`*.{ts,tsx,css}`) or `next.config.ts`): `tsc --noEmit` + `eslint <touched file>`. Failures fed back; must self-correct.
-- **Stop** (assistant declares done, any source edit happened this session): `rm -rf .next && next build && size-limit`. Failures fed back.
-- **`/check-quality`** (manual): clean `.next`, warm each route, Playwright screenshots at 360/390/412/768/1024 across 6 routes, Chrome DevTools `lighthouse_audit` mobile × 3 → median, compare with 3-pt grace, report only.
+- **Stop** (assistant declares done, any source edit happened this session): `tsc --noEmit` + `eslint <changed files>`. **Does NOT touch `.next/`** — production builds and bundle checks live in `/check-quality`, not the Stop hook (Stop hook used to do this; it killed the user's dev server and was removed).
+- **`/check-quality`** (manual): build into the isolated `.next-prod-check/` (never `.next/`), warm each route, Playwright screenshots at 360/390/412/768/1024 across 6 routes, Chrome DevTools `lighthouse_audit` mobile × 3 → median, compare with 3-pt grace, report only.

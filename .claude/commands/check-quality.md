@@ -11,8 +11,9 @@ All Chromium + Lighthouse work runs through the standalone scripts at `.claude/.
 ### 1. Pre-flight
 - Read `package.json` to confirm `size-limit` is configured.
 - Determine the audit target:
-  - If the user supplied a Vercel preview URL, set `AUDIT_URL=<that-url>` and use it (real CDN / ISR — source of truth).
-  - Otherwise, fall back to localhost: `rm -rf .next && npm run build && npm run start &` then poll until `:3000` responds 200.
+  - **Preferred — Vercel preview URL.** If the user supplied one, set `AUDIT_URL=<that-url>` and use it (real CDN / ISR — source of truth).
+  - **Fallback — already-running localhost dev.** If no preview URL, point at `http://localhost:3000/` (the user's `npm run dev`). Note this is dev, not prod, so Lighthouse numbers and the bundle audit (step 5) are NOT comparable to prod — use Vercel preview for an authoritative gate.
+  - **Never run `npm run build` or `npm run start` from this command.** They write into `.next/`, which the user's running dev server owns; touching it produces `TypeError: a[d] is not a function` 500s. The bundle audit in step 5 builds into the isolated `.next-prod-check/` instead.
 
 ### 2. Server readiness (localhost path only)
 Wait until the server responds:
@@ -68,12 +69,12 @@ What it does:
 
 **Windows note:** chrome-launcher races on tmp cleanup and exits non-zero AFTER writing the JSON report. The script treats the JSON file as authoritative and ignores the cleanup exit code.
 
-### 5. Bundle audit
+### 5. Bundle audit (isolated build — never touches the dev server's `.next/`)
 ```sh
-rm -rf .next && npm run build && npx size-limit
+rm -rf .next-prod-check && NEXT_DIST_DIR=.next-prod-check npx next build && npx size-limit
 ```
 
-Any size-limit failure is a hard failure.
+`next.config.ts` reads `NEXT_DIST_DIR` and writes to `.next-prod-check/`. `package.json` `size-limit` paths point at `.next-prod-check/static/...`. The user's `npm run dev` continues writing to `.next/` undisturbed. Any size-limit failure is a hard failure.
 
 ### 6. Report
 Produce a report at `.claude/.last-audit.md` and print the summary to chat:
@@ -81,7 +82,7 @@ Produce a report at `.claude/.last-audit.md` and print the summary to chat:
 ```
 # Quality audit — {YYYY-MM-DD HH:MM}
 Target: {URL}
-Build: clean (.next removed)
+Build: isolated (.next-prod-check)
 
 ## Responsive (6 routes × 5 widths = 30 checks)
 - ✅ all 30 LTR + 5 RTL pass

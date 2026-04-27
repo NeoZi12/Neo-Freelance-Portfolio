@@ -9,8 +9,8 @@ You are reviewing or producing performance-sensitive code in this Next.js 15 sit
 
 1. **`<Image priority>` is allowed only on the LCP image of `sections/HeroSection.tsx`.** That's the orange-ringed avatar — `priority + sizes` on the inner `<Image>`. Anywhere else wastes preload budget and hurts LCP. Lint enforces (ignore-list).
 2. **No raw `getBoundingClientRect()` inside `addEventListener('scroll', ...)` or `addEventListener('resize', ...)`** without `requestAnimationFrame` coalescing. Read existing components before adding new listeners.
-3. **Production build cleanliness**: `rm -rf .next` before any size-limit measurement so chunk sets are predictable.
-4. **No new heavy dependencies** without measuring delta on `.next/static/chunks/**/*.js` total via `npx size-limit`. State the expected size impact in the PR.
+3. **Production build isolation**: NEVER `rm -rf .next` or `next build` into `.next/`. The user runs `npm run dev` in another terminal that owns `.next/`; touching it produces `TypeError: a[d] is not a function` 500s. All perf-check builds go to `.next-prod-check/` via `NEXT_DIST_DIR=.next-prod-check npx next build`. `next.config.ts` already routes `distDir` from that env var; `size-limit` already reads from `.next-prod-check/static/...`.
+4. **No new heavy dependencies** without measuring delta on `.next-prod-check/static/chunks/**/*.js` total via `npx size-limit`. State the expected size impact in the PR.
 5. **Tailwind v4 only.** No CSS Modules, no `@emotion/*`, no `styled-components` — these would re-introduce render-blocking CSS or runtime style injection. Lint enforces via `no-restricted-imports`.
 
 # Project conventions to reuse
@@ -30,8 +30,8 @@ You are reviewing or producing performance-sensitive code in this Next.js 15 sit
 | Mobile LCP | ≤ 2.5s |
 | Mobile CLS | ≤ 0.1 |
 | Mobile INP | ≤ 200ms |
-| `.next/static/chunks/**/*.js` (gzip total) | ≤ 350 KB (placeholder; replaced by baseline) |
-| `.next/static/chunks/**/*.css` (gzip total) | ≤ 20 KB (placeholder; replaced by baseline) |
+| `.next-prod-check/static/chunks/**/*.js` (gzip total) | ≤ 350 KB (placeholder; replaced by baseline) |
+| `.next-prod-check/static/chunks/**/*.css` (gzip total) | ≤ 20 KB (placeholder; replaced by baseline) |
 
 # Things to avoid
 
@@ -46,9 +46,9 @@ You are reviewing or producing performance-sensitive code in this Next.js 15 sit
 # Process when invoked
 
 1. Identify the specific Web Vital or budget metric the change risks.
-2. Measure current state if a baseline exists (run `npm run build`; or run `/check-quality` for end-to-end).
+2. Measure current state if a baseline exists — use the isolated build (`rm -rf .next-prod-check && NEXT_DIST_DIR=.next-prod-check npx next build`) — or run `/check-quality` for end-to-end.
 3. Propose the smallest change that fits the budget. State the expected delta.
-4. Run the build after editing — `rm -rf .next && npm run build` — and confirm `npx size-limit` passes.
+4. Run the build after editing — `rm -rf .next-prod-check && NEXT_DIST_DIR=.next-prod-check npx next build && npx size-limit` — and confirm size-limit passes. Never `rm -rf .next` (that's the dev server's directory).
 5. If touching layout or LCP, run `/check-quality` and confirm median LH stays in band.
 
 When in doubt: load this skill and ask explicitly: "will this affect total JS chunk size / LCP image / scroll-listener perf?" — those three are the high-leverage failure modes.
