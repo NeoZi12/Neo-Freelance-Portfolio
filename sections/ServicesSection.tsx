@@ -244,10 +244,16 @@ function BarChart({ heights, accentIndex }: { heights: number[]; accentIndex: nu
   );
 }
 
-// SVG line-chart for the laptop dashboard. pathLength loops 0↔1 (mirrored
-// easeInOut) while in view — compiles to stroke-dasharray/dashoffset under
-// the hood, so paint-only, no layout. Pauses when offscreen (`once: false`).
+// SVG line-chart for the laptop dashboard. Animates a clipPath rectangle
+// that masks the (always-fully-drawn) line, mirroring 0↔W on a 1.5s
+// easeInOut loop while in view. Pauses when offscreen (`once: false`).
 // Static when prefers-reduced-motion: reduce.
+//
+// Clip-mask instead of stroke-dasharray because the latter leaves
+// subpixel residue at both path endpoints under the section's CSS `zoom`
+// transform — the round dots / micro-segments seen at the path's start
+// and end during the unwind phase. Clipping a rect has no dash boundaries
+// so there is no residue to leak.
 function LineChart({ heights }: { heights: number[] }) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const W = 100;
@@ -261,6 +267,8 @@ function LineChart({ heights }: { heights: number[] }) {
     })
     .join(" ");
 
+  const clipId = "services-linechart-clip";
+
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
@@ -268,36 +276,36 @@ function LineChart({ heights }: { heights: number[] }) {
       className="h-full w-full"
       aria-hidden
     >
-      {prefersReducedMotion ? (
-        <path
-          d={d}
-          fill="none"
-          stroke="#E67E22"
-          strokeWidth={1.5}
-          strokeLinecap="butt"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-        />
-      ) : (
-        <motion.path
-          d={d}
-          fill="none"
-          stroke="#E67E22"
-          strokeWidth={1.5}
-          strokeLinecap="butt"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-          initial={{ pathLength: 0 }}
-          whileInView={{ pathLength: 1 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{
-            duration: 1.5,
-            ease: "easeInOut",
-            repeat: Infinity,
-            repeatType: "mirror",
-          }}
-        />
+      {!prefersReducedMotion && (
+        <defs>
+          <clipPath id={clipId}>
+            <motion.rect
+              x={0}
+              y={0}
+              height={H}
+              initial={{ width: 0 }}
+              whileInView={{ width: W }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{
+                duration: 1.5,
+                ease: "easeInOut",
+                repeat: Infinity,
+                repeatType: "mirror",
+              }}
+            />
+          </clipPath>
+        </defs>
       )}
+      <path
+        d={d}
+        fill="none"
+        stroke="#E67E22"
+        strokeWidth={1.5}
+        strokeLinecap="butt"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        clipPath={prefersReducedMotion ? undefined : `url(#${clipId})`}
+      />
     </svg>
   );
 }
