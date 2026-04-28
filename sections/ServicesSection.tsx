@@ -834,7 +834,10 @@ function ServiceRow({
         >
           <span
             className={cn(
-              "text-[11px] font-semibold uppercase tracking-[0.28em] text-[#E67E22]",
+              "font-semibold uppercase text-[#E67E22]",
+              isHe
+                ? "text-[14px] tracking-[0.18em]"
+                : "text-[11px] tracking-[0.28em]",
               inter.className,
             )}
           >
