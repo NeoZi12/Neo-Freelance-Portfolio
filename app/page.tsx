@@ -6,7 +6,7 @@ const ServicesSection = dynamic(() => import("@/sections/ServicesSection"));
 const AboutSection = dynamic(() => import("@/sections/AboutSection"));
 const PortfolioSection = dynamic(() => import("@/sections/PortfolioSection"));
 const WhyAndTestimonialsSection = dynamic(() => import("@/sections/WhyAndTestimonialsSection"));
-const HowItWorksSection = dynamic(() => import("@/sections/HowItWorksSection"));
+// const HowItWorksSection = dynamic(() => import("@/sections/HowItWorksSection"));
 const ContactSection = dynamic(() => import("@/sections/ContactSection"));
 const FreeGuideCTASection = dynamic(() => import("@/sections/FreeGuideCTASection"));
 const Footer = dynamic(() => import("@/components/Footer"));
@@ -20,7 +20,7 @@ export default function Home() {
       <AboutSection />
       <PortfolioSection />
       <WhyAndTestimonialsSection />
-      <HowItWorksSection />
+      {/* <HowItWorksSection /> */}
       <ContactSection />
       <FreeGuideCTASection />
       <Footer />

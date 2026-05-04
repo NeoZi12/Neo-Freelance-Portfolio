@@ -12,7 +12,7 @@ export const translations = {
       freeGuide: "Free Guide",
     },
     hero: {
-      greeting: "Hi, I'm",
+      greeting: "I'm",
       name: "Neo",
       greetingRole: " — Freelance Web Developer.",
       scrollCta: "What I can do for you",
@@ -262,7 +262,7 @@ export const translations = {
       freeGuide: "מדריך חינמי",
     },
     hero: {
-      greeting: "היי, אני",
+      greeting: "אני",
       name: "ניאו",
       greetingRole: " — מפתח אתרים פרילנסר.",
       scrollCta: "מה אני יכול לעשות עבורך",
