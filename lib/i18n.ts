@@ -184,6 +184,10 @@ export const translations = {
           name: "Tax Consultant landing page - SEO Optimized",
           description: "",
         },
+        {
+          name: "Guy's Barbershop",
+          description: "",
+        },
       ],
     },
     contact: {
@@ -431,6 +435,10 @@ export const translations = {
         },
         {
           name: "אתר ליועצת מס, עם אופטימיזציה לקידום בגוגל",
+          description: "",
+        },
+        {
+          name: "Guy's Barbershop",
           description: "",
         },
       ],
