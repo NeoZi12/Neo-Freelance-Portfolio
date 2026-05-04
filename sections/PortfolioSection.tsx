@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fadeUp, stagger, viewport, EASE } from "@/lib/motion";
+import { fadeUp, stagger, viewport, EASE, DUR } from "@/lib/motion";
 import { montserrat } from "@/lib/fonts";
 import arrowLeft from "@iconify-icons/lucide/arrow-left";
 import arrowRight from "@iconify-icons/lucide/arrow-right";
@@ -259,8 +259,8 @@ function ProjectCard({
           className={cn(
             montserrat.className,
             "shrink-0 inline-flex items-center gap-1",
-            "text-brand-orange font-medium text-xs",
-            "opacity-60 group-hover:opacity-100 transition-opacity duration-300",
+            "text-orange-300 font-medium text-xs",
+            "opacity-70 group-hover:opacity-100 transition-opacity duration-300",
           )}
         >
           {isHe && <Icon icon={arrowLeft} width={12} height={12} />}
@@ -660,39 +660,60 @@ export default function PortfolioSection() {
           </AnimatePresence>
 
           {/* Cards grid — 2+2+1 centered when idle, 2×2 when a project is expanded.
-              Unified motion parent: whileInView + once:true fires the stagger exactly
-              once on first scroll into view; later project switches don't re-animate
-              because persistent keys keep their state and new mounts inherit "show". */}
-          <motion.div
-            className={cn(
-              "grid gap-5 grid-cols-1",
-              selectedProject ? "sm:grid-cols-2" : "sm:grid-cols-4",
-            )}
-            variants={stagger}
-            initial="hidden"
-            whileInView="show"
-            viewport={viewport}
-          >
-            {(selectedProject ? otherProjects! : projects).map((project, i) => (
-              <motion.div
-                key={project.id}
-                variants={fadeUp}
-                className={cn(
-                  "group",
-                  !selectedProject && getGridClasses(i),
-                )}
-              >
-                <ProjectCard
-                  project={project}
-                  viewProjectLabel={t.portfolio.viewProject}
-                  goToWebsiteLabel={t.portfolio.goToWebsite}
-                  isHe={isHe}
-                  isPhone={isPhone}
-                  onClick={handleSelect}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+              Idle uses parent-controlled stagger (works on initial mount).
+              Selected uses per-card whileInView so cards that mount mid-session
+              (the previously-selected card rejoining the grid after a project
+              switch) animate themselves in independently — without this, they'd
+              stay stuck at the parent's stale "hidden" variant (opacity: 0) and
+              leave an empty cell. */}
+          {selectedProject ? (
+            <div className="grid gap-5 grid-cols-1 sm:grid-cols-2">
+              {otherProjects!.map((project) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={viewport}
+                  transition={{ duration: DUR, ease: EASE }}
+                  className="group"
+                >
+                  <ProjectCard
+                    project={project}
+                    viewProjectLabel={t.portfolio.viewProject}
+                    goToWebsiteLabel={t.portfolio.goToWebsite}
+                    isHe={isHe}
+                    isPhone={isPhone}
+                    onClick={handleSelect}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              className="grid gap-5 grid-cols-1 sm:grid-cols-4"
+              variants={stagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={viewport}
+            >
+              {projects.map((project, i) => (
+                <motion.div
+                  key={project.id}
+                  variants={fadeUp}
+                  className={cn("group", getGridClasses(i))}
+                >
+                  <ProjectCard
+                    project={project}
+                    viewProjectLabel={t.portfolio.viewProject}
+                    goToWebsiteLabel={t.portfolio.goToWebsite}
+                    isHe={isHe}
+                    isPhone={isPhone}
+                    onClick={handleSelect}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
         </div>
 
         <div className="hidden lg:block" />
