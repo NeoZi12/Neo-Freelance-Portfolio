@@ -195,7 +195,6 @@ export const translations = {
       heading2: "together",
       subheading: "If you have a project in mind, I'd love to hear from you.",
       social: {
-        linkedin: "Connect with me",
         github: "See my code",
       },
       formHeading: "Send Message",
@@ -448,7 +447,6 @@ export const translations = {
       heading2: "ביחד",
       subheading: "אם יש לך פרויקט בראש, אשמח לשמוע ממך.",
       social: {
-        linkedin: "התחבר איתי",
         github: "ראה את הקוד שלי",
       },
       formHeading: "שליחת הודעה",

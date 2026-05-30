@@ -86,7 +86,6 @@ const siteSchema = {
         addressCountry: "IL",
       },
       sameAs: [
-        "https://www.linkedin.com/in/neozino",
         "https://github.com/NeoZi12",
       ],
       image: "https://neo-freelance-portfolio.vercel.app/images/neo2dmetadata.png",

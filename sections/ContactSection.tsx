@@ -9,8 +9,6 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fadeLeft, fadeRight, viewport } from "@/lib/motion";
 import { montserrat } from "@/lib/fonts";
-import linkedin from "@iconify-icons/mdi/linkedin";
-import whatsapp from "@iconify-icons/mdi/whatsapp";
 import emailOutline from "@iconify-icons/mdi/email-outline";
 import github from "@iconify-icons/mdi/github";
 import instagram from "@iconify-icons/mdi/instagram";
@@ -27,8 +25,6 @@ const MSG_MAX = 500;
 /* ─── Static social data (icons / hrefs / platform keys) ───────────────── */
 
 const socialMeta = [
-  { platform: "linkedin",  label: "LinkedIn",   icon: linkedin,     href: "https://www.linkedin.com/in/neozino/" },
-  { platform: "whatsapp",  label: "WhatsApp",   icon: whatsapp,     href: "https://wa.me/972525930575",         fixedSublabel: "+972 52 593 0575" },
   { platform: "email",     label: "Email",      icon: emailOutline, href: "mailto:neozino.dev@gmail.com",       fixedSublabel: "neozino.dev@gmail.com" },
   { platform: "github",    label: "GitHub",     icon: github,       href: "https://github.com/NeoZi12" },
   { platform: "instagram", label: "Instagram",  icon: instagram,    href: "https://www.instagram.com/neozino.dev?igsh=MXEwOW9kZ2ZjZHI2bQ%3D%3D&utm_source=qr", fixedSublabel: "@neozino.dev" },
