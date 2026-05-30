@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-// PostToolUse hook: after Edit/Write to source files, run tsc --noEmit and
-// eslint <touched file>. Hooks read event JSON from stdin, write user-visible
-// text to stdout, and surface failures via stderr + non-zero exit.
+// PostToolUse hook: after Edit/Write to source files, lint the touched file
+// only. Whole-project tsc is intentionally NOT run here — it dominated the
+// edit cycle even with --incremental. tsc runs once at end-of-turn in the
+// Stop hook (stop-fast-check.mjs), which is when type errors actually
+// matter (before declaring the task done).
 //
 // Exit codes:
 //   0  → success or skipped (no source file touched)
@@ -83,14 +85,16 @@ try {
 
 const failures = [];
 
-// 1. Type-check (whole project — incremental tsbuildinfo keeps this fast).
-const tsc = run("npx", ["tsc", "--noEmit"]);
-if (tsc.code !== 0) {
-  failures.push({ name: "tsc --noEmit", out: (tsc.stdout + tsc.stderr).trim().slice(0, 4000) });
-}
-
-// 2. Lint only the touched file (full repo lint is too slow per-edit).
-const lint = run("npx", ["eslint", relPath]);
+// Lint only the touched file, with a persistent cache so repeated edits to
+// the same file are near-instant. Cache lives in .claude/.eslintcache and is
+// gitignored. Whole-project type-checking is deferred to the Stop hook.
+const lint = run("npx", [
+  "eslint",
+  "--cache",
+  "--cache-location",
+  ".claude/.eslintcache",
+  relPath,
+]);
 if (lint.code !== 0) {
   failures.push({ name: "eslint", out: (lint.stdout + lint.stderr).trim().slice(0, 4000) });
 }

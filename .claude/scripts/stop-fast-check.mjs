@@ -64,9 +64,16 @@ if (tsc.code !== 0) {
   failures.push({ name: "tsc --noEmit", out: (tsc.stdout + tsc.stderr).trim().slice(0, 4000) });
 }
 
-// 2. Lint only the files touched this session.
+// 2. Lint only the files touched this session, sharing the eslint cache
+// with the PostToolUse hook so files already linted mid-edit are skipped.
 if (changedFiles.length > 0) {
-  const lint = run("npx", ["eslint", ...changedFiles]);
+  const lint = run("npx", [
+    "eslint",
+    "--cache",
+    "--cache-location",
+    ".claude/.eslintcache",
+    ...changedFiles,
+  ]);
   if (lint.code !== 0) {
     failures.push({ name: "eslint", out: (lint.stdout + lint.stderr).trim().slice(0, 4000) });
   }

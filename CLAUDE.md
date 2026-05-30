@@ -132,6 +132,6 @@ Use the tokens already defined in `app/globals.css` `@theme` block. Don't introd
 - Font-weight regex lint — too noisy with the multi-font setup; rely on the loaded-set list above
 
 ## Automatic check loop — what runs and when
-- **PostToolUse** (Edit/Write to `app/`, `sections/`, `components/`, `lib/`, `contexts/`, `hooks/` (`*.{ts,tsx,css}`) or `next.config.ts`): `tsc --noEmit` + `eslint <touched file>`. Failures fed back; must self-correct.
-- **Stop** (assistant declares done, any source edit happened this session): `tsc --noEmit` + `eslint <changed files>`. **Does NOT touch `.next/`** — production builds and bundle checks live in `/check-quality`, not the Stop hook (Stop hook used to do this; it killed the user's dev server and was removed).
+- **PostToolUse** (Edit/Write to `app/`, `sections/`, `components/`, `lib/`, `contexts/`, `hooks/` (`*.{ts,tsx,css}`) or `next.config.ts`): `eslint --cache <touched file>`. Whole-project `tsc` is **NOT** run per-edit (was too slow even with `--incremental`); it runs once at end-of-turn in the Stop hook. Lint failures are fed back; must self-correct.
+- **Stop** (assistant declares done, any source edit happened this session): `tsc --noEmit` (incremental) + `eslint --cache <changed files>`. **Does NOT touch `.next/`** — production builds and bundle checks live in `/check-quality`, not the Stop hook (Stop hook used to do this; it killed the user's dev server and was removed).
 - **`/check-quality`** (manual): build into the isolated `.next-prod-check/` (never `.next/`), warm each route, Playwright screenshots at 360/390/412/768/1024 across 6 routes, Chrome DevTools `lighthouse_audit` mobile × 3 → median, compare with 3-pt grace, report only.

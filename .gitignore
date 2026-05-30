@@ -35,6 +35,8 @@ next-env.d.ts
 .claude/.last-check.log
 .claude/.last-audit.md
 .claude/.perf-baseline.json
+.claude/.eslintcache
+.eslintcache
 .claude/asset-backups/
 .claude/lh-*.json
 .claude/lighthouse/
