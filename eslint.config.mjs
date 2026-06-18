@@ -1,16 +1,55 @@
-import { FlatCompat } from "@eslint/eslintrc";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import nextPlugin from "@next/eslint-plugin-next";
+import reactHooks from "eslint-plugin-react-hooks";
+import tsParser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const compat = new FlatCompat({ baseDirectory: __dirname });
-
+/**
+ * ESLint flat config — composed directly from the underlying plugins.
+ *
+ * We deliberately do NOT go through `eslint-config-next` / `FlatCompat`.
+ * `eslint-config-next@15.5.x` only ships the legacy `.eslintrc` format, whose
+ * `index.js` does `require('@rushstack/eslint-patch/modern-module-resolution')`.
+ * That patch identifies its "calling module" by walking the Node require stack,
+ * which breaks under ESLint 9 flat config + pnpm's symlinked node_modules
+ * ("Failed to patch ESLint because the calling module was not recognized"),
+ * failing the lint gate on every file. `@next/eslint-plugin-next` ships a native
+ * flat config (`flatConfig.coreWebVitals`) that keeps the patch out of the path.
+ * See: https://nextjs.org/docs/app/api-reference/config/eslint
+ */
 const eslintConfig = [
-  // Next.js's recommended rule sets for v15. FlatCompat shims the legacy
-  // `.eslintrc` format that `eslint-config-next` 15 still ships under the
-  // hood so it works with flat config.
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    ignores: [
+      ".next/**",
+      ".next-prod-check/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+      ".claude/**",
+    ],
+  },
+
+  // TypeScript / TSX: parser + typescript-eslint recommended rules.
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    plugins: { "@typescript-eslint": tsPlugin },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+    },
+  },
+
+  // Next.js Core Web Vitals (native flat) + React Hooks, across all source.
+  nextPlugin.flatConfig.coreWebVitals,
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    plugins: { "react-hooks": reactHooks },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+    },
+  },
 
   // ──────────────────────────────────────────────────────────────────────────
   // Quality-gate hard rules. See CLAUDE.md → "Stack-specific hard rules".
@@ -61,16 +100,6 @@ const eslintConfig = [
         },
       ],
     },
-  },
-
-  {
-    ignores: [
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-      ".claude/**",
-    ],
   },
 ];
 
