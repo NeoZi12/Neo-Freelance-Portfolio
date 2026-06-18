@@ -32,6 +32,34 @@
   --color-contact-dark: #0d0b09; /* gradient start — near-black warm undertone */
   --color-contact-warm: #1f1107; /* gradient end — deep charcoal ember */
 
+  /* ─────────────────────────────────────────────
+     Products Portal (dev-products-portal)
+     Standalone studio hub — distinct identity from the
+     freelance portfolio above. Warm near-black surface
+     ladder, hairline borders, ZERO shadows, single clay
+     accent. Surfaces reused from UsageCut's real palette.
+     ───────────────────────────────────────────── */
+  /* 4-step surface ladder: canvas → raised → panel → inset */
+  --color-portal-canvas: #0c0a09; /* page background — warm near-black */
+  --color-portal-raised: #131110; /* card resting surface */
+  --color-portal-panel: #1a1715; /* card hovered / lifted surface */
+  --color-portal-inset: #221d1a; /* nested wells (mark plate, peek) */
+
+  /* Hairline border tones (translucent white) */
+  --color-portal-line: rgb(255 255 255 / 0.07); /* resting edge */
+  --color-portal-line-strong: rgb(255 255 255 / 0.13); /* hover / focus edge */
+
+  /* Ink scale */
+  --color-portal-ink: #f3ede0; /* warm paper — headlines */
+  --color-portal-muted: #a39c92; /* supporting copy (AA on canvas) */
+  --color-portal-faint: #6f6a62; /* eyebrows / footer / dimmed */
+
+  /* Per-product clay accents (shared studio hue, two tones) */
+  --color-clock-clay: #c96442; /* ClockedCode */
+  --color-clock-claysoft: #d77e5c;
+  --color-cut-clay: #d9774f; /* UsageCut */
+  --color-cut-claysoft: #e8916b;
+
   /* Typography — replace with your Figma fonts */
   /* --font-sans: 'Your Font', sans-serif; */
   /* --font-heading: 'Your Heading Font', sans-serif; */

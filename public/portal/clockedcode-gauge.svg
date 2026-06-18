@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ClockedCode">
+  <defs>
+    <linearGradient id="track" x1="0.08" y1="0" x2="0.92" y2="0">
+      <stop offset="0" stop-color="#6f6a62"/>
+      <stop offset="0.55" stop-color="#c96442"/>
+      <stop offset="1" stop-color="#d77e5c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- gauge arc track: low -> high = muted -> clay redline -->
+  <path d="M46 349 A210 210 0 0 1 466 349" fill="none" stroke="url(#track)" stroke-width="34" stroke-linecap="round"/>
+
+  <!-- pixel ticks: low 4 muted, high 3 clay -->
+  <rect x="37"  y="340" width="18" height="18" fill="#9b958c"/>
+  <rect x="65"  y="235" width="18" height="18" fill="#9b958c"/>
+  <rect x="142" y="158" width="18" height="18" fill="#9b958c"/>
+  <rect x="247" y="130" width="18" height="18" fill="#9b958c"/>
+  <rect x="352" y="158" width="18" height="18" fill="#cf6e4a"/>
+  <rect x="429" y="235" width="18" height="18" fill="#c96442"/>
+  <rect x="457" y="340" width="18" height="18" fill="#d77e5c"/>
+
+  <!-- needle pinned into the redline (~100%) -->
+  <polygon points="262.75,365.7 249.25,332.3 423,281.5" fill="#f5f3ec"/>
+  <circle cx="256" cy="349" r="28" fill="#f5f3ec"/>
+  <circle cx="256" cy="349" r="12" fill="#c96442"/>
+</svg>
