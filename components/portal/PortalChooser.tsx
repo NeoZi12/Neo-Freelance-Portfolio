@@ -10,8 +10,6 @@ import UsageCutMark from "./UsageCutMark";
 import UsageCutPreview from "./UsageCutPreview";
 
 const CLOCKEDCODE_URL = "https://clockedcode.com";
-// UsageCut has no confirmed production URL in the codebase yet.
-// TODO: confirm live UsageCut URL — one-line swap.
 const USAGECUT_URL = "https://usagecut.com";
 
 /**
