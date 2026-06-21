@@ -17,6 +17,8 @@ export type ProductCardProps = {
   href: string;
   /** Opens in a new tab when true (external product sites). */
   external?: boolean;
+  /** Not yet launched — render as a non-clickable card with a "coming soon" cue. */
+  comingSoon?: boolean;
   /** The product name, rendered as an <h2>. Pass the styled wordmark. */
   name: ReactNode;
   /** The mark (gauge / trimmed-stack), on its own accent-tinted plate. */
@@ -38,6 +40,7 @@ export type ProductCardProps = {
 export default function ProductCard({
   href,
   external = true,
+  comingSoon = false,
   name,
   mark,
   pitch,
@@ -59,19 +62,30 @@ export default function ProductCard({
     },
   };
 
-  const lift = prefersReducedMotion ? {} : { y: -4 };
+  const lift = prefersReducedMotion || comingSoon ? {} : { y: -4 };
+
+  // Coming-soon cards are not navigable: render as a non-interactive container
+  // (no href, no hover-lift) so it announces "not yet available" rather than a link.
+  const Tag = comingSoon ? motion.div : motion.a;
+  const interactiveProps = comingSoon
+    ? { "aria-disabled": true as const }
+    : {
+        href,
+        ...(external
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {}),
+        onFocus: onPointerEnter,
+        onBlur: onPointerLeave,
+        whileHover: lift,
+        whileFocus: lift,
+      };
 
   return (
-    <motion.a
-      href={href}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    <Tag
+      {...interactiveProps}
       variants={cardEntrance}
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
-      onFocus={onPointerEnter}
-      onBlur={onPointerLeave}
-      whileHover={lift}
-      whileFocus={lift}
       transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
       style={{ "--accent": accent } as React.CSSProperties}
       className={cn(
@@ -79,9 +93,13 @@ export default function ProductCard({
         "border border-portal-line bg-portal-raised",
         "p-6 sm:p-7",
         "outline-none transition-[border-color,background-color,opacity] duration-200",
-        "hover:border-portal-line-strong hover:bg-portal-panel",
-        "focus-visible:border-portal-line-strong focus-visible:bg-portal-panel",
-        "focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-portal-canvas",
+        comingSoon
+          ? "cursor-default"
+          : [
+              "hover:border-portal-line-strong hover:bg-portal-panel",
+              "focus-visible:border-portal-line-strong focus-visible:bg-portal-panel",
+              "focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-portal-canvas",
+            ],
         dimmed && "opacity-60",
       )}
     >
@@ -123,6 +141,19 @@ export default function ProductCard({
           <h2 className="text-xl font-semibold tracking-tight text-portal-ink sm:text-2xl">
             {name}
           </h2>
+          {comingSoon && (
+            <span
+              className="ms-auto inline-flex flex-none items-center rounded-full border px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-wide text-portal-muted"
+              style={{
+                borderColor:
+                  "color-mix(in oklab, var(--accent) 30%, transparent)",
+                background:
+                  "color-mix(in oklab, var(--accent) 10%, var(--color-portal-inset))",
+              }}
+            >
+              Coming soon
+            </span>
+          )}
         </div>
 
         <p className="mt-3.5 max-w-[46ch] text-pretty text-sm leading-relaxed text-portal-muted sm:text-[0.95rem]">
@@ -136,29 +167,41 @@ export default function ProductCard({
 
         {/* CTA pill (a visual cue — the whole card is the link). */}
         <div className="mt-5">
-          <span
-            className={cn(
-              "inline-flex w-fit items-center gap-2 rounded-full px-4 py-2",
-              "border border-portal-line-strong bg-portal-inset",
-              "text-sm font-semibold text-portal-ink transition-colors duration-200",
-              "group-hover/card:border-[var(--accent)] group-focus-visible/card:border-[var(--accent)]",
-            )}
-          >
-            {cta}
+          {comingSoon ? (
             <span
-              aria-hidden
               className={cn(
-                "transition-transform duration-200 ease-out",
-                "group-hover/card:translate-x-1 group-focus-visible/card:translate-x-1",
-                "motion-reduce:transition-none motion-reduce:group-hover/card:translate-x-0",
+                "inline-flex w-fit items-center gap-2 rounded-full px-4 py-2",
+                "border border-portal-line bg-portal-inset",
+                "text-sm font-semibold text-portal-muted",
               )}
-              style={{ color: "var(--accent)" }}
             >
-              →
+              {cta}
             </span>
-          </span>
+          ) : (
+            <span
+              className={cn(
+                "inline-flex w-fit items-center gap-2 rounded-full px-4 py-2",
+                "border border-portal-line-strong bg-portal-inset",
+                "text-sm font-semibold text-portal-ink transition-colors duration-200",
+                "group-hover/card:border-[var(--accent)] group-focus-visible/card:border-[var(--accent)]",
+              )}
+            >
+              {cta}
+              <span
+                aria-hidden
+                className={cn(
+                  "transition-transform duration-200 ease-out",
+                  "group-hover/card:translate-x-1 group-focus-visible/card:translate-x-1",
+                  "motion-reduce:transition-none motion-reduce:group-hover/card:translate-x-0",
+                )}
+                style={{ color: "var(--accent)" }}
+              >
+                →
+              </span>
+            </span>
+          )}
         </div>
       </div>
-    </motion.a>
+    </Tag>
   );
 }
