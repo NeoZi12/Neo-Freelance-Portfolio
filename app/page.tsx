@@ -1,12 +1,25 @@
 import PortalChooser from "@/components/portal/PortalChooser";
+import PortfolioHome from "@/components/PortfolioHome";
 
 /**
  * Developer products portal — a maker-hub (Marc Lou model, dark) that routes a
  * visitor to one of Neo Zino's Claude Code tools. Replaces the freelance
  * homepage on the `dev-products-portal` branch (old site preserved via the
  * `portfolio-v1` tag and untouched `main`).
+ *
+ * A `?lang=` param swaps the homepage back to the old freelance portfolio
+ * (the pre-portal site): `?lang=he` Hebrew, `?lang=en` English. Plain `/`
+ * (no param) keeps the dev-tools portal. Reading searchParams opts `/` into
+ * dynamic rendering — acceptable for a personal hub.
  */
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const { lang } = await searchParams;
+  if (lang === "he" || lang === "en") return <PortfolioHome />;
+
   return (
     <main className="relative min-h-[100dvh] overflow-hidden bg-portal-canvas">
       {/* Ambient: one faint warm bloom anchored top-center. Depth comes from the
