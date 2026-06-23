@@ -8,6 +8,7 @@ import { montserrat } from "@/lib/fonts";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EASE, DUR } from "@/lib/motion";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -339,6 +340,7 @@ export default function FreeGuidePage() {
 
   return (
     <>
+      <Navbar />
       <main className={cn("min-h-screen bg-[#080604]", montserrat.className)}>
 
         {/* ── Hero ─────────────────────────────────────────────────────────── */}

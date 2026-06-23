@@ -113,8 +113,14 @@ export default function Navbar() {
   const navLinks = isHe ? [...navLinksBase].reverse() : navLinksBase;
   const mobileNavLinks = navLinksBase;
 
+  // Always carry the active language so portfolio navigation stays on the
+  // portfolio. Without a `lang` param, `/` resolves to the dev-tools portal —
+  // so a bare `path + ""` here would bounce portfolio visitors to the portal.
   function withLang(path: string) {
-    return path + window.location.search;
+    const [base, query] = path.split("?");
+    const params = new URLSearchParams(query ?? window.location.search);
+    params.set("lang", locale);
+    return `${base}?${params.toString()}`;
   }
 
   function scrollToSection(id: string, href: NavHref) {
