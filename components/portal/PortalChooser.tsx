@@ -87,7 +87,6 @@ export default function PortalChooser() {
 
         <ProductCard
           href={USAGECUT_URL}
-          comingSoon
           name={
             <span style={{ letterSpacing: "-0.035em" }}>
               Usage
@@ -98,7 +97,7 @@ export default function PortalChooser() {
           }
           mark={<UsageCutMark size={26} />}
           pitch="A free local scan finds the tokens you waste, then trims them — lossless, reversible, all on your machine."
-          cta="Coming soon"
+          cta="Open UsageCut"
           accent="var(--color-cut-clay)"
           dimmed={active === 0}
           preview={<UsageCutPreview />}
