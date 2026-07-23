@@ -1,0 +1,6 @@
+# Publish dirs a guide PR may touch and still auto-merge (one prefix per line).
+# This repo has no src/ — content lives at the root. Guides are MDX + optional
+# cover images; blog components are shared and rarely change per-post.
+content/blog/
+public/blog/covers/
+components/blog/
