@@ -157,8 +157,7 @@ export default function Navbar() {
   // On each navigation back to "/" the sections are fresh DOM nodes — observers
   // must be set up against the current elements, not the ones from initial mount.
   useEffect(() => {
-    // No single-page sections to observe on the standalone routes.
-    if (pathname === "/free-guide" || pathname.startsWith("/blog")) return;
+    if (pathname === "/free-guide") return; // no sections to observe on the free guide page
 
     const sectionIds: string[] = ["home", "services", "portfolio", "why-us", "how-it-works", "about", "contact"];
     const observers: IntersectionObserver[] = [];
@@ -192,37 +191,6 @@ export default function Navbar() {
       observers.forEach((o) => o.disconnect());
     };
   }, [pathname]);
-
-  // ── Simplified nav for the blog (index + articles) ─────────────────────────
-  // Warm portal chrome: logo → home, a quiet "Blog" label, language switcher.
-  if (pathname.startsWith("/blog")) {
-    return (
-      <header className="fixed top-0 left-0 right-0 z-50 w-full h-[64px] lg:h-[90px] border-b border-portal-line bg-portal-canvas/95 backdrop-blur-sm">
-        <nav
-          className="flex justify-between items-center h-full px-6 sm:px-10 lg:px-8 xl:px-[70px] max-w-7xl mx-auto"
-          dir={isHe ? "rtl" : "ltr"}
-          aria-label="Blog navigation"
-        >
-          <button
-            onClick={() => router.push(withLang("/"))}
-            aria-label="Neo Zino — home"
-            className="inline-flex items-center gap-3 select-none cursor-pointer"
-          >
-            <AnimatedLogo size={56} />
-            <span
-              className={cn(
-                "text-portal-faint text-[11px] font-bold uppercase tracking-[0.28em]",
-                navFont.className,
-              )}
-            >
-              {t.blog.navLabel}
-            </span>
-          </button>
-          <LangSwitcher />
-        </nav>
-      </header>
-    );
-  }
 
   // ── Simplified nav for the free-guide standalone page ──────────────────────
   if (pathname === "/free-guide") {
