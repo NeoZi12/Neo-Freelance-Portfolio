@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { montserrat, jakarta, inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
+import { SITE_URL } from "@/lib/site";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -30,7 +31,7 @@ const PORTAL_DESC =
   "Two tools for Claude Code by Neo Zino: ClockedCode sets it up to full power, UsageCut scans and cuts wasted tokens. Pick where your setup is today.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://neo-freelance-portfolio.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: PORTAL_TITLE,
   description: PORTAL_DESC,
   robots: {
@@ -62,9 +63,9 @@ export const metadata: Metadata = {
 const siteSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://neo-freelance-portfolio.vercel.app/#studio",
+  "@id": `${SITE_URL}/#studio`,
   name: "Neo Zino",
-  url: "https://neo-freelance-portfolio.vercel.app",
+  url: SITE_URL,
   description:
     "Neo Zino builds tools for Claude Code: ClockedCode (a setup kit that takes a stock install to full power) and UsageCut (a local scan that cuts wasted tokens).",
   sameAs: ["https://github.com/NeoZi12"],
