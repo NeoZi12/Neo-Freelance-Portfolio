@@ -32,6 +32,10 @@
   --color-contact-dark: #0d0b09; /* gradient start — near-black warm undertone */
   --color-contact-warm: #1f1107; /* gradient end — deep charcoal ember */
 
+  /* ── Blog section gradient ── */
+  --color-blog-dark: #0c0e11; /* gradient start — deep ink */
+  --color-blog-warm: #1c130b; /* gradient end — dark ember */
+
   /* ─────────────────────────────────────────────
      Products Portal (dev-products-portal)
      Standalone studio hub — distinct identity from the

@@ -10,7 +10,7 @@ import AnimatedLogo from "@/components/AnimatedLogo";
 
 const navFont = montserrat;
 
-type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact" | "/why-us" | "/free-guide";
+type NavHref = "/" | "/about" | "/services" | "/how-it-works" | "/portfolio" | "/contact" | "/why-us" | "/free-guide" | "/blog";
 
 // Sections that have no nav link — they keep a parent nav item highlighted instead
 const NAV_MAP: Record<string, NavHref> = {
@@ -107,6 +107,7 @@ export default function Navbar() {
     { label: t.nav.about,     href: "/about" as NavHref,        id: "about" },
     { label: t.nav.portfolio, href: "/portfolio" as NavHref,    id: "portfolio" },
     { label: t.nav.contact,   href: "/contact" as NavHref,      id: "contact" },
+    { label: t.nav.blog,      href: "/blog" as NavHref,         id: "blog", isRoute: true },
     { label: t.nav.freeGuide, href: "/free-guide" as NavHref,   id: "free-guide", isRoute: true },
   ];
   const isHe = locale === "he";
@@ -148,6 +149,9 @@ export default function Navbar() {
   useEffect(() => {
     if (pathname === "/free-guide") {
       setActiveLink("/free-guide");
+    } else if (pathname.startsWith("/blog")) {
+      // Covers both the list page and every /blog/[slug] detail page.
+      setActiveLink("/blog");
     } else {
       setActiveLink(pathname as NavHref);
     }
@@ -157,7 +161,7 @@ export default function Navbar() {
   // On each navigation back to "/" the sections are fresh DOM nodes — observers
   // must be set up against the current elements, not the ones from initial mount.
   useEffect(() => {
-    if (pathname === "/free-guide") return; // no sections to observe on the free guide page
+    if (pathname === "/free-guide" || pathname.startsWith("/blog")) return; // no sections to observe on standalone pages
 
     const sectionIds: string[] = ["home", "services", "portfolio", "why-us", "how-it-works", "about", "contact"];
     const observers: IntersectionObserver[] = [];
