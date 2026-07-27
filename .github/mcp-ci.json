@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "seo-manager": {
+      "type": "http",
+      "url": "http://localhost:4005/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SEO_MCP_API_KEY}"
+      }
+    }
+  }
+}
