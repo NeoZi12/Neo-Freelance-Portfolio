@@ -10,6 +10,7 @@ export const translations = {
       portfolio: "Portfolio",
       contact: "Contact",
       freeGuide: "Free Guide",
+      blog: "Blog",
     },
     hero: {
       greeting: "I'm",
@@ -263,6 +264,7 @@ export const translations = {
       portfolio: "תיק עבודות",
       contact: "צור קשר",
       freeGuide: "מדריך חינמי",
+      blog: "בלוג",
     },
     hero: {
       greeting: "אני",
