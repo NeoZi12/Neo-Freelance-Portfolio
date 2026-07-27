@@ -1,0 +1,8 @@
+# Path prefixes a guide PR may touch and still qualify for auto-merge.
+# One prefix per line, # comments allowed. Read by seo-auto-merge.yml from
+# the default branch at merge time. This repo's layout is root-level
+# (no src/), matching the rest of the codebase.
+content/blog/
+components/blog/
+public/blog/covers/
+lib/blog.ts
